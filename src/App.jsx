@@ -259,6 +259,7 @@ const RummikubTracker = () => {
       setCurrentPlayerIndex(0);
       setPlayerExtensions(extensions);
       setTimerActive(false);
+      setTimerSeconds(timerDuration);
       localStorage.setItem('active-game', JSON.stringify(game));
       setCurrentRound(1);
       setRoundScores({});
