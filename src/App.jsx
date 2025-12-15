@@ -19,6 +19,8 @@ const RummikubTracker = () => {
   const [loading, setLoading] = useState(true);
   const [audioContext, setAudioContext] = useState(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [draggedPlayerIndex, setDraggedPlayerIndex] = useState(null);
+  const [draggedGamePlayerIndex, setDraggedGamePlayerIndex] = useState(null);
 
   useEffect(() => {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -202,6 +204,59 @@ const RummikubTracker = () => {
 
   const removePlayer = (index) => {
     if (players.length > 1) setPlayers(players.filter((_, i) => i !== index));
+  };
+
+  const handleDragStart = (index) => {
+    setDraggedPlayerIndex(index);
+  };
+
+  const handleDragOver = (e, index) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e, dropIndex) => {
+    e.preventDefault();
+    if (draggedPlayerIndex === null || draggedPlayerIndex === dropIndex) return;
+    
+    const newPlayers = [...players];
+    const draggedPlayer = newPlayers[draggedPlayerIndex];
+    newPlayers.splice(draggedPlayerIndex, 1);
+    newPlayers.splice(dropIndex, 0, draggedPlayer);
+    
+    setPlayers(newPlayers);
+    setDraggedPlayerIndex(null);
+  };
+
+  const handleGamePlayerDragStart = (index) => {
+    setDraggedGamePlayerIndex(index);
+  };
+
+  const handleGamePlayerDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  const handleGamePlayerDrop = (e, dropIndex) => {
+    e.preventDefault();
+    if (draggedGamePlayerIndex === null || draggedGamePlayerIndex === dropIndex) return;
+    
+    const currentPlayerName = activeGame.players[currentPlayerIndex].name;
+    const newPlayers = [...activeGame.players];
+    const draggedPlayer = newPlayers[draggedGamePlayerIndex];
+    newPlayers.splice(draggedGamePlayerIndex, 1);
+    newPlayers.splice(dropIndex, 0, draggedPlayer);
+    
+    const newCurrentPlayerIndex = newPlayers.findIndex(p => p.name === currentPlayerName);
+    
+    const updatedGame = {
+      ...activeGame,
+      players: newPlayers,
+      currentPlayerIndex: newCurrentPlayerIndex
+    };
+    
+    setActiveGame(updatedGame);
+    setCurrentPlayerIndex(newCurrentPlayerIndex);
+    localStorage.setItem('active-game', JSON.stringify(updatedGame));
+    setDraggedGamePlayerIndex(null);
   };
 
   const addSavedPlayerToGame = (savedPlayer) => {
@@ -507,9 +562,20 @@ const RummikubTracker = () => {
                 </div>
               )}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Players <span className="text-xs text-gray-500">(Click avatar to add photo)</span></label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Players <span className="text-xs text-gray-500">(Click avatar to add photo • Drag to reorder)</span>
+                </label>
                 {players.map((player, index) => (
-                  <div key={index} className="flex gap-2 mb-3">
+                  <div 
+                    key={index} 
+                    draggable 
+                    onDragStart={() => handleDragStart(index)}
+                    onDragOver={(e) => handleDragOver(e, index)}
+                    onDrop={(e) => handleDrop(e, index)}
+                    className={`flex gap-2 mb-3 cursor-move transition ${
+                      draggedPlayerIndex === index ? 'opacity-50' : ''
+                    }`}
+                  >
                     <label className="cursor-pointer">
                       <input type="file" accept="image/*" onChange={(e) => handleImageUpload(index, e.target.files[0])} className="hidden" />
                       <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center overflow-hidden border-2 border-gray-300 hover:border-indigo-500 transition">
@@ -575,7 +641,7 @@ const RummikubTracker = () => {
                       </div>
                     </div>
                     <button onClick={nextPlayer}
-                      className="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg flex items-center gap-2 transition">
+                      className="bg-white text-indigo-600 px-4 py-2 rounded-lg flex items-center gap-2 transition hover:bg-indigo-50 font-semibold shadow">
                       <SkipForward size={20} /> Skip Turn
                     </button>
                   </div>
@@ -635,7 +701,16 @@ const RummikubTracker = () => {
 
               <div className="mt-4 grid grid-cols-2 gap-2">
                 {activeGame.players.map((player, idx) => (
-                  <div key={idx} className={`p-3 rounded-lg border-2 transition ${idx === currentPlayerIndex ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200 bg-gray-50'}`}>
+                  <div 
+                    key={idx}
+                    draggable
+                    onDragStart={() => handleGamePlayerDragStart(idx)}
+                    onDragOver={handleGamePlayerDragOver}
+                    onDrop={(e) => handleGamePlayerDrop(e, idx)}
+                    className={`p-3 rounded-lg border-2 transition cursor-move ${
+                      idx === currentPlayerIndex ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200 bg-gray-50'
+                    } ${draggedGamePlayerIndex === idx ? 'opacity-50' : ''}`}
+                  >
                     <div className="flex items-center gap-2">
                       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center overflow-hidden">
                         {player.image ? <img src={player.image} alt="" className="w-full h-full object-cover" /> :
