@@ -120,14 +120,12 @@ const RummikubTracker = () => {
         }
         setActiveGame(game);
         setCurrentPlayerIndex(game.currentPlayerIndex || 0);
+        setCurrentRound(game.rounds.length + 1);
         setTimerDuration(game.timerDuration || 60);
         setTimerSeconds(game.timerDuration || 60);
         setPlayerExtensions(game.playerExtensions || {});
-        setView('activeGame');
-        setTimeout(() => {
-          playTurnNotification();
-          setTimerActive(true);
-        }, 500);
+        setTimerActive(false);
+        setView('home');
       }
     } catch (error) {
       console.error('Error loading data:', error);
@@ -161,7 +159,7 @@ const RummikubTracker = () => {
   };
 
   const extendTimer = () => {
-    if (!activeGame?.players[currentPlayerIndex]) return;
+    if (!activeGame || !activeGame.players[currentPlayerIndex]) return;
     const currentPlayer = activeGame.players[currentPlayerIndex];
     const extensionsUsed = playerExtensions[currentPlayer.name] || 0;
     const maxAllowed = activeGame.maxExtensions || 3;
@@ -195,7 +193,7 @@ const RummikubTracker = () => {
   };
 
   const handleImageUpload = (index, file) => {
-    if (file?.type.startsWith('image/')) {
+    if (file && file.type.startsWith('image/')) {
       const reader = new FileReader();
       reader.onload = (e) => updatePlayer(index, 'image', e.target.result);
       reader.readAsDataURL(file);
@@ -395,23 +393,58 @@ const RummikubTracker = () => {
         )}
 
         {view === 'home' && (
-          <div className="bg-white rounded-xl shadow-lg p-8 text-center">
-            <Trophy className="w-16 h-16 mx-auto mb-4 text-indigo-600" />
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">Welcome to Rummikub Tracker!</h2>
-            <p className="text-gray-600 mb-6">Start a new game or view your game history</p>
-            <div className="space-y-3">
-              <button onClick={() => { setView('newGame'); setPlayers([{ name: '', image: null }]); setGameName(''); }}
-                className="w-full bg-indigo-600 text-white py-4 rounded-lg font-semibold hover:bg-indigo-700 transition flex items-center justify-center gap-2">
-                <Plus size={20} /> Start New Game
-              </button>
-              <button onClick={() => setView('managePlayers')}
-                className="w-full bg-purple-600 text-white py-4 rounded-lg font-semibold hover:bg-purple-700 transition flex items-center justify-center gap-2">
-                <Trophy size={20} /> Manage Players
-              </button>
-              <button onClick={() => setView('gameHistory')}
-                className="w-full bg-gray-200 text-gray-800 py-4 rounded-lg font-semibold hover:bg-gray-300 transition flex items-center justify-center gap-2">
-                <History size={20} /> View Game History
-              </button>
+          <div className="space-y-4">
+            {activeGame && (
+              <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl shadow-lg p-6 text-white">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm opacity-90 mb-1">Game in Progress</p>
+                    <h3 className="text-2xl font-bold mb-2">{activeGame.name}</h3>
+                    <p className="text-sm opacity-90">Round {activeGame.rounds.length + 1} • {activeGame.players.length} players</p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setCurrentRound(activeGame.rounds.length + 1);
+                      setView('activeGame');
+                      setTimeout(() => setTimerActive(true), 500);
+                    }}
+                    className="bg-white text-green-600 px-6 py-3 rounded-lg font-semibold hover:bg-green-50 transition flex items-center gap-2"
+                  >
+                    <Play size={20} />
+                    Resume Game
+                  </button>
+                </div>
+              </div>
+            )}
+            
+            <div className="bg-white rounded-xl shadow-lg p-8 text-center">
+              <Trophy className="w-16 h-16 mx-auto mb-4 text-indigo-600" />
+              <h2 className="text-2xl font-bold text-gray-800 mb-4">Welcome to Rummikub Tracker!</h2>
+              <p className="text-gray-600 mb-6">Start a new game or view your game history</p>
+              <div className="space-y-3">
+                <button 
+                  onClick={() => { 
+                    if (activeGame) {
+                      if (!window.confirm('Starting a new game will end your current game. Continue?')) {
+                        return;
+                      }
+                    }
+                    setView('newGame'); 
+                    setPlayers([{ name: '', image: null }]); 
+                    setGameName(''); 
+                  }}
+                  className="w-full bg-indigo-600 text-white py-4 rounded-lg font-semibold hover:bg-indigo-700 transition flex items-center justify-center gap-2">
+                  <Plus size={20} /> Start New Game
+                </button>
+                <button onClick={() => setView('managePlayers')}
+                  className="w-full bg-purple-600 text-white py-4 rounded-lg font-semibold hover:bg-purple-700 transition flex items-center justify-center gap-2">
+                  <Trophy size={20} /> Manage Players
+                </button>
+                <button onClick={() => setView('gameHistory')}
+                  className="w-full bg-gray-200 text-gray-800 py-4 rounded-lg font-semibold hover:bg-gray-300 transition flex items-center justify-center gap-2">
+                  <History size={20} /> View Game History
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -513,7 +546,14 @@ const RummikubTracker = () => {
                   <h2 className="text-2xl font-bold text-gray-800">{activeGame.name}</h2>
                   <p className="text-sm text-gray-600">Round {currentRound}</p>
                 </div>
-                <button onClick={() => setView('home')} className="text-gray-500 hover:text-gray-700"><X size={24} /></button>
+                <button 
+                  onClick={() => {
+                    setTimerActive(false);
+                    setView('home');
+                  }} 
+                  className="text-gray-500 hover:text-gray-700">
+                  <X size={24} />
+                </button>
               </div>
 
               {activeGame.players[currentPlayerIndex] && (
@@ -534,7 +574,7 @@ const RummikubTracker = () => {
                       </div>
                     </div>
                     <button onClick={nextPlayer}
-                      className="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg flex items-center gap-2 transition text-black">
+                      className="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg flex items-center gap-2 transition">
                       <SkipForward size={20} /> Skip Turn
                     </button>
                   </div>
