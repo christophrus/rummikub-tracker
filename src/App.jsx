@@ -21,6 +21,7 @@ const RummikubTracker = () => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [draggedPlayerIndex, setDraggedPlayerIndex] = useState(null);
   const [draggedGamePlayerIndex, setDraggedGamePlayerIndex] = useState(null);
+  const [ttsLanguage, setTtsLanguage] = useState('de-DE');
 
   useEffect(() => {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -92,7 +93,7 @@ const RummikubTracker = () => {
     });
   };
 
-  const speakPlayerName = (playerName) => {
+  const speakPlayerName = (playerName, language = ttsLanguage) => {
     if ('speechSynthesis' in window) {
       // Cancel any ongoing speech
       window.speechSynthesis.cancel();
@@ -101,6 +102,14 @@ const RummikubTracker = () => {
       utterance.rate = 1.0;
       utterance.pitch = 1.0;
       utterance.volume = 1.0;
+      utterance.lang = language;
+      
+      // Optional: Wähle eine bestimmte Stimme für die Sprache aus
+      const voices = window.speechSynthesis.getVoices();
+      const matchingVoice = voices.find(voice => voice.lang.startsWith(language.split('-')[0]));
+      if (matchingVoice) {
+        utterance.voice = matchingVoice;
+      }
       
       // Small delay to let the notification sound play first
       setTimeout(() => {
@@ -143,6 +152,7 @@ const RummikubTracker = () => {
         setTimerDuration(game.timerDuration || 60);
         setTimerSeconds(game.timerDuration || 60);
         setPlayerExtensions(game.playerExtensions || {});
+        setTtsLanguage(game.ttsLanguage || 'de-DE');
         setTimerActive(false);
         setView('home');
       }
@@ -165,7 +175,7 @@ const RummikubTracker = () => {
     const nextIndex = (currentPlayerIndex + 1) % activeGame.players.length;
     const nextPlayerName = activeGame.players[nextIndex].name;
     playTurnNotification();
-    speakPlayerName(nextPlayerName);
+    speakPlayerName(nextPlayerName, activeGame.ttsLanguage || ttsLanguage);
     setCurrentPlayerIndex(nextIndex);
     setTimerSeconds(timerDuration);
     const updatedGame = { ...activeGame, currentPlayerIndex: nextIndex };
@@ -326,7 +336,8 @@ const RummikubTracker = () => {
         currentPlayerIndex: 0,
         timerDuration,
         maxExtensions,
-        playerExtensions: extensions
+        playerExtensions: extensions,
+        ttsLanguage
       };
       
       setActiveGame(game);
@@ -341,7 +352,7 @@ const RummikubTracker = () => {
       
       setTimeout(() => {
         playTurnNotification();
-        speakPlayerName(validPlayers[0].name);
+        speakPlayerName(validPlayers[0].name, ttsLanguage);
         setTimerActive(true);
       }, 500);
     } catch (error) {
@@ -484,7 +495,7 @@ const RummikubTracker = () => {
                       setView('activeGame');
                       setTimeout(() => {
                         playTurnNotification();
-                        speakPlayerName(activeGame.players[currentPlayerIndex].name);
+                        speakPlayerName(activeGame.players[currentPlayerIndex].name, activeGame.ttsLanguage || ttsLanguage);
                         setTimerActive(true);
                       }, 500);
                     }}
@@ -566,6 +577,23 @@ const RummikubTracker = () => {
                   <option value={10}>10 extensions</option>
                 </select>
                 <p className="text-xs text-gray-500 mt-1">Each extension adds 30 seconds</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Voice Announcement Language</label>
+                <select value={ttsLanguage} onChange={(e) => setTtsLanguage(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                  <option value="de-DE">🇩🇪 Deutsch</option>
+                  <option value="en-US">🇺🇸 English (US)</option>
+                  <option value="en-GB">🇬🇧 English (UK)</option>
+                  <option value="fr-FR">🇫🇷 Français</option>
+                  <option value="es-ES">🇪🇸 Español</option>
+                  <option value="it-IT">🇮🇹 Italiano</option>
+                  <option value="pt-PT">🇵🇹 Português</option>
+                  <option value="nl-NL">🇳🇱 Nederlands</option>
+                  <option value="pl-PL">🇵🇱 Polski</option>
+                  <option value="ru-RU">🇷🇺 Русский</option>
+                </select>
+                <p className="text-xs text-gray-500 mt-1">Language for player name announcements</p>
               </div>
               {savedPlayers.length > 0 && (
                 <div>
