@@ -92,6 +92,23 @@ const RummikubTracker = () => {
     });
   };
 
+  const speakPlayerName = (playerName) => {
+    if ('speechSynthesis' in window) {
+      // Cancel any ongoing speech
+      window.speechSynthesis.cancel();
+      
+      const utterance = new SpeechSynthesisUtterance(playerName);
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
+      utterance.volume = 1.0;
+      
+      // Small delay to let the notification sound play first
+      setTimeout(() => {
+        window.speechSynthesis.speak(utterance);
+      }, 400);
+    }
+  };
+
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen().catch(err => {
@@ -146,7 +163,9 @@ const RummikubTracker = () => {
     if (!activeGame) return;
     setTimerActive(false);
     const nextIndex = (currentPlayerIndex + 1) % activeGame.players.length;
+    const nextPlayerName = activeGame.players[nextIndex].name;
     playTurnNotification();
+    speakPlayerName(nextPlayerName);
     setCurrentPlayerIndex(nextIndex);
     setTimerSeconds(timerDuration);
     const updatedGame = { ...activeGame, currentPlayerIndex: nextIndex };
@@ -322,6 +341,7 @@ const RummikubTracker = () => {
       
       setTimeout(() => {
         playTurnNotification();
+        speakPlayerName(validPlayers[0].name);
         setTimerActive(true);
       }, 500);
     } catch (error) {
@@ -462,7 +482,11 @@ const RummikubTracker = () => {
                     onClick={() => {
                       setCurrentRound(activeGame.rounds.length + 1);
                       setView('activeGame');
-                      setTimeout(() => setTimerActive(true), 500);
+                      setTimeout(() => {
+                        playTurnNotification();
+                        speakPlayerName(activeGame.players[currentPlayerIndex].name);
+                        setTimerActive(true);
+                      }, 500);
                     }}
                     className="bg-white text-green-600 px-6 py-3 rounded-lg font-semibold hover:bg-green-50 transition flex items-center gap-2"
                   >
