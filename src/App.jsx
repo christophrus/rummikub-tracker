@@ -1,5 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Timer, Trophy, History, X, Play, Pause, RotateCcw, Check, Trash2, SkipForward, Maximize, Minimize } from 'lucide-react';
+import { Plus, Timer, Trophy, History, X, Play, Pause, RotateCcw, Check, Trash2, SkipForward, Maximize, Minimize, Globe } from 'lucide-react';
+
+// Import language files
+import enTranslations from './locales/en.js';
+import deTranslations from './locales/de.js';
+import frTranslations from './locales/fr.js';
+
+// Build translations object from imported files
+const translations = {
+  en: enTranslations,
+  de: deTranslations,
+  fr: frTranslations
+};
 
 const RummikubTracker = () => {
   const [view, setView] = useState('home');
@@ -22,6 +34,16 @@ const RummikubTracker = () => {
   const [draggedPlayerIndex, setDraggedPlayerIndex] = useState(null);
   const [draggedGamePlayerIndex, setDraggedGamePlayerIndex] = useState(null);
   const [ttsLanguage, setTtsLanguage] = useState('de-DE');
+  const [uiLanguage, setUiLanguage] = useState('en');
+
+  // Translation function
+  const t = (key, replacements = {}) => {
+    let text = translations[uiLanguage]?.[key] || translations.en[key] || key;
+    Object.keys(replacements).forEach(replaceKey => {
+      text = text.replace(`{{${replaceKey}}}`, replacements[replaceKey]);
+    });
+    return text;
+  };
 
   useEffect(() => {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -95,7 +117,6 @@ const RummikubTracker = () => {
 
   const speakPlayerName = (playerName, language = ttsLanguage) => {
     if ('speechSynthesis' in window) {
-      // Cancel any ongoing speech
       window.speechSynthesis.cancel();
       
       const utterance = new SpeechSynthesisUtterance(playerName);
@@ -104,14 +125,12 @@ const RummikubTracker = () => {
       utterance.volume = 1.0;
       utterance.lang = language;
       
-      // Optional: Wähle eine bestimmte Stimme für die Sprache aus
       const voices = window.speechSynthesis.getVoices();
       const matchingVoice = voices.find(voice => voice.lang.startsWith(language.split('-')[0]));
       if (matchingVoice) {
         utterance.voice = matchingVoice;
       }
       
-      // Small delay to let the notification sound play first
       setTimeout(() => {
         window.speechSynthesis.speak(utterance);
       }, 400);
@@ -135,6 +154,9 @@ const RummikubTracker = () => {
       
       const savedPlayersData = localStorage.getItem('saved-players');
       if (savedPlayersData) setSavedPlayers(JSON.parse(savedPlayersData));
+      
+      const savedUiLanguage = localStorage.getItem('ui-language');
+      if (savedUiLanguage) setUiLanguage(savedUiLanguage);
       
       const activeGameData = localStorage.getItem('active-game');
       if (activeGameData) {
@@ -161,6 +183,11 @@ const RummikubTracker = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const changeUiLanguage = (lang) => {
+    setUiLanguage(lang);
+    localStorage.setItem('ui-language', lang);
   };
 
   const formatTime = (seconds) => {
@@ -341,9 +368,9 @@ const RummikubTracker = () => {
   };
 
   const addSavedPlayerToGame = (savedPlayer) => {
-    if (players.length >= 6) return alert('Maximum 6 players allowed');
+    if (players.length >= 6) return alert(t('maxPlayersAlert'));
     if (players.some(p => p.name.toLowerCase() === savedPlayer.name.toLowerCase())) {
-      return alert('This player is already added to the game');
+      return alert(t('playerAlreadyAddedAlert'));
     }
     const emptyIndex = players.findIndex(p => !p.name.trim());
     if (emptyIndex !== -1) {
@@ -359,7 +386,7 @@ const RummikubTracker = () => {
     const validPlayers = players.filter(p => p.name.trim() !== '');
     
     if (validPlayers.length < 2) {
-      alert('Please add at least 2 players');
+      alert(t('minPlayersAlert'));
       return;
     }
 
@@ -419,7 +446,7 @@ const RummikubTracker = () => {
 
   const saveRound = () => {
     if (!activeGame.players.every(p => roundScores[p.name] !== undefined && roundScores[p.name] !== '')) {
-      return alert('Please enter scores for all players');
+      return alert(t('enterAllScoresAlert'));
     }
     const updatedGame = {
       ...activeGame,
@@ -507,7 +534,7 @@ const RummikubTracker = () => {
             style={{ fontSize: '20px' }}>
             {formatTime(seconds)}
           </text>
-          {!isActive && <text x="100" y="160" textAnchor="middle" className="fill-yellow-600" style={{ fontSize: '12px' }}>PAUSED</text>}
+          {!isActive && <text x="100" y="160" textAnchor="middle" className="fill-yellow-600" style={{ fontSize: '12px' }}>{t('paused').toUpperCase()}</text>}
         </svg>
       </div>
     );
@@ -516,7 +543,7 @@ const RummikubTracker = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-        <div className="text-xl text-gray-700">Loading...</div>
+        <div className="text-xl text-gray-700">{t('loading')}</div>
       </div>
     );
   }
@@ -526,8 +553,22 @@ const RummikubTracker = () => {
       <div className="max-w-4xl mx-auto">
         {!(isFullscreen && view === 'activeGame') && (
           <div className="text-center mb-8 pt-6">
-            <h1 className="text-4xl font-bold text-indigo-900 mb-2">Rummikub Tracker</h1>
-            <p className="text-gray-600">Track your game scores with ease</p>
+            <div className="flex items-center justify-center gap-4 mb-2">
+              <h1 className="text-4xl font-bold text-indigo-900">{t('appTitle')}</h1>
+              <div className="relative">
+                <select
+                  value={uiLanguage}
+                  onChange={(e) => changeUiLanguage(e.target.value)}
+                  className="flex items-center gap-2 px-3 py-2 bg-white rounded-lg shadow hover:bg-gray-50 transition cursor-pointer border border-gray-300"
+                  title={t('selectLanguage')}
+                >
+                  <option value="en">🇬🇧 English</option>
+                  <option value="de">🇩🇪 Deutsch</option>
+                  <option value="fr">🇫🇷 Français</option>
+                </select>
+              </div>
+            </div>
+            <p className="text-gray-600">{t('appSubtitle')}</p>
           </div>
         )}
 
@@ -537,9 +578,9 @@ const RummikubTracker = () => {
               <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl shadow-lg p-6 text-white">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm opacity-90 mb-1">Game in Progress</p>
+                    <p className="text-sm opacity-90 mb-1">{t('gameInProgress')}</p>
                     <h3 className="text-2xl font-bold mb-2">{activeGame.name}</h3>
-                    <p className="text-sm opacity-90">Round {activeGame.rounds.length + 1} • {activeGame.players.length} players</p>
+                    <p className="text-sm opacity-90">{t('round')} {activeGame.rounds.length + 1} • {activeGame.players.length} {t('players').toLowerCase()}</p>
                   </div>
                   <button
                     onClick={() => {
@@ -554,7 +595,7 @@ const RummikubTracker = () => {
                     className="bg-white text-green-600 px-6 py-3 rounded-lg font-semibold hover:bg-green-50 transition flex items-center gap-2"
                   >
                     <Play size={20} />
-                    Resume Game
+                    {t('resumeGame')}
                   </button>
                 </div>
               </div>
@@ -562,13 +603,13 @@ const RummikubTracker = () => {
             
             <div className="bg-white rounded-xl shadow-lg p-8 text-center">
               <Trophy className="w-16 h-16 mx-auto mb-4 text-indigo-600" />
-              <h2 className="text-2xl font-bold text-gray-800 mb-4">Welcome to Rummikub Tracker!</h2>
-              <p className="text-gray-600 mb-6">Start a new game or view your game history</p>
+              <h2 className="text-2xl font-bold text-gray-800 mb-4">{t('welcomeTitle')}</h2>
+              <p className="text-gray-600 mb-6">{t('welcomeSubtitle')}</p>
               <div className="space-y-3">
                 <button 
                   onClick={() => { 
                     if (activeGame) {
-                      if (!window.confirm('Starting a new game will end your current game. Continue?')) {
+                      if (!window.confirm(t('endCurrentGameConfirm'))) {
                         return;
                       }
                     }
@@ -577,15 +618,15 @@ const RummikubTracker = () => {
                     setGameName(''); 
                   }}
                   className="w-full bg-indigo-600 text-white py-4 rounded-lg font-semibold hover:bg-indigo-700 transition flex items-center justify-center gap-2">
-                  <Plus size={20} /> Start New Game
+                  <Plus size={20} /> {t('startNewGame')}
                 </button>
                 <button onClick={() => setView('managePlayers')}
                   className="w-full bg-purple-600 text-white py-4 rounded-lg font-semibold hover:bg-purple-700 transition flex items-center justify-center gap-2">
-                  <Trophy size={20} /> Manage Players
+                  <Trophy size={20} /> {t('managePlayers')}
                 </button>
                 <button onClick={() => setView('gameHistory')}
                   className="w-full bg-gray-200 text-gray-800 py-4 rounded-lg font-semibold hover:bg-gray-300 transition flex items-center justify-center gap-2">
-                  <History size={20} /> View Game History
+                  <History size={20} /> {t('viewGameHistory')}
                 </button>
               </div>
             </div>
@@ -595,43 +636,43 @@ const RummikubTracker = () => {
         {view === 'newGame' && (
           <div className="bg-white rounded-xl shadow-lg p-6">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">New Game</h2>
+              <h2 className="text-2xl font-bold text-gray-800">{t('newGame')}</h2>
               <button onClick={() => setView('home')} className="text-gray-500 hover:text-gray-700"><X size={24} /></button>
             </div>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Game Name (optional)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('gameNameOptional')}</label>
                 <input type="text" value={gameName} onChange={(e) => setGameName(e.target.value)}
-                  placeholder="e.g., Friday Night Game"
+                  placeholder={t('gameNamePlaceholder')}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Turn Timer Duration</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('turnTimerDuration')}</label>
                 <select value={timerDuration} onChange={(e) => setTimerDuration(Number(e.target.value))}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
-                  <option value={30}>30 seconds</option>
-                  <option value={60}>1 minute</option>
-                  <option value={90}>1.5 minutes</option>
-                  <option value={120}>2 minutes</option>
-                  <option value={180}>3 minutes</option>
-                  <option value={300}>5 minutes</option>
+                  <option value={30}>30 {t('seconds')}</option>
+                  <option value={60}>1 {t('minute')}</option>
+                  <option value={90}>1.5 {t('minutes')}</option>
+                  <option value={120}>2 {t('minutes')}</option>
+                  <option value={180}>3 {t('minutes')}</option>
+                  <option value={300}>5 {t('minutes')}</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Time Extensions per Player</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('timeExtensionsPerPlayer')}</label>
                 <select value={maxExtensions} onChange={(e) => setMaxExtensions(Number(e.target.value))}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
-                  <option value={0}>None</option>
-                  <option value={1}>1 extension</option>
-                  <option value={2}>2 extensions</option>
-                  <option value={3}>3 extensions</option>
-                  <option value={5}>5 extensions</option>
-                  <option value={10}>10 extensions</option>
+                  <option value={0}>{t('none')}</option>
+                  <option value={1}>1 {t('extension')}</option>
+                  <option value={2}>2 {t('extensions')}</option>
+                  <option value={3}>3 {t('extensions')}</option>
+                  <option value={5}>5 {t('extensions')}</option>
+                  <option value={10}>10 {t('extensions')}</option>
                 </select>
-                <p className="text-xs text-gray-500 mt-1">Each extension adds 30 seconds</p>
+                <p className="text-xs text-gray-500 mt-1">{t('extensionNote')}</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Voice Announcement Language</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('voiceAnnouncementLanguage')}</label>
                 <select value={ttsLanguage} onChange={(e) => setTtsLanguage(e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
                   <option value="de-DE">🇩🇪 Deutsch</option>
@@ -645,11 +686,11 @@ const RummikubTracker = () => {
                   <option value="pl-PL">🇵🇱 Polski</option>
                   <option value="ru-RU">🇷🇺 Русский</option>
                 </select>
-                <p className="text-xs text-gray-500 mt-1">Language for player name announcements</p>
+                <p className="text-xs text-gray-500 mt-1">{t('voiceLanguageNote')}</p>
               </div>
               {savedPlayers.length > 0 && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Quick Add Saved Players</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('quickAddSavedPlayers')}</label>
                   <div className="flex flex-wrap gap-2 p-3 bg-gray-50 rounded-lg max-h-40 overflow-y-auto">
                     {savedPlayers.map((sp, idx) => (
                       <button key={idx} onClick={() => addSavedPlayerToGame(sp)}
@@ -667,7 +708,7 @@ const RummikubTracker = () => {
               )}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Players <span className="text-xs text-gray-500">(Click avatar to add photo • Use arrows or drag to reorder)</span>
+                  {t('playersLabel')} <span className="text-xs text-gray-500">{t('playersNote')}</span>
                 </label>
                 {players.map((player, index) => (
                   <div 
@@ -687,14 +728,14 @@ const RummikubTracker = () => {
                       </div>
                     </label>
                     <input type="text" value={player.name} onChange={(e) => updatePlayer(index, 'name', e.target.value)}
-                      placeholder={`Player ${index + 1}`}
+                      placeholder={`${t('playerPlaceholder')} ${index + 1}`}
                       className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" />
                     <div className="flex flex-col gap-1">
                       <button 
                         onClick={() => movePlayerUp(index)} 
                         disabled={index === 0}
                         className={`px-2 py-1 rounded ${index === 0 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-indigo-100 text-indigo-600 hover:bg-indigo-200'}`}
-                        title="Move up"
+                        title={t('moveUp')}
                       >
                         ▲
                       </button>
@@ -702,7 +743,7 @@ const RummikubTracker = () => {
                         onClick={() => movePlayerDown(index)} 
                         disabled={index === players.length - 1}
                         className={`px-2 py-1 rounded ${index === players.length - 1 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-indigo-100 text-indigo-600 hover:bg-indigo-200'}`}
-                        title="Move down"
+                        title={t('moveDown')}
                       >
                         ▼
                       </button>
@@ -716,12 +757,12 @@ const RummikubTracker = () => {
                 ))}
                 {players.length < 6 && (
                   <button onClick={addPlayer} className="w-full py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-indigo-400 hover:text-indigo-600 transition">
-                    + Add Player
+                    {t('addPlayer')}
                   </button>
                 )}
               </div>
               <button onClick={startNewGame} className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition mt-6">
-                Start Game
+                {t('startGame')}
               </button>
             </div>
           </div>
@@ -733,7 +774,7 @@ const RummikubTracker = () => {
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h2 className="text-2xl font-bold text-gray-800">{activeGame.name}</h2>
-                  <p className="text-sm text-gray-600">Round {currentRound}</p>
+                  <p className="text-sm text-gray-600">{t('round')} {currentRound}</p>
                 </div>
                 <button 
                   onClick={() => {
@@ -758,13 +799,13 @@ const RummikubTracker = () => {
                         }
                       </div>
                       <div>
-                        <p className="text-sm opacity-90 mb-1">Current Turn</p>
+                        <p className="text-sm opacity-90 mb-1">{t('currentTurn')}</p>
                         <p className="text-2xl font-bold">{activeGame.players[currentPlayerIndex].name}</p>
                       </div>
                     </div>
                     <button onClick={nextPlayer}
                       className="bg-white text-indigo-600 px-4 py-2 rounded-lg flex items-center gap-2 transition hover:bg-indigo-50 font-semibold shadow">
-                      <SkipForward size={20} /> Skip Turn
+                      <SkipForward size={20} /> {t('skipTurn')}
                     </button>
                   </div>
                 </div>
@@ -777,17 +818,17 @@ const RummikubTracker = () => {
                     {timerActive ? (
                       <button onClick={() => setTimerActive(false)}
                         className="px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition flex items-center gap-2 font-semibold shadow-lg">
-                        <Pause size={20} /> Pause
+                        <Pause size={20} /> {t('pause')}
                       </button>
                     ) : (
                       <button onClick={() => setTimerActive(true)}
                         className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center gap-2 font-semibold shadow-lg">
-                        <Play size={20} /> Resume
+                        <Play size={20} /> {t('resume')}
                       </button>
                     )}
                     <button onClick={resetTimer}
                       className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition flex items-center gap-2 font-semibold shadow-lg">
-                      <RotateCcw size={20} /> Reset
+                      <RotateCcw size={20} /> {t('reset')}
                     </button>
                   </div>
                   {activeGame.players[currentPlayerIndex] && (() => {
@@ -801,21 +842,21 @@ const RummikubTracker = () => {
                           className={`w-full px-4 py-3 rounded-lg font-semibold transition flex items-center justify-center gap-2 ${
                             canExtend ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                           }`}>
-                          <Plus size={20} /> Add 30 Seconds ({max - used} left)
+                          <Plus size={20} /> {t('addSeconds')} ({max - used} {t('left')})
                         </button>
                       </div>
                     );
                   })()}
                   <div className="flex items-center gap-2 mt-4">
-                    <label className="text-sm text-gray-700 font-medium">Duration:</label>
+                    <label className="text-sm text-gray-700 font-medium">{t('duration')}</label>
                     <select value={timerDuration} onChange={(e) => updateTimerDuration(Number(e.target.value))}
                       className="text-sm px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white">
-                      <option value={30}>30 seconds</option>
-                      <option value={60}>1 minute</option>
-                      <option value={90}>1.5 minutes</option>
-                      <option value={120}>2 minutes</option>
-                      <option value={180}>3 minutes</option>
-                      <option value={300}>5 minutes</option>
+                      <option value={30}>30 {t('seconds')}</option>
+                      <option value={60}>1 {t('minute')}</option>
+                      <option value={90}>1.5 {t('minutes')}</option>
+                      <option value={120}>2 {t('minutes')}</option>
+                      <option value={180}>3 {t('minutes')}</option>
+                      <option value={300}>5 {t('minutes')}</option>
                     </select>
                   </div>
                 </div>
@@ -838,7 +879,7 @@ const RummikubTracker = () => {
                         onClick={() => moveGamePlayerUp(idx)} 
                         disabled={idx === 0}
                         className={`w-6 h-6 rounded text-xs ${idx === 0 ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-indigo-500 text-white hover:bg-indigo-600'}`}
-                        title="Move up"
+                        title={t('moveUp')}
                       >
                         ▲
                       </button>
@@ -846,7 +887,7 @@ const RummikubTracker = () => {
                         onClick={() => moveGamePlayerDown(idx)} 
                         disabled={idx === activeGame.players.length - 1}
                         className={`w-6 h-6 rounded text-xs ${idx === activeGame.players.length - 1 ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-indigo-500 text-white hover:bg-indigo-600'}`}
-                        title="Move down"
+                        title={t('moveDown')}
                       >
                         ▼
                       </button>
@@ -862,11 +903,11 @@ const RummikubTracker = () => {
                         </p>
                         {activeGame.rounds.length > 0 && (
                           <p className="text-xs text-gray-600">
-                            Score: {activeGame.rounds.reduce((s, r) => s + (parseInt(r.scores[player.name]) || 0), 0)}
+                            {t('score')} {activeGame.rounds.reduce((s, r) => s + (parseInt(r.scores[player.name]) || 0), 0)}
                           </p>
                         )}
                         {activeGame.maxExtensions > 0 && (
-                          <p className="text-xs text-blue-600">Extensions: {playerExtensions[player.name] || 0}/{activeGame.maxExtensions}</p>
+                          <p className="text-xs text-blue-600">{t('extensions')}: {playerExtensions[player.name] || 0}/{activeGame.maxExtensions}</p>
                         )}
                       </div>
                     </div>
@@ -876,7 +917,7 @@ const RummikubTracker = () => {
             </div>
 
             <div className="bg-white rounded-xl shadow-lg p-6">
-              <h3 className="text-xl font-bold text-gray-800 mb-4">Enter Round {currentRound} Scores</h3>
+              <h3 className="text-xl font-bold text-gray-800 mb-4">{t('enterRoundScores', { round: currentRound })}</h3>
               <div className="space-y-3">
                 {activeGame.players.map((player, idx) => (
                   <div key={idx} className="flex items-center gap-3">
@@ -892,18 +933,18 @@ const RummikubTracker = () => {
               </div>
               <button onClick={saveRound}
                 className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition mt-4 flex items-center justify-center gap-2">
-                <Check size={20} /> Save Round
+                <Check size={20} /> {t('saveRound')}
               </button>
             </div>
 
             {activeGame.rounds.length > 0 && (
               <div className="bg-white rounded-xl shadow-lg p-6">
-                <h3 className="text-xl font-bold text-gray-800 mb-4">Score Summary</h3>
+                <h3 className="text-xl font-bold text-gray-800 mb-4">{t('scoreSummary')}</h3>
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
                       <tr className="border-b-2 border-gray-200">
-                        <th className="text-left py-2 px-2 text-sm font-semibold text-gray-700">Round</th>
+                        <th className="text-left py-2 px-2 text-sm font-semibold text-gray-700">{t('round')}</th>
                         {activeGame.players.map((p, idx) => (
                           <th key={idx} className="text-center py-2 px-2 text-sm font-semibold text-gray-700">
                             <div className="flex flex-col items-center gap-1">
@@ -927,7 +968,7 @@ const RummikubTracker = () => {
                         </tr>
                       ))}
                       <tr className="bg-indigo-50 font-bold">
-                        <td className="py-2 px-2 text-sm">Total</td>
+                        <td className="py-2 px-2 text-sm">{t('total')}</td>
                         {activeGame.players.map((p, pIdx) => (
                           <td key={pIdx} className="text-center py-2 px-2 text-sm text-indigo-900">
                             {activeGame.rounds.reduce((s, r) => s + (parseInt(r.scores[p.name]) || 0), 0)}
@@ -938,7 +979,7 @@ const RummikubTracker = () => {
                   </table>
                 </div>
                 <button onClick={endGame} className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition mt-4">
-                  End Game
+                  {t('endGame')}
                 </button>
               </div>
             )}
@@ -948,18 +989,18 @@ const RummikubTracker = () => {
         {view === 'managePlayers' && (
           <div className="bg-white rounded-xl shadow-lg p-6">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">Manage Players</h2>
+              <h2 className="text-2xl font-bold text-gray-800">{t('managePlayersTitle')}</h2>
               <button onClick={() => setView('home')} className="text-gray-500 hover:text-gray-700"><X size={24} /></button>
             </div>
             {savedPlayers.length === 0 ? (
               <div className="text-center py-12 text-gray-500">
                 <Trophy size={48} className="mx-auto mb-4 opacity-50" />
-                <p className="mb-4">No saved players yet</p>
-                <p className="text-sm">Players will be automatically saved when you create games</p>
+                <p className="mb-4">{t('noSavedPlayers')}</p>
+                <p className="text-sm">{t('noSavedPlayersNote')}</p>
               </div>
             ) : (
               <div className="space-y-3">
-                <p className="text-sm text-gray-600 mb-4">{savedPlayers.length} saved player{savedPlayers.length !== 1 ? 's' : ''}</p>
+                <p className="text-sm text-gray-600 mb-4">{savedPlayers.length} {savedPlayers.length === 1 ? t('savedPlayer') : t('savedPlayers')}</p>
                 {savedPlayers.map((player, idx) => (
                   <div key={idx} className="border border-gray-200 rounded-lg p-4 hover:border-indigo-300 transition">
                     <div className="flex items-center justify-between">
@@ -979,7 +1020,7 @@ const RummikubTracker = () => {
               </div>
             )}
             <div className="mt-6 pt-6 border-t border-gray-200">
-              <p className="text-sm text-gray-600">Tip: Players are automatically saved when you start a game. You can quickly add them to new games from the "Quick Add" section.</p>
+              <p className="text-sm text-gray-600">{t('managePlayersTip')}</p>
             </div>
           </div>
         )}
@@ -987,13 +1028,13 @@ const RummikubTracker = () => {
         {view === 'gameHistory' && (
           <div className="bg-white rounded-xl shadow-lg p-6">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">Game History</h2>
+              <h2 className="text-2xl font-bold text-gray-800">{t('gameHistory')}</h2>
               <button onClick={() => setView('home')} className="text-gray-500 hover:text-gray-700"><X size={24} /></button>
             </div>
             {gameHistory.length === 0 ? (
               <div className="text-center py-12 text-gray-500">
                 <History size={48} className="mx-auto mb-4 opacity-50" />
-                <p>No games played yet</p>
+                <p>{t('noGamesPlayed')}</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -1002,10 +1043,10 @@ const RummikubTracker = () => {
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <h3 className="font-bold text-gray-800">{game.name}</h3>
-                        <p className="text-sm text-gray-600">{new Date(game.startTime).toLocaleDateString()} • {game.rounds.length} rounds</p>
+                        <p className="text-sm text-gray-600">{new Date(game.startTime).toLocaleDateString()} • {game.rounds.length} {t('rounds')}</p>
                         <div className="mt-2 flex items-center gap-2">
                           <Trophy size={16} className="text-yellow-600" />
-                          <span className="text-sm font-semibold text-gray-700">Winner: {game.winner}</span>
+                          <span className="text-sm font-semibold text-gray-700">{t('winner')} {game.winner}</span>
                         </div>
                         <div className="mt-2 text-xs text-gray-600">
                           {Object.entries(game.finalScores).map(([player, score]) => (
@@ -1027,7 +1068,7 @@ const RummikubTracker = () => {
 
       <button onClick={toggleFullscreen}
         className="fixed bottom-6 right-6 bg-indigo-600 text-white p-4 rounded-full shadow-lg hover:bg-indigo-700 transition-all hover:scale-110 z-40"
-        title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}>
+        title={isFullscreen ? t('exitFullscreen') : t('enterFullscreen')}>
         {isFullscreen ? <Minimize size={24} /> : <Maximize size={24} />}
       </button>
     </div>
