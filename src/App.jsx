@@ -235,6 +235,58 @@ const RummikubTracker = () => {
     if (players.length > 1) setPlayers(players.filter((_, i) => i !== index));
   };
 
+  const movePlayerUp = (index) => {
+    if (index === 0) return;
+    const newPlayers = [...players];
+    [newPlayers[index - 1], newPlayers[index]] = [newPlayers[index], newPlayers[index - 1]];
+    setPlayers(newPlayers);
+  };
+
+  const movePlayerDown = (index) => {
+    if (index === players.length - 1) return;
+    const newPlayers = [...players];
+    [newPlayers[index], newPlayers[index + 1]] = [newPlayers[index + 1], newPlayers[index]];
+    setPlayers(newPlayers);
+  };
+
+  const moveGamePlayerUp = (index) => {
+    if (index === 0) return;
+    const currentPlayerName = activeGame.players[currentPlayerIndex].name;
+    const newPlayers = [...activeGame.players];
+    [newPlayers[index - 1], newPlayers[index]] = [newPlayers[index], newPlayers[index - 1]];
+    
+    const newCurrentPlayerIndex = newPlayers.findIndex(p => p.name === currentPlayerName);
+    
+    const updatedGame = {
+      ...activeGame,
+      players: newPlayers,
+      currentPlayerIndex: newCurrentPlayerIndex
+    };
+    
+    setActiveGame(updatedGame);
+    setCurrentPlayerIndex(newCurrentPlayerIndex);
+    localStorage.setItem('active-game', JSON.stringify(updatedGame));
+  };
+
+  const moveGamePlayerDown = (index) => {
+    if (index === activeGame.players.length - 1) return;
+    const currentPlayerName = activeGame.players[currentPlayerIndex].name;
+    const newPlayers = [...activeGame.players];
+    [newPlayers[index], newPlayers[index + 1]] = [newPlayers[index + 1], newPlayers[index]];
+    
+    const newCurrentPlayerIndex = newPlayers.findIndex(p => p.name === currentPlayerName);
+    
+    const updatedGame = {
+      ...activeGame,
+      players: newPlayers,
+      currentPlayerIndex: newCurrentPlayerIndex
+    };
+    
+    setActiveGame(updatedGame);
+    setCurrentPlayerIndex(newCurrentPlayerIndex);
+    localStorage.setItem('active-game', JSON.stringify(updatedGame));
+  };
+
   const handleDragStart = (index) => {
     setDraggedPlayerIndex(index);
   };
@@ -615,7 +667,7 @@ const RummikubTracker = () => {
               )}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Players <span className="text-xs text-gray-500">(Click avatar to add photo • Drag to reorder)</span>
+                  Players <span className="text-xs text-gray-500">(Click avatar to add photo • Use arrows or drag to reorder)</span>
                 </label>
                 {players.map((player, index) => (
                   <div 
@@ -624,7 +676,7 @@ const RummikubTracker = () => {
                     onDragStart={() => handleDragStart(index)}
                     onDragOver={(e) => handleDragOver(e, index)}
                     onDrop={(e) => handleDrop(e, index)}
-                    className={`flex gap-2 mb-3 cursor-move transition ${
+                    className={`flex gap-2 mb-3 transition ${
                       draggedPlayerIndex === index ? 'opacity-50' : ''
                     }`}
                   >
@@ -637,6 +689,24 @@ const RummikubTracker = () => {
                     <input type="text" value={player.name} onChange={(e) => updatePlayer(index, 'name', e.target.value)}
                       placeholder={`Player ${index + 1}`}
                       className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" />
+                    <div className="flex flex-col gap-1">
+                      <button 
+                        onClick={() => movePlayerUp(index)} 
+                        disabled={index === 0}
+                        className={`px-2 py-1 rounded ${index === 0 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-indigo-100 text-indigo-600 hover:bg-indigo-200'}`}
+                        title="Move up"
+                      >
+                        ▲
+                      </button>
+                      <button 
+                        onClick={() => movePlayerDown(index)} 
+                        disabled={index === players.length - 1}
+                        className={`px-2 py-1 rounded ${index === players.length - 1 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-indigo-100 text-indigo-600 hover:bg-indigo-200'}`}
+                        title="Move down"
+                      >
+                        ▼
+                      </button>
+                    </div>
                     {players.length > 1 && (
                       <button onClick={() => removePlayer(index)} className="px-3 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200">
                         <X size={20} />
@@ -759,11 +829,29 @@ const RummikubTracker = () => {
                     onDragStart={() => handleGamePlayerDragStart(idx)}
                     onDragOver={handleGamePlayerDragOver}
                     onDrop={(e) => handleGamePlayerDrop(e, idx)}
-                    className={`p-3 rounded-lg border-2 transition cursor-move ${
+                    className={`p-3 rounded-lg border-2 transition relative ${
                       idx === currentPlayerIndex ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200 bg-gray-50'
                     } ${draggedGamePlayerIndex === idx ? 'opacity-50' : ''}`}
                   >
-                    <div className="flex items-center gap-2">
+                    <div className="absolute top-1 right-1 flex gap-1">
+                      <button 
+                        onClick={() => moveGamePlayerUp(idx)} 
+                        disabled={idx === 0}
+                        className={`w-6 h-6 rounded text-xs ${idx === 0 ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-indigo-500 text-white hover:bg-indigo-600'}`}
+                        title="Move up"
+                      >
+                        ▲
+                      </button>
+                      <button 
+                        onClick={() => moveGamePlayerDown(idx)} 
+                        disabled={idx === activeGame.players.length - 1}
+                        className={`w-6 h-6 rounded text-xs ${idx === activeGame.players.length - 1 ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-indigo-500 text-white hover:bg-indigo-600'}`}
+                        title="Move down"
+                      >
+                        ▼
+                      </button>
+                    </div>
+                    <div className="flex items-center gap-2 pr-14">
                       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center overflow-hidden">
                         {player.image ? <img src={player.image} alt="" className="w-full h-full object-cover" /> :
                           <span className="text-sm font-bold text-white">{player.name.charAt(0).toUpperCase()}</span>}
