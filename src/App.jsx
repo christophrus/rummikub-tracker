@@ -858,8 +858,7 @@ const RummikubTracker = () => {
                       className="w-full sm:w-auto bg-white text-indigo-600 px-3 sm:px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition hover:bg-indigo-50 font-semibold shadow text-sm sm:text-base whitespace-nowrap">
                       <SkipForward size={18} className="sm:hidden" />
                       <SkipForward size={20} className="hidden sm:inline" />
-                      <span className="hidden sm:inline">{t('skipTurn')}</span>
-                      <span className="sm:hidden">{t('nextPlayer')}</span>
+                      {t('nextPlayer')}
                     </button>
                   </div>
                 </div>

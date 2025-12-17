@@ -37,7 +37,7 @@ const deTranslations = {
   pause: 'Pause',
   resume: 'Fortsetzen',
   reset: 'Zurücksetzen',
-  addSeconds: '30 Sekunden hinzufügen',
+  addSeconds: '30s hinzufügen',
   left: 'übrig',
   duration: 'Dauer:',
   enterRoundScores: 'Runde {{round}} Punkte eingeben',

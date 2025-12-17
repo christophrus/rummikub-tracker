@@ -37,7 +37,7 @@ const frTranslations = {
   pause: 'Pause',
   resume: 'Reprendre',
   reset: 'Réinitialiser',
-  addSeconds: 'Ajouter 30 secondes',
+  addSeconds: 'Ajouter 30s',
   left: 'restantes',
   duration: 'Durée:',
   enterRoundScores: 'Entrer les scores de la manche {{round}}',
