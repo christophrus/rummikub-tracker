@@ -33,6 +33,7 @@ const frTranslations = {
   startGame: 'Commencer la partie',
   currentTurn: 'Tour actuel',
   skipTurn: 'Passer le tour',
+  nextPlayer: 'Joueur suivant',
   pause: 'Pause',
   resume: 'Reprendre',
   reset: 'Réinitialiser',

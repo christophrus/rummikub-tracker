@@ -33,6 +33,7 @@ const enTranslations = {
   startGame: 'Start Game',
   currentTurn: 'Current Turn',
   skipTurn: 'Skip Turn',
+  nextPlayer: 'Next player',
   pause: 'Pause',
   resume: 'Resume',
   reset: 'Reset',

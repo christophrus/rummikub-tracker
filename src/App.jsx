@@ -859,7 +859,7 @@ const RummikubTracker = () => {
                       <SkipForward size={18} className="sm:hidden" />
                       <SkipForward size={20} className="hidden sm:inline" />
                       <span className="hidden sm:inline">{t('skipTurn')}</span>
-                      <span className="sm:hidden">Skip</span>
+                      <span className="sm:hidden">{t('nextPlayer')}</span>
                     </button>
                   </div>
                 </div>

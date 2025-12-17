@@ -33,6 +33,7 @@ const deTranslations = {
   startGame: 'Spiel starten',
   currentTurn: 'Am Zug',
   skipTurn: 'Zug überspringen',
+  nextPlayer: 'Nächster Spieler',
   pause: 'Pause',
   resume: 'Fortsetzen',
   reset: 'Zurücksetzen',
