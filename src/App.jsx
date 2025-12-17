@@ -487,6 +487,11 @@ const RummikubTracker = () => {
     if (!activeGame.players.every(p => roundScores[p.name] !== undefined && roundScores[p.name] !== '')) {
       return alert(t('enterAllScoresAlert'));
     }
+    
+    // Stop and reset timer
+    setTimerActive(false);
+    setTimerSeconds(timerDuration);
+    
     const updatedGame = {
       ...activeGame,
       rounds: [...activeGame.rounds, { round: currentRound, scores: { ...roundScores }, timestamp: new Date().toISOString() }]
@@ -506,6 +511,10 @@ const RummikubTracker = () => {
   };
 
   const endGame = () => {
+    // Stop timer
+    setTimerActive(false);
+    setTimerSeconds(timerDuration);
+    
     const totals = calculateTotals();
     const winner = Object.keys(totals).reduce((a, b) => totals[a] < totals[b] ? a : b);
     const completedGame = {
