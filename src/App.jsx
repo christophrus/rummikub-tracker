@@ -600,14 +600,14 @@ const RummikubTracker = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <div className="max-w-4xl mx-auto">
         {!(isFullscreen && view === 'activeGame') && (
-          <div className="text-center mb-8 pt-6">
-            <div className="flex items-center justify-center gap-4 mb-2">
-              <h1 className="text-4xl font-bold text-indigo-900">{t('appTitle')}</h1>
+          <div className="text-center mb-6 sm:mb-8 pt-4 sm:pt-6">
+            <div className="flex items-center justify-center gap-2 sm:gap-4 mb-2 flex-wrap px-4">
+              <h1 className="text-2xl sm:text-4xl font-bold text-indigo-900">{t('appTitle')}</h1>
               <div className="relative">
                 <select
                   value={uiLanguage}
                   onChange={(e) => changeUiLanguage(e.target.value)}
-                  className="flex items-center gap-2 px-3 py-2 bg-white rounded-lg shadow hover:bg-gray-50 transition cursor-pointer border border-gray-300"
+                  className="flex items-center gap-2 px-2 sm:px-3 py-1 sm:py-2 bg-white rounded-lg shadow hover:bg-gray-50 transition cursor-pointer border border-gray-300 text-sm sm:text-base"
                   title={t('selectLanguage')}
                 >
                   <option value="en">🇬🇧 English</option>
@@ -616,19 +616,19 @@ const RummikubTracker = () => {
                 </select>
               </div>
             </div>
-            <p className="text-gray-600">{t('appSubtitle')}</p>
+            <p className="text-sm sm:text-base text-gray-600 px-4">{t('appSubtitle')}</p>
           </div>
         )}
 
         {view === 'home' && (
           <div className="space-y-4">
             {activeGame && (
-              <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl shadow-lg p-6 text-white">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm opacity-90 mb-1">{t('gameInProgress')}</p>
-                    <h3 className="text-2xl font-bold mb-2">{activeGame.name}</h3>
-                    <p className="text-sm opacity-90">{t('round')} {activeGame.rounds.length + 1} • {activeGame.players.length} {t('players').toLowerCase()}</p>
+              <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl shadow-lg p-4 sm:p-6 text-white">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs sm:text-sm opacity-90 mb-1">{t('gameInProgress')}</p>
+                    <h3 className="text-xl sm:text-2xl font-bold mb-2 truncate">{activeGame.name}</h3>
+                    <p className="text-xs sm:text-sm opacity-90">{t('round')} {activeGame.rounds.length + 1} • {activeGame.players.length} {t('players').toLowerCase()}</p>
                   </div>
                   <button
                     onClick={() => {
@@ -640,9 +640,10 @@ const RummikubTracker = () => {
                         setTimerActive(true);
                       }, 500);
                     }}
-                    className="bg-white text-green-600 px-6 py-3 rounded-lg font-semibold hover:bg-green-50 transition flex items-center gap-2"
+                    className="w-full sm:w-auto bg-white text-green-600 px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold hover:bg-green-50 transition flex items-center justify-center gap-2 text-sm sm:text-base whitespace-nowrap"
                   >
-                    <Play size={20} />
+                    <Play size={18} className="sm:hidden" />
+                    <Play size={20} className="hidden sm:inline" />
                     {t('resumeGame')}
                   </button>
                 </div>
@@ -819,65 +820,75 @@ const RummikubTracker = () => {
 
         {view === 'activeGame' && activeGame && (
           <div className="space-y-4">
-            <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6">
               <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-800">{activeGame.name}</h2>
-                  <p className="text-sm text-gray-600">{t('round')} {currentRound}</p>
+                <div className="flex-1 min-w-0 mr-4">
+                  <h2 className="text-xl sm:text-2xl font-bold text-gray-800 truncate">{activeGame.name}</h2>
+                  <p className="text-xs sm:text-sm text-gray-600">{t('round')} {currentRound}</p>
                 </div>
                 <button 
                   onClick={() => {
                     setTimerActive(false);
                     setView('home');
                   }} 
-                  className="text-gray-500 hover:text-gray-700">
-                  <X size={24} />
+                  className="text-gray-500 hover:text-gray-700 flex-shrink-0">
+                  <X size={20} className="sm:hidden" />
+                  <X size={24} className="hidden sm:inline" />
                 </button>
               </div>
 
               {activeGame.players[currentPlayerIndex] && (
-                <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg p-4 mb-4 text-white">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center overflow-hidden border-2 border-white shadow-lg">
+                <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg p-3 sm:p-4 mb-4 text-white">
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
+                      <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white rounded-full flex items-center justify-center overflow-hidden border-2 border-white shadow-lg flex-shrink-0">
                         {activeGame.players[currentPlayerIndex].image ? 
                           <img src={activeGame.players[currentPlayerIndex].image} alt="" className="w-full h-full object-cover" /> :
-                          <span className="text-2xl font-bold bg-gradient-to-br from-indigo-500 to-purple-600 text-white w-full h-full flex items-center justify-center">
+                          <span className="text-xl sm:text-2xl font-bold bg-gradient-to-br from-indigo-500 to-purple-600 text-white w-full h-full flex items-center justify-center">
                             {activeGame.players[currentPlayerIndex].name.charAt(0).toUpperCase()}
                           </span>
                         }
                       </div>
-                      <div>
-                        <p className="text-sm opacity-90 mb-1">{t('currentTurn')}</p>
-                        <p className="text-2xl font-bold">{activeGame.players[currentPlayerIndex].name}</p>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs sm:text-sm opacity-90 mb-1">{t('currentTurn')}</p>
+                        <p className="text-lg sm:text-2xl font-bold truncate">{activeGame.players[currentPlayerIndex].name}</p>
                       </div>
                     </div>
                     <button onClick={nextPlayer}
-                      className="bg-white text-indigo-600 px-4 py-2 rounded-lg flex items-center gap-2 transition hover:bg-indigo-50 font-semibold shadow">
-                      <SkipForward size={20} /> {t('skipTurn')}
+                      className="w-full sm:w-auto bg-white text-indigo-600 px-3 sm:px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition hover:bg-indigo-50 font-semibold shadow text-sm sm:text-base whitespace-nowrap">
+                      <SkipForward size={18} className="sm:hidden" />
+                      <SkipForward size={20} className="hidden sm:inline" />
+                      <span className="hidden sm:inline">{t('skipTurn')}</span>
+                      <span className="sm:hidden">Skip</span>
                     </button>
                   </div>
                 </div>
               )}
 
-              <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-6 shadow-inner">
+              <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-4 sm:p-6 shadow-inner">
                 <div className="flex flex-col items-center">
                   <AnalogClock seconds={timerSeconds} duration={timerDuration} isActive={timerActive} />
-                  <div className="flex gap-2 mt-4">
+                  <div className="flex gap-2 mt-4 flex-wrap justify-center">
                     {timerActive ? (
                       <button onClick={() => setTimerActive(false)}
-                        className="px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition flex items-center gap-2 font-semibold shadow-lg">
-                        <Pause size={20} /> {t('pause')}
+                        className="px-4 sm:px-6 py-2 sm:py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition flex items-center gap-2 font-semibold shadow-lg text-sm sm:text-base">
+                        <Pause size={18} className="sm:hidden" />
+                        <Pause size={20} className="hidden sm:inline" />
+                        {t('pause')}
                       </button>
                     ) : (
                       <button onClick={() => setTimerActive(true)}
-                        className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center gap-2 font-semibold shadow-lg">
-                        <Play size={20} /> {t('resume')}
+                        className="px-4 sm:px-6 py-2 sm:py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center gap-2 font-semibold shadow-lg text-sm sm:text-base">
+                        <Play size={18} className="sm:hidden" />
+                        <Play size={20} className="hidden sm:inline" />
+                        {t('resume')}
                       </button>
                     )}
                     <button onClick={resetTimer}
-                      className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition flex items-center gap-2 font-semibold shadow-lg">
-                      <RotateCcw size={20} /> {t('reset')}
+                      className="px-4 sm:px-6 py-2 sm:py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition flex items-center gap-2 font-semibold shadow-lg text-sm sm:text-base">
+                      <RotateCcw size={18} className="sm:hidden" />
+                      <RotateCcw size={20} className="hidden sm:inline" />
+                      {t('reset')}
                     </button>
                   </div>
                   {activeGame.players[currentPlayerIndex] && (() => {
@@ -888,18 +899,20 @@ const RummikubTracker = () => {
                     return (
                       <div className="mt-4 w-full">
                         <button onClick={extendTimer} disabled={!canExtend}
-                          className={`w-full px-4 py-3 rounded-lg font-semibold transition flex items-center justify-center gap-2 ${
+                          className={`w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg font-semibold transition flex items-center justify-center gap-2 text-sm sm:text-base ${
                             canExtend ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                           }`}>
-                          <Plus size={20} /> {t('addSeconds')} ({max - used} {t('left')})
+                          <Plus size={18} className="sm:hidden flex-shrink-0" />
+                          <Plus size={20} className="hidden sm:inline flex-shrink-0" />
+                          <span className="truncate">{t('addSeconds')} ({max - used} {t('left')})</span>
                         </button>
                       </div>
                     );
                   })()}
-                  <div className="flex items-center gap-2 mt-4">
-                    <label className="text-sm text-gray-700 font-medium">{t('duration')}</label>
+                  <div className="flex items-center gap-2 mt-4 flex-wrap justify-center">
+                    <label className="text-xs sm:text-sm text-gray-700 font-medium">{t('duration')}</label>
                     <select value={timerDuration} onChange={(e) => updateTimerDuration(Number(e.target.value))}
-                      className="text-sm px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white">
+                      className="text-xs sm:text-sm px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white">
                       <option value={30}>30 {t('seconds')}</option>
                       <option value={60}>1 {t('minute')}</option>
                       <option value={90}>1.5 {t('minutes')}</option>
@@ -911,7 +924,7 @@ const RummikubTracker = () => {
                 </div>
               </div>
 
-              <div className="mt-4 grid grid-cols-2 gap-2">
+              <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {activeGame.players.map((player, idx) => (
                   <div 
                     key={idx}
@@ -919,7 +932,7 @@ const RummikubTracker = () => {
                     onDragStart={() => handleGamePlayerDragStart(idx)}
                     onDragOver={handleGamePlayerDragOver}
                     onDrop={(e) => handleGamePlayerDrop(e, idx)}
-                    className={`p-3 rounded-lg border-2 transition relative ${
+                    className={`p-2 sm:p-3 rounded-lg border-2 transition relative ${
                       idx === currentPlayerIndex ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200 bg-gray-50'
                     } ${draggedGamePlayerIndex === idx ? 'opacity-50' : ''}`}
                   >
@@ -927,7 +940,7 @@ const RummikubTracker = () => {
                       <button 
                         onClick={() => moveGamePlayerUp(idx)} 
                         disabled={idx === 0}
-                        className={`w-6 h-6 rounded text-xs ${idx === 0 ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-indigo-500 text-white hover:bg-indigo-600'}`}
+                        className={`w-5 h-5 sm:w-6 sm:h-6 rounded text-xs ${idx === 0 ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-indigo-500 text-white hover:bg-indigo-600'}`}
                         title={t('moveUp')}
                       >
                         ▲
@@ -935,19 +948,19 @@ const RummikubTracker = () => {
                       <button 
                         onClick={() => moveGamePlayerDown(idx)} 
                         disabled={idx === activeGame.players.length - 1}
-                        className={`w-6 h-6 rounded text-xs ${idx === activeGame.players.length - 1 ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-indigo-500 text-white hover:bg-indigo-600'}`}
+                        className={`w-5 h-5 sm:w-6 sm:h-6 rounded text-xs ${idx === activeGame.players.length - 1 ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-indigo-500 text-white hover:bg-indigo-600'}`}
                         title={t('moveDown')}
                       >
                         ▼
                       </button>
                     </div>
-                    <div className="flex items-center gap-2 pr-14">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center overflow-hidden">
+                    <div className="flex items-center gap-2 pr-12 sm:pr-14">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center overflow-hidden flex-shrink-0">
                         {player.image ? <img src={player.image} alt="" className="w-full h-full object-cover" /> :
-                          <span className="text-sm font-bold text-white">{player.name.charAt(0).toUpperCase()}</span>}
+                          <span className="text-xs sm:text-sm font-bold text-white">{player.name.charAt(0).toUpperCase()}</span>}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className={`text-sm font-semibold truncate ${idx === currentPlayerIndex ? 'text-indigo-900' : 'text-gray-700'}`}>
+                        <p className={`text-xs sm:text-sm font-semibold truncate ${idx === currentPlayerIndex ? 'text-indigo-900' : 'text-gray-700'}`}>
                           {player.name}
                         </p>
                         {activeGame.rounds.length > 0 && (
@@ -956,7 +969,7 @@ const RummikubTracker = () => {
                           </p>
                         )}
                         {activeGame.maxExtensions > 0 && (
-                          <p className="text-xs text-blue-600">{t('extensions')}: {playerExtensions[player.name] || 0}/{activeGame.maxExtensions}</p>
+                          <p className="text-xs text-blue-600">{playerExtensions[player.name] || 0}/{activeGame.maxExtensions}</p>
                         )}
                       </div>
                     </div>
@@ -965,69 +978,73 @@ const RummikubTracker = () => {
               </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <h3 className="text-xl font-bold text-gray-800 mb-4">{t('enterRoundScores', { round: currentRound })}</h3>
+            <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-4">{t('enterRoundScores', { round: currentRound })}</h3>
               <div className="space-y-3">
                 {activeGame.players.map((player, idx) => (
-                  <div key={idx} className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center overflow-hidden">
+                  <div key={idx} className="flex items-center gap-2 sm:gap-3">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center overflow-hidden flex-shrink-0">
                       {player.image ? <img src={player.image} alt="" className="w-full h-full object-cover" /> :
-                        <span className="text-sm font-bold text-white">{player.name.charAt(0).toUpperCase()}</span>}
+                        <span className="text-xs sm:text-sm font-bold text-white">{player.name.charAt(0).toUpperCase()}</span>}
                     </div>
-                    <label className="flex-1 text-gray-700 font-medium">{player.name}</label>
+                    <label className="flex-1 text-sm sm:text-base text-gray-700 font-medium truncate">{player.name}</label>
                     <input type="number" value={roundScores[player.name] || ''} onChange={(e) => updateRoundScore(player, e.target.value)}
-                      placeholder="0" className="w-24 px-4 py-2 border border-gray-300 rounded-lg text-center focus:ring-2 focus:ring-indigo-500" />
+                      placeholder="0" className="w-16 sm:w-24 px-2 sm:px-4 py-2 border border-gray-300 rounded-lg text-center focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base" />
                   </div>
                 ))}
               </div>
               <button onClick={saveRound}
-                className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition mt-4 flex items-center justify-center gap-2">
-                <Check size={20} /> {t('saveRound')}
+                className="w-full bg-indigo-600 text-white py-2 sm:py-3 rounded-lg font-semibold hover:bg-indigo-700 transition mt-4 flex items-center justify-center gap-2 text-sm sm:text-base">
+                <Check size={18} className="sm:hidden" />
+                <Check size={20} className="hidden sm:inline" />
+                {t('saveRound')}
               </button>
             </div>
 
             {activeGame.rounds.length > 0 && (
-              <div className="bg-white rounded-xl shadow-lg p-6">
-                <h3 className="text-xl font-bold text-gray-800 mb-4">{t('scoreSummary')}</h3>
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b-2 border-gray-200">
-                        <th className="text-left py-2 px-2 text-sm font-semibold text-gray-700">{t('round')}</th>
-                        {activeGame.players.map((p, idx) => (
-                          <th key={idx} className="text-center py-2 px-2 text-sm font-semibold text-gray-700">
-                            <div className="flex flex-col items-center gap-1">
-                              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center overflow-hidden">
-                                {p.image ? <img src={p.image} alt="" className="w-full h-full object-cover" /> :
-                                  <span className="text-xs font-bold text-white">{p.name.charAt(0).toUpperCase()}</span>}
+              <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+                <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-4">{t('scoreSummary')}</h3>
+                <div className="overflow-x-auto -mx-4 sm:mx-0">
+                  <div className="inline-block min-w-full align-middle px-4 sm:px-0">
+                    <table className="min-w-full">
+                      <thead>
+                        <tr className="border-b-2 border-gray-200">
+                          <th className="text-left py-2 px-1 sm:px-2 text-xs sm:text-sm font-semibold text-gray-700 sticky left-0 bg-white">{t('round')}</th>
+                          {activeGame.players.map((p, idx) => (
+                            <th key={idx} className="text-center py-2 px-1 sm:px-2 text-xs sm:text-sm font-semibold text-gray-700">
+                              <div className="flex flex-col items-center gap-1">
+                                <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center overflow-hidden">
+                                  {p.image ? <img src={p.image} alt="" className="w-full h-full object-cover" /> :
+                                    <span className="text-xs font-bold text-white">{p.name.charAt(0).toUpperCase()}</span>}
+                                </div>
+                                <span className="text-xs truncate max-w-[60px] sm:max-w-none">{p.name}</span>
                               </div>
-                              <span className="text-xs">{p.name}</span>
-                            </div>
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {activeGame.rounds.map((round, idx) => (
-                        <tr key={idx} className="border-b border-gray-100">
-                          <td className="py-2 px-2 text-sm text-gray-600">{round.round}</td>
-                          {activeGame.players.map((p, pIdx) => (
-                            <td key={pIdx} className="text-center py-2 px-2 text-sm">{round.scores[p.name] || 0}</td>
+                            </th>
                           ))}
                         </tr>
-                      ))}
-                      <tr className="bg-indigo-50 font-bold">
-                        <td className="py-2 px-2 text-sm">{t('total')}</td>
-                        {activeGame.players.map((p, pIdx) => (
-                          <td key={pIdx} className="text-center py-2 px-2 text-sm text-indigo-900">
-                            {activeGame.rounds.reduce((s, r) => s + (parseInt(r.scores[p.name]) || 0), 0)}
-                          </td>
+                      </thead>
+                      <tbody>
+                        {activeGame.rounds.map((round, idx) => (
+                          <tr key={idx} className="border-b border-gray-100">
+                            <td className="py-2 px-1 sm:px-2 text-xs sm:text-sm text-gray-600 sticky left-0 bg-white">{round.round}</td>
+                            {activeGame.players.map((p, pIdx) => (
+                              <td key={pIdx} className="text-center py-2 px-1 sm:px-2 text-xs sm:text-sm">{round.scores[p.name] || 0}</td>
+                            ))}
+                          </tr>
                         ))}
-                      </tr>
-                    </tbody>
-                  </table>
+                        <tr className="bg-indigo-50 font-bold">
+                          <td className="py-2 px-1 sm:px-2 text-xs sm:text-sm sticky left-0 bg-indigo-50">{t('total')}</td>
+                          {activeGame.players.map((p, pIdx) => (
+                            <td key={pIdx} className="text-center py-2 px-1 sm:px-2 text-xs sm:text-sm text-indigo-900">
+                              {activeGame.rounds.reduce((s, r) => s + (parseInt(r.scores[p.name]) || 0), 0)}
+                            </td>
+                          ))}
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
-                <button onClick={endGame} className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition mt-4">
+                <button onClick={endGame} className="w-full bg-green-600 text-white py-2 sm:py-3 rounded-lg font-semibold hover:bg-green-700 transition mt-4 text-sm sm:text-base">
                   {t('endGame')}
                 </button>
               </div>
