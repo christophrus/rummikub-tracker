@@ -253,7 +253,42 @@ const RummikubTracker = () => {
   const handleImageUpload = (index, file) => {
     if (file && file.type.startsWith('image/')) {
       const reader = new FileReader();
-      reader.onload = (e) => updatePlayer(index, 'image', e.target.result);
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          // Create canvas for resizing
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          
+          // Set maximum dimensions
+          const maxSize = 200;
+          let width = img.width;
+          let height = img.height;
+          
+          // Calculate new dimensions maintaining aspect ratio
+          if (width > height) {
+            if (width > maxSize) {
+              height = (height * maxSize) / width;
+              width = maxSize;
+            }
+          } else {
+            if (height > maxSize) {
+              width = (width * maxSize) / height;
+              height = maxSize;
+            }
+          }
+          
+          // Resize image
+          canvas.width = width;
+          canvas.height = height;
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          // Convert to base64 with compression (0.8 quality)
+          const resizedImage = canvas.toDataURL('image/jpeg', 0.8);
+          updatePlayer(index, 'image', resizedImage);
+        };
+        img.src = e.target.result;
+      };
       reader.readAsDataURL(file);
     }
   };
@@ -436,7 +471,11 @@ const RummikubTracker = () => {
       }, 500);
     } catch (error) {
       console.error('Error starting game:', error);
-      alert('Error starting game. Please try again.');
+      if (error.name === 'QuotaExceededError' || error.message.includes('quota')) {
+        alert('Storage quota exceeded! This usually happens when player images are too large. Try:\n\n1. Using smaller images\n2. Removing some player photos\n3. Clearing old game history\n4. Using browser settings to increase storage limit');
+      } else {
+        alert('Error starting game. Please try again.');
+      }
     }
   };
 
@@ -710,6 +749,7 @@ const RummikubTracker = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   {t('playersLabel')} <span className="text-xs text-gray-500">{t('playersNote')}</span>
                 </label>
+                <p className="text-xs text-gray-500 mb-3">{t('imageAutoResize')}</p>
                 {players.map((player, index) => (
                   <div 
                     key={index} 

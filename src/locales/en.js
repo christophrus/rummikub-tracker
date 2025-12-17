@@ -1,5 +1,5 @@
 // locales/en.js - English translations (default)
-export default {
+const enTranslations = {
   appTitle: 'Rummikub Tracker',
   appSubtitle: 'Track your game scores with ease',
   gameInProgress: 'Game in Progress',
@@ -67,5 +67,8 @@ export default {
   enterAllScoresAlert: 'Please enter scores for all players',
   endCurrentGameConfirm: 'Starting a new game will end your current game. Continue?',
   language: 'Language',
-  selectLanguage: 'Select Language'
+  selectLanguage: 'Select Language',
+  imageAutoResize: '💡 Images are automatically resized and compressed to save space'
 };
+
+export default enTranslations;

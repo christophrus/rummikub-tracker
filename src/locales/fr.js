@@ -1,10 +1,5 @@
 // locales/fr.js - French translations
-// To add this language to the app:
-// 1. Import this file in App.jsx
-// 2. Add it to the translations object: translations.fr = frTranslations
-// 3. Add French option to the language selector
-
-export default {
+const frTranslations = {
   appTitle: 'Rummikub Tracker',
   appSubtitle: 'Suivez vos scores de jeu avec facilité',
   gameInProgress: 'Partie en cours',
@@ -72,5 +67,8 @@ export default {
   enterAllScoresAlert: 'Veuillez entrer les scores pour tous les joueurs',
   endCurrentGameConfirm: 'Commencer une nouvelle partie terminera votre partie actuelle. Continuer?',
   language: 'Langue',
-  selectLanguage: 'Sélectionner la langue'
+  selectLanguage: 'Sélectionner la langue',
+  imageAutoResize: '💡 Les images sont automatiquement redimensionnées et compressées pour économiser de l\'espace'
 };
+
+export default frTranslations;

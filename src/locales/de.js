@@ -1,5 +1,5 @@
 // locales/de.js - German translations
-export default {
+const deTranslations = {
   appTitle: 'Rummikub Tracker',
   appSubtitle: 'Verfolgen Sie Ihre Spielergebnisse mit Leichtigkeit',
   gameInProgress: 'Spiel läuft',
@@ -67,5 +67,8 @@ export default {
   enterAllScoresAlert: 'Bitte geben Sie Punkte für alle Spieler ein',
   endCurrentGameConfirm: 'Das Starten eines neuen Spiels beendet Ihr aktuelles Spiel. Fortfahren?',
   language: 'Sprache',
-  selectLanguage: 'Sprache auswählen'
+  selectLanguage: 'Sprache auswählen',
+  imageAutoResize: '💡 Bilder werden automatisch verkleinert und komprimiert, um Speicherplatz zu sparen'
 };
+
+export default deTranslations;
