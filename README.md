@@ -6,6 +6,8 @@ A modern, feature-rich web application for tracking Rummikub game scores with ti
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![React](https://img.shields.io/badge/React-18.x-61dafb.svg)
 
+Demo: ![https://christophrus.github.io/rummikub-tracker/](https://christophrus.github.io/rummikub-tracker/)
+
 ## ✨ Features
 
 ### 🎮 Game Management
