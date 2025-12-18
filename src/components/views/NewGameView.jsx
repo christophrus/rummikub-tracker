@@ -30,29 +30,31 @@ export const NewGameView = ({
   t
 }) => {
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6">
+    <div className="bg-white rounded-xl shadow-lg p-4 md:p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">{t('newGame')}</h2>
-        <button onClick={onClose} className="text-gray-500 hover:text-gray-700"><X size={24} /></button>
+        <h2 className="text-xl md:text-2xl font-bold text-gray-800">{t('newGame')}</h2>
+        <button onClick={onClose} className="text-gray-500 hover:text-gray-700 p-1">
+          <X size={24} />
+        </button>
       </div>
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">{t('gameNameOptional')}</label>
+          <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2">{t('gameNameOptional')}</label>
           <input 
             type="text" 
             value={gameName} 
             onChange={(e) => onGameNameChange(e.target.value)}
             placeholder={t('gameNamePlaceholder')}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" 
+            className="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-sm" 
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">{t('turnTimerDuration')}</label>
+          <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2">{t('turnTimerDuration')}</label>
           <select 
             value={timerDuration} 
             onChange={(e) => onTimerDurationChange(Number(e.target.value))}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+            className="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-sm"
           >
             <option value={30}>30 {t('seconds')}</option>
             <option value={60}>1 {t('minute')}</option>
@@ -64,11 +66,11 @@ export const NewGameView = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">{t('timeExtensionsPerPlayer')}</label>
+          <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2">{t('timeExtensionsPerPlayer')}</label>
           <select 
             value={maxExtensions} 
             onChange={(e) => onMaxExtensionsChange(Number(e.target.value))}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+            className="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-sm"
           >
             <option value={0}>{t('none')}</option>
             <option value={1}>1 {t('extension')}</option>
@@ -81,11 +83,11 @@ export const NewGameView = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">{t('voiceAnnouncementLanguage')}</label>
+          <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2">{t('voiceAnnouncementLanguage')}</label>
           <select 
             value={ttsLanguage} 
             onChange={(e) => onTtsLanguageChange(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+            className="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-sm"
           >
             {VOICE_LANGUAGES.map(lang => (
               <option key={lang.code} value={lang.code}>{lang.label}</option>
@@ -96,8 +98,8 @@ export const NewGameView = ({
 
         {savedPlayers.length > 0 && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">{t('quickAddSavedPlayers')}</label>
-            <div className="flex flex-wrap gap-2 p-3 bg-gray-50 rounded-lg max-h-40 overflow-y-auto">
+            <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">{t('quickAddSavedPlayers')}</label>
+            <div className="flex flex-wrap gap-2 p-2 md:p-3 bg-gray-50 rounded-lg max-h-40 overflow-y-auto">
               {savedPlayers.map((sp, idx) => (
                 <QuickAddPlayerButton 
                   key={idx} 
@@ -110,7 +112,7 @@ export const NewGameView = ({
         )}
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
             {t('playersLabel')} <span className="text-xs text-gray-500">{t('playersNote')}</span>
           </label>
           <p className="text-xs text-gray-500 mb-3">{t('imageAutoResize')}</p>
@@ -135,7 +137,7 @@ export const NewGameView = ({
           {players.length < 6 && (
             <button 
               onClick={onAddPlayer} 
-              className="w-full py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-indigo-400 hover:text-indigo-600 transition"
+              className="w-full py-2 border-2 border-dashed border-gray-300 rounded-lg text-xs md:text-sm text-gray-600 hover:border-indigo-400 hover:text-indigo-600 transition"
             >
               {t('addPlayer')}
             </button>
@@ -144,7 +146,7 @@ export const NewGameView = ({
 
         <button 
           onClick={onStartGame} 
-          className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition mt-6"
+          className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition mt-6 text-sm md:text-base"
         >
           {t('startGame')}
         </button>
