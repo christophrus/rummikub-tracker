@@ -26,10 +26,7 @@ export const ManagePlayersView = ({
             <div key={idx} className="border border-gray-200 rounded-lg p-2 md:p-4 hover:border-indigo-300 transition">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
-                  <div className="flex-shrink-0">
-                    <PlayerAvatar player={player} size="md" className="md:hidden" />
-                    <PlayerAvatar player={player} size="lg" className="hidden md:block" />
-                  </div>
+                  <PlayerAvatar player={player} size="md" className="flex-shrink-0" />
                   <p className="font-semibold text-gray-800 text-sm md:text-base truncate">{player.name}</p>
                 </div>
                 <button 
