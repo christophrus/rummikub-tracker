@@ -81,7 +81,11 @@ const deTranslations = {
   lightMode: 'Heller Modus',
   darkMode: 'Dunkler Modus',
   clickToToggle: 'Klicken zum Umschalten',
-  settingsSavedAutomatically: 'Einstellungen werden automatisch gespeichert'
+  settingsSavedAutomatically: 'Einstellungen werden automatisch gespeichert',
+  clearAllData: 'Alle Daten löschen',
+  clearAllDataDescription: 'Alle gespeicherten Spiele, Spieler und Einstellungen löschen',
+  clearAllDataConfirm: 'Bist du sicher, dass du alle Daten löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden!',
+  clearAllDataButton: 'Alle Daten löschen'
 };
 
 export default deTranslations;

@@ -81,7 +81,11 @@ const frTranslations = {
   lightMode: 'Mode clair',
   darkMode: 'Mode sombre',
   clickToToggle: 'Cliquer pour basculer',
-  settingsSavedAutomatically: 'Les paramètres sont sauvegardés automatiquement'
+  settingsSavedAutomatically: 'Les paramètres sont sauvegardés automatiquement',
+  clearAllData: 'Effacer toutes les données',
+  clearAllDataDescription: 'Supprimer tous les jeux, joueurs et paramètres sauvegardés',
+  clearAllDataConfirm: 'Êtes-vous sûr de vouloir supprimer toutes les données? Cette action est irréversible!',
+  clearAllDataButton: 'Effacer toutes les données'
 };
 
 export default frTranslations;

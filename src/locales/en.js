@@ -81,7 +81,11 @@ const enTranslations = {
   lightMode: 'Light Mode',
   darkMode: 'Dark Mode',
   clickToToggle: 'Click to toggle',
-  settingsSavedAutomatically: 'Settings are saved automatically'
+  settingsSavedAutomatically: 'Settings are saved automatically',
+  clearAllData: 'Clear All Data',
+  clearAllDataDescription: 'Delete all saved games, players, and settings',
+  clearAllDataConfirm: 'Are you sure you want to delete all data? This action cannot be undone!',
+  clearAllDataButton: 'Clear All Data'
 };
 
 export default enTranslations;

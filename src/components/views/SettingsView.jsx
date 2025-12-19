@@ -1,4 +1,4 @@
-import { X, Settings, Moon, Sun, Globe, Volume2 } from 'lucide-react';
+import { X, Settings, Moon, Sun, Globe, Volume2, Trash2 } from 'lucide-react';
 import { VOICE_LANGUAGES, UI_LANGUAGES } from '../../constants';
 import { useTheme } from '../../hooks';
 
@@ -92,6 +92,26 @@ export const SettingsView = ({
             <div className="text-xs md:text-sm text-gray-500 dark:text-gray-400">
               {t('clickToToggle')}
             </div>
+          </button>
+        </div>
+
+        {/* Clear All Data Setting */}
+        <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+          <div className="flex items-center gap-2 mb-3">
+            <Trash2 className="text-red-600 dark:text-red-400" size={20} />
+            <h3 className="text-base md:text-lg font-semibold text-gray-800 dark:text-gray-100">{t('clearAllData')}</h3>
+          </div>
+          <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 mb-3">{t('clearAllDataDescription')}</p>
+          <button
+            onClick={() => {
+              if (window.confirm(t('clearAllDataConfirm'))) {
+                localStorage.clear();
+                window.location.reload();
+              }
+            }}
+            className="w-full px-4 py-3 bg-red-50 dark:bg-red-900/20 border border-red-300 dark:border-red-800 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition text-red-700 dark:text-red-400 font-medium text-sm md:text-base"
+          >
+            {t('clearAllDataButton')}
           </button>
         </div>
       </div>
