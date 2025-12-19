@@ -94,11 +94,10 @@ const RummikubTracker = () => {
   // Audio
   const { playTickTock, playTurnNotification, speakPlayerName } = useAudio();
 
-  // Timer
+  // Timer (kept for useTimer hook compatibility)
   const handleTimeUp = useCallback(() => {
-    if (!activeGame) return;
-    nextPlayer();
-  }, [activeGame]);
+    // This is now handled by the useEffect watching timerSeconds
+  }, []);
 
   const { 
     timerSeconds, 
@@ -122,8 +121,7 @@ const RummikubTracker = () => {
           }
           if (newValue <= 0) {
             setTimerActive(false);
-            nextPlayer();
-            return timerDuration;
+            return 0;
           }
           return newValue;
         });
@@ -131,6 +129,13 @@ const RummikubTracker = () => {
     }
     return () => clearInterval(interval);
   }, [timerActive, timerSeconds, timerDuration, playTickTock]);
+
+  // Handle timer expiration
+  useEffect(() => {
+    if (timerSeconds === 0 && activeGame && !timerActive) {
+      nextPlayer();
+    }
+  }, [timerSeconds, activeGame, timerActive]);
 
   // Fullscreen listener
   useEffect(() => {
