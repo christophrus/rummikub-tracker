@@ -1,7 +1,7 @@
 import { TIMER_LOW_TIME, TIMER_WARNING_TIME } from '../constants';
 import { formatTime } from '../utils';
 
-export const AnalogClock = ({ seconds, duration, isActive }) => {
+export const AnalogClock = ({ seconds, duration, isActive, t }) => {
   const percentage = seconds / duration;
   const angle = percentage * 360 - 90;
   const isLowTime = seconds <= TIMER_LOW_TIME;
@@ -39,7 +39,7 @@ export const AnalogClock = ({ seconds, duration, isActive }) => {
           style={{ fontSize: '20px' }}>
           {formatTime(seconds)}
         </text>
-        {!isActive && <text x="100" y="160" textAnchor="middle" className="fill-yellow-600" style={{ fontSize: '12px' }}>PAUSED</text>}
+        {!isActive && <text x="100" y="160" textAnchor="middle" className="fill-yellow-600" style={{ fontSize: '12px' }}>{t('paused')}</text>}
       </svg>
     </div>
   );

@@ -72,7 +72,7 @@ export const ActiveGameView = ({
 
         <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 rounded-lg p-4 sm:p-6 shadow-inner">
           <div className="flex flex-col items-center">
-            <AnalogClock seconds={timerSeconds} duration={timerDuration} isActive={timerActive} />
+            <AnalogClock seconds={timerSeconds} duration={timerDuration} isActive={timerActive} t={t} />
             <div className="flex gap-2 mt-4 flex-wrap justify-center">
               {timerActive ? (
                 <button 
