@@ -1,4 +1,4 @@
-import { Play, Trophy, Settings } from 'lucide-react';
+import { Play, Trophy, Settings, Users, History } from 'lucide-react';
 
 export const HomeView = ({ 
   activeGame, 
@@ -49,16 +49,16 @@ export const HomeView = ({
             onClick={onManagePlayers}
             className="w-full bg-purple-600 dark:bg-purple-500 text-white py-2 sm:py-4 rounded-lg font-semibold hover:bg-purple-700 dark:hover:bg-purple-600 transition flex items-center justify-center gap-2 text-sm sm:text-base"
           >
-            <Trophy size={18} className="sm:hidden" />
-            <Trophy size={20} className="hidden sm:inline" />
+            <Users size={18} className="sm:hidden" />
+            <Users size={20} className="hidden sm:inline" />
             {t('managePlayers')}
           </button>
           <button 
             onClick={onViewHistory}
             className="w-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 py-2 sm:py-4 rounded-lg font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition flex items-center justify-center gap-2 text-sm sm:text-base"
           >
-            <Trophy size={18} className="sm:hidden" />
-            <Trophy size={20} className="hidden sm:inline" />
+            <History size={18} className="sm:hidden" />
+            <History size={20} className="hidden sm:inline" />
             {t('viewGameHistory')}
           </button>
           <button 
