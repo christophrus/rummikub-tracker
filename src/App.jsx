@@ -11,7 +11,8 @@ import {
   useGameData, 
   useTimer, 
   useAudio, 
-  useLocalization 
+  useLocalization,
+  ThemeProvider
 } from './hooks';
 
 // Import constants
@@ -37,6 +38,7 @@ import {
   GameHistoryView,
   ManagePlayersView
 } from './components/views';
+import { ThemeToggle } from './components';
 
 // Build translations object
 const translations = {
@@ -339,23 +341,23 @@ const RummikubTracker = () => {
   // Loading
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-        <div className="text-xl text-gray-700">{t('loading')}</div>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
+        <div className="text-xl text-gray-700 dark:text-gray-300">{t('loading')}</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="max-w-4xl mx-auto">
         {!(isFullscreen && view === VIEWS.ACTIVE_GAME) && (
           <div className="text-center mb-6 sm:mb-8 pt-4 sm:pt-6">
             <div className="flex items-center justify-center gap-2 sm:gap-4 mb-2 flex-wrap px-4">
-              <h1 className="text-2xl sm:text-4xl font-bold text-indigo-900">{t('appTitle')}</h1>
+              <h1 className="text-2xl sm:text-4xl font-bold text-indigo-900 dark:text-indigo-300">{t('appTitle')}</h1>
               <select
                 value={uiLanguage}
                 onChange={(e) => changeUiLanguage(e.target.value)}
-                className="flex items-center gap-2 px-2 sm:px-3 py-1 sm:py-2 bg-white rounded-lg shadow hover:bg-gray-50 transition cursor-pointer border border-gray-300 text-sm sm:text-base"
+                className="flex items-center gap-2 px-2 sm:px-3 py-1 sm:py-2 bg-white dark:bg-gray-700 dark:text-gray-100 rounded-lg shadow hover:bg-gray-50 dark:hover:bg-gray-600 transition cursor-pointer border border-gray-300 dark:border-gray-600 text-sm sm:text-base"
                 title={t('selectLanguage')}
               >
                 <option value="en">🇬🇧 English</option>
@@ -363,7 +365,7 @@ const RummikubTracker = () => {
                 <option value="fr">🇫🇷 Français</option>
               </select>
             </div>
-            <p className="text-sm sm:text-base text-gray-600 px-4">{t('appSubtitle')}</p>
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 px-4">{t('appSubtitle')}</p>
           </div>
         )}
 
@@ -476,6 +478,8 @@ const RummikubTracker = () => {
         )}
       </div>
 
+      <ThemeToggle />
+
       <button 
         onClick={toggleFullscreen}
         className="fixed bottom-6 right-6 bg-indigo-600 text-white p-4 rounded-full shadow-lg hover:bg-indigo-700 transition-all hover:scale-110 z-40"
@@ -487,4 +491,11 @@ const RummikubTracker = () => {
   );
 };
 
-export default RummikubTracker;
+// Wrap with ThemeProvider
+const App = () => (
+  <ThemeProvider>
+    <RummikubTracker />
+  </ThemeProvider>
+);
+
+export default App;

@@ -12,7 +12,7 @@ export const HomeView = ({
   return (
     <div className="space-y-4">
       {activeGame && (
-        <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl shadow-lg p-4 sm:p-6 text-white">
+        <div className="bg-gradient-to-r from-green-500 to-emerald-600 dark:from-green-600 dark:to-emerald-700 rounded-xl shadow-lg p-4 sm:p-6 text-white">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
             <div className="flex-1 min-w-0">
               <p className="text-xs sm:text-sm opacity-90 mb-1">{t('gameInProgress')}</p>
@@ -21,7 +21,7 @@ export const HomeView = ({
             </div>
             <button
               onClick={onResume}
-              className="w-full sm:w-auto bg-white text-green-600 px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold hover:bg-green-50 transition flex items-center justify-center gap-2 text-sm sm:text-base whitespace-nowrap"
+              className="w-full sm:w-auto bg-white dark:bg-gray-100 text-green-600 dark:text-green-700 px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold hover:bg-green-50 dark:hover:bg-gray-200 transition flex items-center justify-center gap-2 text-sm sm:text-base whitespace-nowrap"
             >
               <Play size={18} className="sm:hidden" />
               <Play size={20} className="hidden sm:inline" />
@@ -31,14 +31,14 @@ export const HomeView = ({
         </div>
       )}
       
-      <div className="bg-white rounded-xl shadow-lg p-4 sm:p-8 text-center">
-        <Trophy className="w-12 sm:w-16 h-12 sm:h-16 mx-auto mb-3 sm:mb-4 text-indigo-600" />
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2 sm:mb-4">{t('welcomeTitle')}</h2>
-        <p className="text-xs sm:text-sm text-gray-600 mb-4 sm:mb-6">{t('welcomeSubtitle')}</p>
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-8 text-center">
+        <Trophy className="w-12 sm:w-16 h-12 sm:h-16 mx-auto mb-3 sm:mb-4 text-indigo-600 dark:text-indigo-400" />
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2 sm:mb-4">{t('welcomeTitle')}</h2>
+        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-4 sm:mb-6">{t('welcomeSubtitle')}</p>
         <div className="space-y-2 sm:space-y-3">
           <button 
             onClick={onNewGame}
-            className="w-full bg-indigo-600 text-white py-2 sm:py-4 rounded-lg font-semibold hover:bg-indigo-700 transition flex items-center justify-center gap-2 text-sm sm:text-base"
+            className="w-full bg-indigo-600 dark:bg-indigo-500 text-white py-2 sm:py-4 rounded-lg font-semibold hover:bg-indigo-700 dark:hover:bg-indigo-600 transition flex items-center justify-center gap-2 text-sm sm:text-base"
           >
             <Trophy size={18} className="sm:hidden" />
             <Trophy size={20} className="hidden sm:inline" />
@@ -46,7 +46,7 @@ export const HomeView = ({
           </button>
           <button 
             onClick={onManagePlayers}
-            className="w-full bg-purple-600 text-white py-2 sm:py-4 rounded-lg font-semibold hover:bg-purple-700 transition flex items-center justify-center gap-2 text-sm sm:text-base"
+            className="w-full bg-purple-600 dark:bg-purple-500 text-white py-2 sm:py-4 rounded-lg font-semibold hover:bg-purple-700 dark:hover:bg-purple-600 transition flex items-center justify-center gap-2 text-sm sm:text-base"
           >
             <Trophy size={18} className="sm:hidden" />
             <Trophy size={20} className="hidden sm:inline" />
@@ -54,7 +54,7 @@ export const HomeView = ({
           </button>
           <button 
             onClick={onViewHistory}
-            className="w-full bg-gray-200 text-gray-800 py-2 sm:py-4 rounded-lg font-semibold hover:bg-gray-300 transition flex items-center justify-center gap-2 text-sm sm:text-base"
+            className="w-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 py-2 sm:py-4 rounded-lg font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition flex items-center justify-center gap-2 text-sm sm:text-base"
           >
             <Trophy size={18} className="sm:hidden" />
             <Trophy size={20} className="hidden sm:inline" />

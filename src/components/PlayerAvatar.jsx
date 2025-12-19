@@ -18,7 +18,7 @@ export const PlayerAvatar = ({ player, size = 'md' }) => {
   };
 
   return (
-    <div className={`${sizeClasses[size]} rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center overflow-hidden border-2 border-white shadow-lg flex-shrink-0`}>
+    <div className={`${sizeClasses[size]} rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 dark:from-indigo-600 dark:to-purple-700 flex items-center justify-center overflow-hidden border-2 border-white dark:border-gray-700 shadow-lg flex-shrink-0`}>
       {player?.image ? (
         <img src={player.image} alt={player.name} className="w-full h-full object-cover" />
       ) : (
@@ -34,11 +34,11 @@ export const QuickAddPlayerButton = ({ player, onClick }) => {
   return (
     <button 
       onClick={onClick}
-      className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-300 rounded-lg hover:border-indigo-500 hover:bg-indigo-50 transition"
+      className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:border-indigo-500 dark:hover:border-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition"
     >
       <PlayerAvatar player={player} size="sm" />
-      <span className="text-sm font-medium text-gray-700">{player.name}</span>
-      <Plus size={16} className="text-gray-400" />
+      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{player.name}</span>
+      <Plus size={16} className="text-gray-400 dark:text-gray-500" />
     </button>
   );
 };

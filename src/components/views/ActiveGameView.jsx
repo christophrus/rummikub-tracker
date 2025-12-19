@@ -35,22 +35,22 @@ export const ActiveGameView = ({
 
   return (
     <div className="space-y-4">
-      <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex-1 min-w-0 mr-4">
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-800 truncate">{activeGame.name}</h2>
-            <p className="text-xs sm:text-sm text-gray-600">{t('round')} {currentRound}</p>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-100 truncate">{activeGame.name}</h2>
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">{t('round')} {currentRound}</p>
           </div>
           <button 
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 flex-shrink-0"
+            className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 flex-shrink-0"
           >
             <X size={24} />
           </button>
         </div>
 
         {currentPlayer && (
-          <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg p-3 sm:p-4 mb-4 text-white">
+          <div className="bg-gradient-to-r from-indigo-500 to-purple-600 dark:from-indigo-600 dark:to-purple-700 rounded-lg p-3 sm:p-4 mb-4 text-white">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
               <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
                 <PlayerAvatar player={currentPlayer} size="lg" />
@@ -61,7 +61,7 @@ export const ActiveGameView = ({
               </div>
               <button 
                 onClick={onNextPlayer}
-                className="w-full sm:w-auto bg-white text-indigo-600 px-3 sm:px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition hover:bg-indigo-50 font-semibold shadow text-sm sm:text-base whitespace-nowrap"
+                className="w-full sm:w-auto bg-white dark:bg-gray-100 text-indigo-600 dark:text-indigo-700 px-3 sm:px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition hover:bg-indigo-50 dark:hover:bg-gray-200 font-semibold shadow text-sm sm:text-base whitespace-nowrap"
               >
                 <SkipForward size={20} />
                 {t('nextPlayer')}
@@ -70,7 +70,7 @@ export const ActiveGameView = ({
           </div>
         )}
 
-        <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-4 sm:p-6 shadow-inner">
+        <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 rounded-lg p-4 sm:p-6 shadow-inner">
           <div className="flex flex-col items-center">
             <AnalogClock seconds={timerSeconds} duration={timerDuration} isActive={timerActive} />
             <div className="flex gap-2 mt-4 flex-wrap justify-center">
@@ -105,7 +105,7 @@ export const ActiveGameView = ({
                 onClick={onExtendTimer} 
                 disabled={!canExtend}
                 className={`w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg font-semibold transition flex items-center justify-center gap-2 text-sm sm:text-base ${
-                  canExtend ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  canExtend ? 'bg-blue-600 dark:bg-blue-500 text-white hover:bg-blue-700 dark:hover:bg-blue-600' : 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'
                 }`}
               >
                 <Plus size={20} />
@@ -114,11 +114,11 @@ export const ActiveGameView = ({
             </div>
 
             <div className="flex items-center gap-2 mt-4 flex-wrap justify-center">
-              <label className="text-xs sm:text-sm text-gray-700 font-medium">{t('duration')}</label>
+              <label className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 font-medium">{t('duration')}</label>
               <select 
                 value={timerDuration} 
                 onChange={(e) => onUpdateTimerDuration(Number(e.target.value))}
-                className="text-xs sm:text-sm px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white"
+                className="text-xs sm:text-sm px-3 sm:px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 bg-white dark:bg-gray-700 dark:text-gray-100"
               >
                 <option value={30}>30 {t('seconds')}</option>
                 <option value={60}>1 {t('minute')}</option>
@@ -140,14 +140,14 @@ export const ActiveGameView = ({
               onDragOver={onDragOver}
               onDrop={(e) => onDrop?.(e, idx)}
               className={`p-2 sm:p-3 rounded-lg border-2 transition relative ${
-                idx === currentPlayerIndex ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200 bg-gray-50'
+                idx === currentPlayerIndex ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 dark:border-indigo-400' : 'border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700'
               } ${draggedGamePlayerIndex === idx ? 'opacity-50' : ''}`}
             >
               <div className="absolute top-1 right-1 flex gap-1">
                 <button 
                   onClick={() => onMovePlayerUp?.(idx)} 
                   disabled={idx === 0}
-                  className={`w-5 h-5 sm:w-6 sm:h-6 rounded text-xs ${idx === 0 ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-indigo-500 text-white hover:bg-indigo-600'}`}
+                  className={`w-5 h-5 sm:w-6 sm:h-6 rounded text-xs ${idx === 0 ? 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed' : 'bg-indigo-500 dark:bg-indigo-600 text-white hover:bg-indigo-600 dark:hover:bg-indigo-700'}`}
                   title={t('moveUp')}
                 >
                   ▲
@@ -155,7 +155,7 @@ export const ActiveGameView = ({
                 <button 
                   onClick={() => onMovePlayerDown?.(idx)} 
                   disabled={idx === activeGame.players.length - 1}
-                  className={`w-5 h-5 sm:w-6 sm:h-6 rounded text-xs ${idx === activeGame.players.length - 1 ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-indigo-500 text-white hover:bg-indigo-600'}`}
+                  className={`w-5 h-5 sm:w-6 sm:h-6 rounded text-xs ${idx === activeGame.players.length - 1 ? 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed' : 'bg-indigo-500 dark:bg-indigo-600 text-white hover:bg-indigo-600 dark:hover:bg-indigo-700'}`}
                   title={t('moveDown')}
                 >
                   ▼
@@ -164,16 +164,16 @@ export const ActiveGameView = ({
               <div className="flex items-center gap-2 pr-12 sm:pr-14">
                 <PlayerAvatar player={player} size="md" />
                 <div className="flex-1 min-w-0">
-                  <p className={`text-xs sm:text-sm font-semibold truncate ${idx === currentPlayerIndex ? 'text-indigo-900' : 'text-gray-700'}`}>
+                  <p className={`text-xs sm:text-sm font-semibold truncate ${idx === currentPlayerIndex ? 'text-indigo-900 dark:text-indigo-200' : 'text-gray-700 dark:text-gray-300'}`}>
                     {player.name}
                   </p>
                   {activeGame.rounds.length > 0 && (
-                    <p className="text-xs text-gray-600">
+                    <p className="text-xs text-gray-600 dark:text-gray-400">
                       {t('score')} {activeGame.rounds.reduce((s, r) => s + (parseInt(r.scores[player.name]) || 0), 0)}
                     </p>
                   )}
                   {activeGame.maxExtensions > 0 && (
-                    <p className="text-xs text-blue-600">{playerExtensions[player.name] || 0}/{activeGame.maxExtensions}</p>
+                    <p className="text-xs text-blue-600 dark:text-blue-400">{playerExtensions[player.name] || 0}/{activeGame.maxExtensions}</p>
                   )}
                 </div>
               </div>
@@ -182,19 +182,19 @@ export const ActiveGameView = ({
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6">
-        <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-4">{t('enterRoundScores', { round: currentRound })}</h3>
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6">
+        <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">{t('enterRoundScores', { round: currentRound })}</h3>
         <div className="space-y-3">
           {activeGame.players.map((player, idx) => (
             <div key={idx} className="flex items-center gap-2 sm:gap-3">
               <PlayerAvatar player={player} size="md" />
-              <label className="flex-1 text-sm sm:text-base text-gray-700 font-medium truncate">{player.name}</label>
+              <label className="flex-1 text-sm sm:text-base text-gray-700 dark:text-gray-300 font-medium truncate">{player.name}</label>
               <input 
                 type="number" 
                 value={roundScores[player.name] || ''} 
                 onChange={(e) => onUpdateRoundScore(player, e.target.value)}
                 placeholder="0" 
-                className="w-16 sm:w-24 px-2 sm:px-4 py-2 border border-gray-300 rounded-lg text-center focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base" 
+                className="w-16 sm:w-24 px-2 sm:px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-center focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 text-sm sm:text-base" 
               />
             </div>
           ))}
@@ -204,8 +204,8 @@ export const ActiveGameView = ({
           disabled={!allScoresEntered}
           className={`w-full py-2 sm:py-3 rounded-lg font-semibold transition mt-4 flex items-center justify-center gap-2 text-sm sm:text-base ${
             allScoresEntered 
-              ? 'bg-indigo-600 text-white hover:bg-indigo-700' 
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              ? 'bg-indigo-600 dark:bg-indigo-500 text-white hover:bg-indigo-700 dark:hover:bg-indigo-600' 
+              : 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'
           }`}
         >
           <Check size={20} />
@@ -214,16 +214,16 @@ export const ActiveGameView = ({
       </div>
 
       {activeGame.rounds.length > 0 && (
-        <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6">
-          <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-4">{t('scoreSummary')}</h3>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6">
+          <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">{t('scoreSummary')}</h3>
           <div className="overflow-x-auto -mx-4 sm:mx-0">
             <div className="inline-block min-w-full align-middle px-4 sm:px-0">
               <table className="min-w-full">
                 <thead>
-                  <tr className="border-b-2 border-gray-200">
-                    <th className="text-left py-2 px-1 sm:px-2 text-xs sm:text-sm font-semibold text-gray-700 sticky left-0 bg-white">{t('round')}</th>
+                  <tr className="border-b-2 border-gray-200 dark:border-gray-600">
+                    <th className="text-left py-2 px-1 sm:px-2 text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 sticky left-0 bg-white dark:bg-gray-800">{t('round')}</th>
                     {activeGame.players.map((p, idx) => (
-                      <th key={idx} className="text-center py-2 px-1 sm:px-2 text-xs sm:text-sm font-semibold text-gray-700">
+                      <th key={idx} className="text-center py-2 px-1 sm:px-2 text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">
                         <div className="flex flex-col items-center gap-1">
                           <PlayerAvatar player={p} size="sm" />
                           <span className="text-xs truncate max-w-[60px] sm:max-w-none">{p.name}</span>
@@ -234,17 +234,17 @@ export const ActiveGameView = ({
                 </thead>
                 <tbody>
                   {activeGame.rounds.map((round, idx) => (
-                    <tr key={idx} className="border-b border-gray-100">
-                      <td className="py-2 px-1 sm:px-2 text-xs sm:text-sm text-gray-600 sticky left-0 bg-white">{round.round}</td>
+                    <tr key={idx} className="border-b border-gray-100 dark:border-gray-700">
+                      <td className="py-2 px-1 sm:px-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400 sticky left-0 bg-white dark:bg-gray-800">{round.round}</td>
                       {activeGame.players.map((p, pIdx) => (
-                        <td key={pIdx} className="text-center py-2 px-1 sm:px-2 text-xs sm:text-sm">{round.scores[p.name] || 0}</td>
+                        <td key={pIdx} className="text-center py-2 px-1 sm:px-2 text-xs sm:text-sm text-gray-800 dark:text-gray-300">{round.scores[p.name] || 0}</td>
                       ))}
                     </tr>
                   ))}
-                  <tr className="bg-indigo-50 font-bold">
-                    <td className="py-2 px-1 sm:px-2 text-xs sm:text-sm sticky left-0 bg-indigo-50">{t('total')}</td>
+                  <tr className="bg-indigo-50 dark:bg-indigo-900/30 font-bold">
+                    <td className="py-2 px-1 sm:px-2 text-xs sm:text-sm sticky left-0 bg-indigo-50 dark:bg-indigo-900/30 dark:text-gray-200">{t('total')}</td>
                     {activeGame.players.map((p, pIdx) => (
-                      <td key={pIdx} className="text-center py-2 px-1 sm:px-2 text-xs sm:text-sm text-indigo-900">
+                      <td key={pIdx} className="text-center py-2 px-1 sm:px-2 text-xs sm:text-sm text-indigo-900 dark:text-indigo-200">
                         {activeGame.rounds.reduce((s, r) => s + (parseInt(r.scores[p.name]) || 0), 0)}
                       </td>
                     ))}
@@ -255,7 +255,7 @@ export const ActiveGameView = ({
           </div>
           <button 
             onClick={onEndGame}
-            className="w-full bg-green-600 text-white py-2 sm:py-3 rounded-lg font-semibold hover:bg-green-700 transition mt-4 text-sm sm:text-base"
+            className="w-full bg-green-600 dark:bg-green-500 text-white py-2 sm:py-3 rounded-lg font-semibold hover:bg-green-700 dark:hover:bg-green-600 transition mt-4 text-sm sm:text-base"
           >
             {t('endGame')}
           </button>
