@@ -132,6 +132,7 @@ export const NewGameView = ({
               onDrop={onDrop}
               showMoveButtons={true}
               canRemove={players.length > 1}
+              t={t}
             />
           ))}
           {players.length < 6 && (

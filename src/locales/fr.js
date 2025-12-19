@@ -69,7 +69,10 @@ const frTranslations = {
   endCurrentGameConfirm: 'Commencer une nouvelle partie terminera votre partie actuelle. Continuer?',
   language: 'Langue',
   selectLanguage: 'Sélectionner la langue',
-  imageAutoResize: '💡 Les images sont automatiquement redimensionnées et compressées pour économiser de l\'espace'
+  imageAutoResize: '💡 Les images sont automatiquement redimensionnées et compressées pour économiser de l\'espace',
+  switchToDarkMode: 'Passer en mode sombre',
+  switchToLightMode: 'Passer en mode clair',
+  removePlayer: 'Retirer le joueur'
 };
 
 export default frTranslations;

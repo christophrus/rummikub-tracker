@@ -14,7 +14,8 @@ export const PlayerCard = ({
   onDrop,
   showMoveButtons = true,
   canRemove = true,
-  showPlayerNumber = false
+  showPlayerNumber = false,
+  t
 }) => {
   return (
     <div 
@@ -61,7 +62,7 @@ export const PlayerCard = ({
               title="Remove player"
             >
               <X size={18} />
-              <span>Entfernen</span>
+              <span>{t?.('removePlayer') || 'Remove'}</span>
             </button>
           </div>
         )}

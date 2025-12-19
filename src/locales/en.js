@@ -69,7 +69,10 @@ const enTranslations = {
   endCurrentGameConfirm: 'Starting a new game will end your current game. Continue?',
   language: 'Language',
   selectLanguage: 'Select Language',
-  imageAutoResize: '💡 Images are automatically resized and compressed to save space'
+  imageAutoResize: '💡 Images are automatically resized and compressed to save space',
+  switchToDarkMode: 'Switch to dark mode',
+  switchToLightMode: 'Switch to light mode',
+  removePlayer: 'Remove player'
 };
 
 export default enTranslations;

@@ -478,7 +478,7 @@ const RummikubTracker = () => {
         )}
       </div>
 
-      <ThemeToggle />
+      <ThemeToggle t={t} />
 
       <button 
         onClick={toggleFullscreen}

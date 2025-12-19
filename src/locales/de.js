@@ -69,7 +69,10 @@ const deTranslations = {
   endCurrentGameConfirm: 'Das Starten eines neuen Spiels beendet Ihr aktuelles Spiel. Fortfahren?',
   language: 'Sprache',
   selectLanguage: 'Sprache auswählen',
-  imageAutoResize: '💡 Bilder werden automatisch verkleinert und komprimiert, um Speicherplatz zu sparen'
+  imageAutoResize: '💡 Bilder werden automatisch verkleinert und komprimiert, um Speicherplatz zu sparen',
+  switchToDarkMode: 'Zum dunklen Modus wechseln',
+  switchToLightMode: 'Zum hellen Modus wechseln',
+  removePlayer: 'Spieler entfernen'
 };
 
 export default deTranslations;
