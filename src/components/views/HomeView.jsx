@@ -1,4 +1,4 @@
-import { Play, Trophy } from 'lucide-react';
+import { Play, Trophy, Settings } from 'lucide-react';
 
 export const HomeView = ({ 
   activeGame, 
@@ -7,6 +7,7 @@ export const HomeView = ({
   onResume, 
   onManagePlayers, 
   onViewHistory,
+  onSettings,
   t 
 }) => {
   return (
@@ -59,6 +60,14 @@ export const HomeView = ({
             <Trophy size={18} className="sm:hidden" />
             <Trophy size={20} className="hidden sm:inline" />
             {t('viewGameHistory')}
+          </button>
+          <button 
+            onClick={onSettings}
+            className="w-full bg-blue-600 dark:bg-blue-500 text-white py-2 sm:py-4 rounded-lg font-semibold hover:bg-blue-700 dark:hover:bg-blue-600 transition flex items-center justify-center gap-2 text-sm sm:text-base"
+          >
+            <Settings size={18} className="sm:hidden" />
+            <Settings size={20} className="hidden sm:inline" />
+            {t('settings')}
           </button>
         </div>
       </div>

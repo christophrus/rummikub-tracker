@@ -1,20 +1,18 @@
 import { X, Plus } from 'lucide-react';
 import { PlayerCard } from '../PlayerCard';
 import { QuickAddPlayerButton } from '../PlayerAvatar';
-import { TIMER_PRESETS, EXTENSION_PRESETS, VOICE_LANGUAGES } from '../../constants';
+import { TIMER_PRESETS, EXTENSION_PRESETS } from '../../constants';
 
 export const NewGameView = ({ 
   players,
   gameName,
   timerDuration,
   maxExtensions,
-  ttsLanguage,
   savedPlayers,
   onClose,
   onGameNameChange,
   onTimerDurationChange,
   onMaxExtensionsChange,
-  onTtsLanguageChange,
   onAddPlayer,
   onRemovePlayer,
   onUpdatePlayer,
@@ -80,20 +78,6 @@ export const NewGameView = ({
             <option value={10}>10 {t('extensions')}</option>
           </select>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('extensionNote')}</p>
-        </div>
-
-        <div>
-          <label className="block text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 md:mb-2">{t('voiceAnnouncementLanguage')}</label>
-          <select 
-            value={ttsLanguage} 
-            onChange={(e) => onTtsLanguageChange(e.target.value)}
-            className="w-full px-3 md:px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 text-sm"
-          >
-            {VOICE_LANGUAGES.map(lang => (
-              <option key={lang.code} value={lang.code}>{lang.label}</option>
-            ))}
-          </select>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('voiceLanguageNote')}</p>
         </div>
 
         {savedPlayers.length > 0 && (

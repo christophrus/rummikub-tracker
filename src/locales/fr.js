@@ -72,7 +72,16 @@ const frTranslations = {
   imageAutoResize: '💡 Les images sont automatiquement redimensionnées et compressées pour économiser de l\'espace',
   switchToDarkMode: 'Passer en mode sombre',
   switchToLightMode: 'Passer en mode clair',
-  removePlayer: 'Retirer le joueur'
+  removePlayer: 'Retirer le joueur',
+  settings: 'Paramètres',
+  uiLanguage: 'Langue de l\'interface',
+  uiLanguageDescription: 'Choisissez la langue de l\'interface de l\'application',
+  appearance: 'Apparence',
+  appearanceDescription: 'Choisissez entre le thème clair et sombre',
+  lightMode: 'Mode clair',
+  darkMode: 'Mode sombre',
+  clickToToggle: 'Cliquer pour basculer',
+  settingsSavedAutomatically: 'Les paramètres sont sauvegardés automatiquement'
 };
 
 export default frTranslations;

@@ -36,9 +36,9 @@ import {
   NewGameView,
   ActiveGameView,
   GameHistoryView,
-  ManagePlayersView
+  ManagePlayersView,
+  SettingsView
 } from './components/views';
-import { ThemeToggle } from './components';
 
 // Build translations object
 const translations = {
@@ -84,7 +84,10 @@ const RummikubTracker = () => {
   const [gameName, setGameName] = useState('');
   const [timerDuration, setTimerDuration] = useState(60);
   const [maxExtensions, setMaxExtensions] = useState(3);
-  const [ttsLanguage, setTtsLanguage] = useState('de-DE');
+  const [ttsLanguage, setTtsLanguage] = useState(() => {
+    const saved = localStorage.getItem('tts-language');
+    return saved || 'de-DE';
+  });
   const [draggedPlayerIndex, setDraggedPlayerIndex] = useState(null);
   const [draggedGamePlayerIndex, setDraggedGamePlayerIndex] = useState(null);
 
@@ -327,6 +330,12 @@ const RummikubTracker = () => {
     setPlayers(newPlayers);
   };
 
+  // Settings handlers
+  const handleTtsLanguageChange = (newLang) => {
+    setTtsLanguage(newLang);
+    localStorage.setItem('tts-language', newLang);
+  };
+
   // Fullscreen
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
@@ -352,19 +361,7 @@ const RummikubTracker = () => {
       <div className="max-w-4xl mx-auto">
         {!(isFullscreen && view === VIEWS.ACTIVE_GAME) && (
           <div className="text-center mb-6 sm:mb-8 pt-4 sm:pt-6">
-            <div className="flex items-center justify-center gap-2 sm:gap-4 mb-2 flex-wrap px-4">
-              <h1 className="text-2xl sm:text-4xl font-bold text-indigo-900 dark:text-indigo-300">{t('appTitle')}</h1>
-              <select
-                value={uiLanguage}
-                onChange={(e) => changeUiLanguage(e.target.value)}
-                className="flex items-center gap-2 px-2 sm:px-3 py-1 sm:py-2 bg-white dark:bg-gray-700 dark:text-gray-100 rounded-lg shadow hover:bg-gray-50 dark:hover:bg-gray-600 transition cursor-pointer border border-gray-300 dark:border-gray-600 text-sm sm:text-base"
-                title={t('selectLanguage')}
-              >
-                <option value="en">🇬🇧 English</option>
-                <option value="de">🇩🇪 Deutsch</option>
-                <option value="fr">🇫🇷 Français</option>
-              </select>
-            </div>
+            <h1 className="text-2xl sm:text-4xl font-bold text-indigo-900 dark:text-indigo-300 mb-2">{t('appTitle')}</h1>
             <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 px-4">{t('appSubtitle')}</p>
           </div>
         )}
@@ -377,6 +374,7 @@ const RummikubTracker = () => {
             onResume={handleResumeGame}
             onManagePlayers={() => setView(VIEWS.MANAGE_PLAYERS)}
             onViewHistory={() => setView(VIEWS.GAME_HISTORY)}
+            onSettings={() => setView(VIEWS.SETTINGS)}
             t={t}
           />
         )}
@@ -387,13 +385,11 @@ const RummikubTracker = () => {
             gameName={gameName}
             timerDuration={timerDuration}
             maxExtensions={maxExtensions}
-            ttsLanguage={ttsLanguage}
             savedPlayers={savedPlayers}
             onClose={() => setView(VIEWS.HOME)}
             onGameNameChange={setGameName}
             onTimerDurationChange={setTimerDuration}
             onMaxExtensionsChange={setMaxExtensions}
-            onTtsLanguageChange={setTtsLanguage}
             onAddPlayer={handleAddPlayer}
             onRemovePlayer={handleRemovePlayer}
             onUpdatePlayer={handleUpdatePlayer}
@@ -476,9 +472,18 @@ const RummikubTracker = () => {
             t={t}
           />
         )}
-      </div>
 
-      <ThemeToggle t={t} />
+        {view === VIEWS.SETTINGS && (
+          <SettingsView
+            uiLanguage={uiLanguage}
+            ttsLanguage={ttsLanguage}
+            onClose={() => setView(VIEWS.HOME)}
+            onUiLanguageChange={changeUiLanguage}
+            onTtsLanguageChange={handleTtsLanguageChange}
+            t={t}
+          />
+        )}
+      </div>
 
       <button 
         onClick={toggleFullscreen}

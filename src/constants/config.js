@@ -62,5 +62,6 @@ export const VIEWS = {
   NEW_GAME: 'newGame',
   ACTIVE_GAME: 'activeGame',
   MANAGE_PLAYERS: 'managePlayers',
-  GAME_HISTORY: 'gameHistory'
+  GAME_HISTORY: 'gameHistory',
+  SETTINGS: 'settings'
 };

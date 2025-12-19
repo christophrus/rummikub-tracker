@@ -72,7 +72,16 @@ const deTranslations = {
   imageAutoResize: '💡 Bilder werden automatisch verkleinert und komprimiert, um Speicherplatz zu sparen',
   switchToDarkMode: 'Zum dunklen Modus wechseln',
   switchToLightMode: 'Zum hellen Modus wechseln',
-  removePlayer: 'Spieler entfernen'
+  removePlayer: 'Spieler entfernen',
+  settings: 'Einstellungen',
+  uiLanguage: 'Oberflächensprache',
+  uiLanguageDescription: 'Wählen Sie die Sprache für die App-Oberfläche',
+  appearance: 'Erscheinungsbild',
+  appearanceDescription: 'Wählen Sie zwischen hellem und dunklem Design',
+  lightMode: 'Heller Modus',
+  darkMode: 'Dunkler Modus',
+  clickToToggle: 'Klicken zum Umschalten',
+  settingsSavedAutomatically: 'Einstellungen werden automatisch gespeichert'
 };
 
 export default deTranslations;

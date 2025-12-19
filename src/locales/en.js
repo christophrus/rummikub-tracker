@@ -72,7 +72,16 @@ const enTranslations = {
   imageAutoResize: '💡 Images are automatically resized and compressed to save space',
   switchToDarkMode: 'Switch to dark mode',
   switchToLightMode: 'Switch to light mode',
-  removePlayer: 'Remove player'
+  removePlayer: 'Remove player',
+  settings: 'Settings',
+  uiLanguage: 'Interface Language',
+  uiLanguageDescription: 'Choose the language for the app interface',
+  appearance: 'Appearance',
+  appearanceDescription: 'Choose between light and dark theme',
+  lightMode: 'Light Mode',
+  darkMode: 'Dark Mode',
+  clickToToggle: 'Click to toggle',
+  settingsSavedAutomatically: 'Settings are saved automatically'
 };
 
 export default enTranslations;
