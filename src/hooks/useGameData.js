@@ -139,6 +139,7 @@ export const useGameData = () => {
         status: 'active',
         currentPlayerIndex: 0,
         timerDuration,
+        originalTimerDuration: timerDuration,
         maxExtensions,
         playerExtensions: extensions,
         ttsLanguage

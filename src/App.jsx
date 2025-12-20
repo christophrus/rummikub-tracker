@@ -83,6 +83,7 @@ const RummikubTracker = () => {
   const [players, setPlayers] = useState([{ name: '', image: null }]);
   const [gameName, setGameName] = useState('');
   const [timerDuration, setTimerDuration] = useState(60);
+  const [originalTimerDuration, setOriginalTimerDuration] = useState(60);
   const [maxExtensions, setMaxExtensions] = useState(3);
   const [ttsLanguage, setTtsLanguage] = useState(() => {
     const saved = localStorage.getItem('tts-language');
@@ -147,6 +148,15 @@ const RummikubTracker = () => {
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
 
+  // Load timer duration from active game
+  useEffect(() => {
+    if (activeGame && activeGame.timerDuration) {
+      setTimerDuration(activeGame.timerDuration);
+      setOriginalTimerDuration(activeGame.originalTimerDuration || activeGame.timerDuration);
+      setTimerSeconds(activeGame.timerDuration);
+    }
+  }, [activeGame?.timerDuration]);
+
   // Translation function
   const t = (key, replacements = {}) => {
     let text = translations[uiLanguage]?.[key] || translations.en[key] || key;
@@ -184,16 +194,17 @@ const RummikubTracker = () => {
     setTimerDuration(newTime);
     const updatedExtensions = { ...playerExtensions, [currentPlayer.name]: extensionsUsed + 1 };
     setPlayerExtensions(updatedExtensions);
-    const updatedGame = { ...activeGame, playerExtensions: updatedExtensions, timerDuration: newTime };
+    const updatedGame = { ...activeGame, playerExtensions: updatedExtensions };
     setActiveGame(updatedGame);
     localStorage.setItem(STORAGE_KEYS.ACTIVE_GAME, JSON.stringify(updatedGame));
   };
 
   const updateTimerDuration = (newDuration) => {
     setTimerDuration(newDuration);
+    setOriginalTimerDuration(newDuration);
     setTimerSeconds(newDuration);
     if (activeGame) {
-      const updatedGame = { ...activeGame, timerDuration: newDuration };
+      const updatedGame = { ...activeGame, timerDuration: newDuration, originalTimerDuration: newDuration };
       setActiveGame(updatedGame);
       localStorage.setItem(STORAGE_KEYS.ACTIVE_GAME, JSON.stringify(updatedGame));
     }
@@ -263,6 +274,9 @@ const RummikubTracker = () => {
     setView(VIEWS.NEW_GAME);
     setPlayers([{ name: '', image: null }]);
     setGameName('');
+    setTimerDuration(60);
+    setOriginalTimerDuration(60);
+    setTimerSeconds(60);
   };
 
   const handleStartGame = () => {
@@ -278,7 +292,8 @@ const RummikubTracker = () => {
       setCurrentPlayerIndex(0);
       setPlayerExtensions(game.playerExtensions);
       setTimerActive(false);
-      setTimerSeconds(timerDuration);
+      setTimerSeconds(game.timerDuration);
+      setOriginalTimerDuration(game.originalTimerDuration);
       setView(VIEWS.ACTIVE_GAME);
       
       setTimeout(() => {
@@ -455,7 +470,8 @@ const RummikubTracker = () => {
             onPause={() => setTimerActive(false)}
             onResume={() => setTimerActive(true)}
             onResetTimer={() => {
-              setTimerSeconds(timerDuration);
+              setTimerSeconds(originalTimerDuration);
+              setTimerDuration(originalTimerDuration);
               setTimerActive(true);
             }}
             onExtendTimer={extendTimer}
