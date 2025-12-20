@@ -85,17 +85,17 @@ export const ActiveGameView = ({
                   <p className="text-base sm:text-2xl font-bold truncate">{currentPlayer.name}</p>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="flex flex-col gap-2">
                 <button 
                   onClick={onDeclareWinner}
-                  className="bg-yellow-400 text-yellow-900 px-2 py-1.5 sm:px-4 sm:py-2 rounded-lg flex items-center justify-center gap-1 sm:gap-2 transition hover:bg-yellow-300 font-semibold shadow text-xs sm:text-base"
+                  className="w-full bg-yellow-400 text-yellow-900 px-2 py-1.5 sm:px-4 sm:py-2 rounded-lg flex items-center justify-center gap-1 sm:gap-2 transition hover:bg-yellow-300 font-semibold shadow text-xs sm:text-base"
                 >
                   <Trophy size={16} className="sm:w-5 sm:h-5" />
                   <span className="truncate">{t('declareWinner')}</span>
                 </button>
                 <button 
                   onClick={onNextPlayer}
-                  className="bg-white dark:bg-gray-100 text-indigo-600 dark:text-indigo-700 px-2 py-1.5 sm:px-4 sm:py-2 rounded-lg flex items-center justify-center gap-1 sm:gap-2 transition hover:bg-indigo-50 dark:hover:bg-gray-200 font-semibold shadow text-xs sm:text-base"
+                  className="w-full bg-white dark:bg-gray-100 text-indigo-600 dark:text-indigo-700 px-2 py-1.5 sm:px-4 sm:py-2 rounded-lg flex items-center justify-center gap-1 sm:gap-2 transition hover:bg-indigo-50 dark:hover:bg-gray-200 font-semibold shadow text-xs sm:text-base"
                 >
                   <SkipForward size={16} className="sm:w-5 sm:h-5" />
                   <span className="truncate">{t('nextPlayer')}</span>
