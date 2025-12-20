@@ -179,10 +179,12 @@ const RummikubTracker = () => {
     const maxAllowed = activeGame.maxExtensions || 3;
     if (extensionsUsed >= maxAllowed) return;
     
-    setTimerSeconds(prev => prev + EXTENSION_DURATION_SECONDS);
+    const newTime = timerSeconds + EXTENSION_DURATION_SECONDS;
+    setTimerSeconds(newTime);
+    setTimerDuration(newTime);
     const updatedExtensions = { ...playerExtensions, [currentPlayer.name]: extensionsUsed + 1 };
     setPlayerExtensions(updatedExtensions);
-    const updatedGame = { ...activeGame, playerExtensions: updatedExtensions };
+    const updatedGame = { ...activeGame, playerExtensions: updatedExtensions, timerDuration: newTime };
     setActiveGame(updatedGame);
     localStorage.setItem(STORAGE_KEYS.ACTIVE_GAME, JSON.stringify(updatedGame));
   };
