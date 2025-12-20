@@ -62,12 +62,20 @@ export const ActiveGameView = ({
 
         {declaredWinner && (
           <div className="bg-gradient-to-r from-yellow-400 to-amber-500 rounded-lg p-4 sm:p-6 mb-4 text-white animate-pulse">
-            <div className="flex flex-col items-center gap-3">
-              <Trophy size={48} className="text-white drop-shadow-lg" />
+            <div className="flex flex-col items-center gap-4">
+              <Trophy size={56} className="text-white drop-shadow-lg" />
               <div className="text-center">
-                <p className="text-xl sm:text-3xl font-bold mb-2">{t('roundWinner')}</p>
-                <div className="flex items-center justify-center gap-3">
-                  <PlayerAvatar player={declaredWinner} size="lg" />
+                <p className="text-xl sm:text-3xl font-bold mb-4">{t('roundWinner')}</p>
+                <div className="flex flex-col items-center gap-4">
+                  <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 dark:from-indigo-600 dark:to-purple-700 flex items-center justify-center overflow-hidden border-4 border-white shadow-2xl">
+                    {declaredWinner?.image ? (
+                      <img src={declaredWinner.image} alt={declaredWinner.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-5xl sm:text-6xl font-bold text-white">
+                        {declaredWinner?.name?.charAt(0).toUpperCase() || '?'}
+                      </span>
+                    )}
+                  </div>
                   <p className="text-2xl sm:text-4xl font-bold">{declaredWinner.name}</p>
                 </div>
               </div>
