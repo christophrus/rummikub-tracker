@@ -299,6 +299,7 @@ const RummikubTracker = () => {
     const winner = activeGame.players[currentPlayerIndex];
     setTimerActive(false);
     setDeclaredWinner(winner);
+    updateRoundScore(winner, '0');
   };
 
   const handleCancelWinner = () => {

@@ -223,36 +223,46 @@ export const ActiveGameView = ({
         )}
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6">
-        <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">{t('enterRoundScores', { round: currentRound })}</h3>
-        <div className="space-y-3">
-          {activeGame.players.map((player, idx) => (
-            <div key={idx} className="flex items-center gap-2 sm:gap-3">
-              <PlayerAvatar player={player} size="md" />
-              <label className="flex-1 text-sm sm:text-base text-gray-700 dark:text-gray-300 font-medium truncate">{player.name}</label>
-              <input 
-                type="number" 
-                value={roundScores[player.name] || ''} 
-                onChange={(e) => onUpdateRoundScore(player, e.target.value)}
-                placeholder="0" 
-                className="w-16 sm:w-24 px-2 sm:px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-center focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 text-sm sm:text-base" 
-              />
-            </div>
-          ))}
+      {declaredWinner && (
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6">
+          <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">{t('enterRoundScores', { round: currentRound })}</h3>
+          <div className="space-y-3">
+            {activeGame.players.map((player, idx) => {
+              const isWinner = declaredWinner && player.name === declaredWinner.name;
+              return (
+              <div key={idx} className="flex items-center gap-2 sm:gap-3">
+                <PlayerAvatar player={player} size="md" />
+                <label className="flex-1 text-sm sm:text-base text-gray-700 dark:text-gray-300 font-medium truncate">{player.name}</label>
+                <input 
+                  type="number" 
+                  value={roundScores[player.name] || ''} 
+                  onChange={(e) => onUpdateRoundScore(player, e.target.value)}
+                  placeholder="0" 
+                  readOnly={isWinner}
+                  className={`w-16 sm:w-24 px-2 sm:px-4 py-2 border rounded-lg text-center text-sm sm:text-base ${
+                    isWinner 
+                      ? 'border-green-500 bg-green-50 dark:bg-green-900/30 dark:border-green-400 text-green-700 dark:text-green-300 font-bold cursor-not-allowed' 
+                      : 'border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400'
+                  }`} 
+                />
+              </div>
+              );
+            })}
+          </div>
+          <button 
+            onClick={onSaveRound}
+            disabled={!allScoresEntered}
+            className={`w-full py-2 sm:py-3 rounded-lg font-semibold transition mt-4 flex items-center justify-center gap-2 text-sm sm:text-base ${
+              allScoresEntered 
+                ? 'bg-indigo-600 dark:bg-indigo-500 text-white hover:bg-indigo-700 dark:hover:bg-indigo-600' 
+                : 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+            }`}
+          >
+            <Check size={20} />
+            {t('saveRound')}
+          </button>
         </div>
-        <button 
-          onClick={onSaveRound}
-          disabled={!allScoresEntered}
-          className={`w-full py-2 sm:py-3 rounded-lg font-semibold transition mt-4 flex items-center justify-center gap-2 text-sm sm:text-base ${
-            allScoresEntered 
-              ? 'bg-indigo-600 dark:bg-indigo-500 text-white hover:bg-indigo-700 dark:hover:bg-indigo-600' 
-              : 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-          }`}
-        >
-          <Check size={20} />
-          {t('saveRound')}
-        </button>
-      </div>
+      )}
 
       {activeGame.rounds.length > 0 && (
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6">
