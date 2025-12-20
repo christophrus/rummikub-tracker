@@ -86,7 +86,9 @@ const enTranslations = {
   clearAllDataDescription: 'Delete all saved games, players, and settings',
   clearAllDataConfirm: 'Are you sure you want to delete all data? This action cannot be undone!',
   clearAllDataButton: 'Clear All Data',
-  paused: 'PAUSED'
+  paused: 'PAUSED',
+  declareWinner: 'Declare Winner',
+  roundWinner: 'Round Winner!'
 };
 
 export default enTranslations;

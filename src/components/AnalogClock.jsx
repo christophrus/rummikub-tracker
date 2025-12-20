@@ -1,7 +1,7 @@
 import { TIMER_LOW_TIME, TIMER_WARNING_TIME } from '../constants';
 import { formatTime } from '../utils';
 
-export const AnalogClock = ({ seconds, duration, isActive, t }) => {
+export const AnalogClock = ({ seconds, duration, isActive, t, onClick }) => {
   const percentage = seconds / duration;
   const angle = percentage * 360 - 90;
   const isLowTime = seconds <= TIMER_LOW_TIME;
@@ -15,7 +15,16 @@ export const AnalogClock = ({ seconds, duration, isActive, t }) => {
   
   return (
     <div className="relative">
-      <svg width="240" height="240" viewBox="0 0 200 200" className="mx-auto">
+      <svg 
+        width="240" 
+        height="240" 
+        viewBox="0 0 200 200" 
+        className="mx-auto cursor-pointer transition-transform hover:scale-105"
+        onClick={onClick}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => e.key === 'Enter' && onClick?.()}
+      >
         <circle cx="100" cy="100" r="95" fill="white" stroke="#e5e7eb" strokeWidth="2" />
         {[...Array(12)].map((_, i) => {
           const tickAngle = (i * 30 - 90) * (Math.PI / 180);

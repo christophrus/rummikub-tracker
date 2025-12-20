@@ -90,6 +90,7 @@ const RummikubTracker = () => {
   });
   const [draggedPlayerIndex, setDraggedPlayerIndex] = useState(null);
   const [draggedGamePlayerIndex, setDraggedGamePlayerIndex] = useState(null);
+  const [declaredWinner, setDeclaredWinner] = useState(null);
 
   // Audio
   const { playTickTock, playTurnNotification, speakPlayerName } = useAudio();
@@ -293,6 +294,18 @@ const RummikubTracker = () => {
     }
   };
 
+  const handleDeclareWinner = () => {
+    if (!activeGame || !activeGame.players[currentPlayerIndex]) return;
+    const winner = activeGame.players[currentPlayerIndex];
+    setTimerActive(false);
+    setDeclaredWinner(winner);
+  };
+
+  const handleCancelWinner = () => {
+    setDeclaredWinner(null);
+    setTimerActive(true);
+  };
+
   const handleSaveRound = () => {
     if (!activeGame.players.every(p => roundScores[p.name] !== undefined && roundScores[p.name] !== '')) {
       alert(t('enterAllScoresAlert'));
@@ -301,6 +314,7 @@ const RummikubTracker = () => {
     
     setTimerActive(false);
     setTimerSeconds(timerDuration);
+    setDeclaredWinner(null);
     saveRound();
   };
 
@@ -429,6 +443,7 @@ const RummikubTracker = () => {
             roundScores={roundScores}
             playerExtensions={playerExtensions}
             draggedGamePlayerIndex={draggedGamePlayerIndex}
+            declaredWinner={declaredWinner}
             onClose={() => {
               setTimerActive(false);
               setView(VIEWS.HOME);
@@ -445,6 +460,8 @@ const RummikubTracker = () => {
             onUpdateRoundScore={updateRoundScore}
             onSaveRound={handleSaveRound}
             onEndGame={handleEndGame}
+            onDeclareWinner={handleDeclareWinner}
+            onCancelWinner={handleCancelWinner}
             onMovePlayerUp={handleMoveGamePlayerUp}
             onMovePlayerDown={handleMoveGamePlayerDown}
             onDragStart={(index) => setDraggedGamePlayerIndex(index)}

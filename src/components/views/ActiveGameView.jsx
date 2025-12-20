@@ -1,4 +1,4 @@
-import { X, Play, Pause, RotateCcw, Check, Plus, SkipForward } from 'lucide-react';
+import { X, Play, Pause, RotateCcw, Check, Plus, SkipForward, Trophy } from 'lucide-react';
 import { AnalogClock, PlayerAvatar } from '../index';
 
 export const ActiveGameView = ({ 
@@ -11,6 +11,7 @@ export const ActiveGameView = ({
   roundScores,
   playerExtensions,
   draggedGamePlayerIndex,
+  declaredWinner,
   onClose,
   onNextPlayer,
   onPause,
@@ -21,6 +22,8 @@ export const ActiveGameView = ({
   onUpdateRoundScore,
   onSaveRound,
   onEndGame,
+  onDeclareWinner,
+  onCancelWinner,
   onMovePlayerUp,
   onMovePlayerDown,
   onDragStart,
@@ -33,6 +36,14 @@ export const ActiveGameView = ({
   const canExtend = playerExtensionsUsed < (activeGame.maxExtensions || 3) && (activeGame.maxExtensions || 3) > 0;
   const allScoresEntered = activeGame.players.every(p => roundScores[p.name] !== undefined && roundScores[p.name] !== '');
 
+  const handleCloseClick = () => {
+    if (declaredWinner) {
+      onCancelWinner();
+    } else {
+      onClose();
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6">
@@ -42,38 +53,63 @@ export const ActiveGameView = ({
             <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">{t('round')} {currentRound}</p>
           </div>
           <button 
-            onClick={onClose}
+            onClick={handleCloseClick}
             className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 flex-shrink-0"
           >
             <X size={24} />
           </button>
         </div>
 
-        {currentPlayer && (
-          <div className="bg-gradient-to-r from-indigo-500 to-purple-600 dark:from-indigo-600 dark:to-purple-700 rounded-lg p-3 sm:p-4 mb-4 text-white">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-              <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
-                <PlayerAvatar player={currentPlayer} size="lg" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs sm:text-sm opacity-90 mb-1">{t('currentTurn')}</p>
-                  <p className="text-lg sm:text-2xl font-bold truncate">{currentPlayer.name}</p>
+        {declaredWinner && (
+          <div className="bg-gradient-to-r from-yellow-400 to-amber-500 rounded-lg p-4 sm:p-6 mb-4 text-white animate-pulse">
+            <div className="flex flex-col items-center gap-3">
+              <Trophy size={48} className="text-white drop-shadow-lg" />
+              <div className="text-center">
+                <p className="text-xl sm:text-3xl font-bold mb-2">{t('roundWinner')}</p>
+                <div className="flex items-center justify-center gap-3">
+                  <PlayerAvatar player={declaredWinner} size="lg" />
+                  <p className="text-2xl sm:text-4xl font-bold">{declaredWinner.name}</p>
                 </div>
               </div>
-              <button 
-                onClick={onNextPlayer}
-                className="w-full sm:w-auto bg-white dark:bg-gray-100 text-indigo-600 dark:text-indigo-700 px-3 sm:px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition hover:bg-indigo-50 dark:hover:bg-gray-200 font-semibold shadow text-sm sm:text-base whitespace-nowrap"
-              >
-                <SkipForward size={20} />
-                {t('nextPlayer')}
-              </button>
             </div>
           </div>
         )}
 
-        <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 rounded-lg p-4 sm:p-6 shadow-inner">
-          <div className="flex flex-col items-center">
-            <AnalogClock seconds={timerSeconds} duration={timerDuration} isActive={timerActive} t={t} />
-            <div className="flex gap-2 mt-4 flex-wrap justify-center">
+        {!declaredWinner && currentPlayer && (
+          <div className="bg-gradient-to-r from-indigo-500 to-purple-600 dark:from-indigo-600 dark:to-purple-700 rounded-lg p-2 sm:p-4 mb-4 text-white">
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2 sm:gap-4">
+                <PlayerAvatar player={currentPlayer} size="lg" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs opacity-90 mb-0.5">{t('currentTurn')}</p>
+                  <p className="text-base sm:text-2xl font-bold truncate">{currentPlayer.name}</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <button 
+                  onClick={onDeclareWinner}
+                  className="bg-yellow-400 text-yellow-900 px-2 py-1.5 sm:px-4 sm:py-2 rounded-lg flex items-center justify-center gap-1 sm:gap-2 transition hover:bg-yellow-300 font-semibold shadow text-xs sm:text-base"
+                >
+                  <Trophy size={16} className="sm:w-5 sm:h-5" />
+                  <span className="truncate">{t('declareWinner')}</span>
+                </button>
+                <button 
+                  onClick={onNextPlayer}
+                  className="bg-white dark:bg-gray-100 text-indigo-600 dark:text-indigo-700 px-2 py-1.5 sm:px-4 sm:py-2 rounded-lg flex items-center justify-center gap-1 sm:gap-2 transition hover:bg-indigo-50 dark:hover:bg-gray-200 font-semibold shadow text-xs sm:text-base"
+                >
+                  <SkipForward size={16} className="sm:w-5 sm:h-5" />
+                  <span className="truncate">{t('nextPlayer')}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {!declaredWinner && (
+          <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 rounded-lg p-4 sm:p-6 shadow-inner">
+            <div className="flex flex-col items-center">
+              <AnalogClock seconds={timerSeconds} duration={timerDuration} isActive={timerActive} t={t} onClick={onNextPlayer} />
+              <div className="flex gap-2 mt-4 flex-wrap justify-center">
               {timerActive ? (
                 <button 
                   onClick={onPause}
@@ -130,8 +166,10 @@ export const ActiveGameView = ({
             </div>
           </div>
         </div>
+        )}
 
-        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2">
+        {!declaredWinner && (
+          <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2">
           {activeGame.players.map((player, idx) => (
             <div 
               key={idx}
@@ -139,29 +177,30 @@ export const ActiveGameView = ({
               onDragStart={() => onDragStart?.(idx)}
               onDragOver={onDragOver}
               onDrop={(e) => onDrop?.(e, idx)}
-              className={`p-2 sm:p-3 rounded-lg border-2 transition relative ${
+              className={`p-2 rounded-lg border-2 transition ${
                 idx === currentPlayerIndex ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 dark:border-indigo-400' : 'border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700'
               } ${draggedGamePlayerIndex === idx ? 'opacity-50' : ''}`}
             >
-              <div className="absolute top-1 right-1 flex gap-1">
-                <button 
-                  onClick={() => onMovePlayerUp?.(idx)} 
-                  disabled={idx === 0}
-                  className={`w-5 h-5 sm:w-6 sm:h-6 rounded text-xs ${idx === 0 ? 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed' : 'bg-indigo-500 dark:bg-indigo-600 text-white hover:bg-indigo-600 dark:hover:bg-indigo-700'}`}
-                  title={t('moveUp')}
-                >
-                  ▲
-                </button>
-                <button 
-                  onClick={() => onMovePlayerDown?.(idx)} 
-                  disabled={idx === activeGame.players.length - 1}
-                  className={`w-5 h-5 sm:w-6 sm:h-6 rounded text-xs ${idx === activeGame.players.length - 1 ? 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed' : 'bg-indigo-500 dark:bg-indigo-600 text-white hover:bg-indigo-600 dark:hover:bg-indigo-700'}`}
-                  title={t('moveDown')}
-                >
-                  ▼
-                </button>
-              </div>
-              <div className="flex items-center gap-2 pr-12 sm:pr-14">
+              <div className="flex items-center gap-2">
+                <div className="flex flex-col gap-0.5">
+                  <button 
+                    onClick={() => onMovePlayerUp?.(idx)} 
+                    disabled={idx === 0}
+                    className={`w-5 h-4 sm:w-6 sm:h-5 rounded text-xs leading-none ${idx === 0 ? 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed' : 'bg-indigo-500 dark:bg-indigo-600 text-white hover:bg-indigo-600 dark:hover:bg-indigo-700'}`}
+                    title={t('moveUp')}
+                  >
+                    ▲
+                  </button>
+                  <button 
+                    onClick={() => onMovePlayerDown?.(idx)} 
+                    disabled={idx === activeGame.players.length - 1}
+                    className={`w-5 h-4 sm:w-6 sm:h-5 rounded text-xs leading-none ${idx === activeGame.players.length - 1 ? 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed' : 'bg-indigo-500 dark:bg-indigo-600 text-white hover:bg-indigo-600 dark:hover:bg-indigo-700'}`}
+                    title={t('moveDown')}
+                  >
+                    ▼
+                  </button>
+                </div>
+                <div className="flex items-center gap-2 flex-1 min-w-0">
                 <PlayerAvatar player={player} size="md" />
                 <div className="flex-1 min-w-0">
                   <p className={`text-xs sm:text-sm font-semibold truncate ${idx === currentPlayerIndex ? 'text-indigo-900 dark:text-indigo-200' : 'text-gray-700 dark:text-gray-300'}`}>
@@ -178,8 +217,10 @@ export const ActiveGameView = ({
                 </div>
               </div>
             </div>
+          </div>
           ))}
         </div>
+        )}
       </div>
 
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6">

@@ -86,7 +86,9 @@ const deTranslations = {
   clearAllDataDescription: 'Alle gespeicherten Spiele, Spieler und Einstellungen löschen',
   clearAllDataConfirm: 'Bist du sicher, dass du alle Daten löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden!',
   clearAllDataButton: 'Alle Daten löschen',
-  paused: 'PAUSIERT'
+  paused: 'PAUSIERT',
+  declareWinner: 'Gewinner erklären',
+  roundWinner: 'Rundengewinner!'
 };
 
 export default deTranslations;

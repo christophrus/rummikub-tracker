@@ -86,7 +86,9 @@ const frTranslations = {
   clearAllDataDescription: 'Supprimer tous les jeux, joueurs et paramètres sauvegardés',
   clearAllDataConfirm: 'Êtes-vous sûr de vouloir supprimer toutes les données? Cette action est irréversible!',
   clearAllDataButton: 'Effacer toutes les données',
-  paused: 'EN PAUSE'
+  paused: 'EN PAUSE',
+  declareWinner: 'Déclarer vainqueur',
+  roundWinner: 'Gagnant du tour !'
 };
 
 export default frTranslations;
