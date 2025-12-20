@@ -178,7 +178,8 @@ const RummikubTracker = () => {
     playTurnNotification();
     speakPlayerName(nextPlayerName, activeGame.ttsLanguage || ttsLanguage);
     setCurrentPlayerIndex(nextIndex);
-    setTimerSeconds(timerDuration);
+    setTimerSeconds(originalTimerDuration);
+    setTimerDuration(originalTimerDuration);
     const updatedGame = { ...activeGame, currentPlayerIndex: nextIndex };
     setActiveGame(updatedGame);
     localStorage.setItem(STORAGE_KEYS.ACTIVE_GAME, JSON.stringify(updatedGame));
