@@ -82,7 +82,10 @@ const RummikubTracker = () => {
   // New Game form state
   const [players, setPlayers] = useState([{ name: '', image: null }]);
   const [gameName, setGameName] = useState('');
-  const [timerDuration, setTimerDuration] = useState(60);
+  const [timerDuration, setTimerDuration] = useState(() => {
+    const saved = localStorage.getItem('preferred-timer-duration');
+    return saved ? Number(saved) : 60;
+  });
   const [originalTimerDuration, setOriginalTimerDuration] = useState(60);
   const [maxExtensions, setMaxExtensions] = useState(3);
   const [ttsLanguage, setTtsLanguage] = useState(() => {
@@ -274,9 +277,6 @@ const RummikubTracker = () => {
     setView(VIEWS.NEW_GAME);
     setPlayers([{ name: '', image: null }]);
     setGameName('');
-    setTimerDuration(60);
-    setOriginalTimerDuration(60);
-    setTimerSeconds(60);
   };
 
   const handleStartGame = () => {
@@ -425,7 +425,10 @@ const RummikubTracker = () => {
             savedPlayers={savedPlayers}
             onClose={() => setView(VIEWS.HOME)}
             onGameNameChange={setGameName}
-            onTimerDurationChange={setTimerDuration}
+            onTimerDurationChange={(duration) => {
+              setTimerDuration(duration);
+              localStorage.setItem('preferred-timer-duration', duration);
+            }}
             onMaxExtensionsChange={setMaxExtensions}
             onAddPlayer={handleAddPlayer}
             onRemovePlayer={handleRemovePlayer}
