@@ -247,10 +247,9 @@ export const ActiveGameView = ({
                   value={roundScores[player.name] || ''} 
                   onChange={(e) => onUpdateRoundScore(player, e.target.value)}
                   placeholder="0" 
-                  readOnly={isWinner}
                   className={`w-16 sm:w-24 px-2 sm:px-4 py-2 border rounded-lg text-center text-sm sm:text-base ${
                     isWinner 
-                      ? 'border-green-500 bg-green-50 dark:bg-green-900/30 dark:border-green-400 text-green-700 dark:text-green-300 font-bold cursor-not-allowed' 
+                      ? 'border-green-500 bg-green-50 dark:bg-green-900/30 dark:border-green-400 text-green-700 dark:text-green-300 font-bold' 
                       : 'border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400'
                   }`} 
                 />
