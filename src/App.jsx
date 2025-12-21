@@ -12,7 +12,11 @@ import {
   useTimer, 
   useAudio, 
   useLocalization,
-  ThemeProvider
+  ThemeProvider,
+  useGameFlow,
+  useTimerControl,
+  usePlayerManagement,
+  useGamePlayerManagement
 } from './hooks';
 
 // Import constants
@@ -20,14 +24,7 @@ import { VIEWS, STORAGE_KEYS, MAX_PLAYERS, MIN_PLAYERS, EXTENSION_DURATION_SECON
 
 // Import utilities
 import { 
-  handleImageUpload, 
-  validateMinPlayers,
-  movePlayerUp,
-  movePlayerDown,
-  reorderPlayers,
-  updatePlayer,
-  addPlayer,
-  removePlayer
+  validateMinPlayers
 } from './utils';
 
 // Import components
@@ -80,7 +77,6 @@ const RummikubTracker = () => {
   const { uiLanguage, changeUiLanguage } = useLocalization();
 
   // New Game form state
-  const [players, setPlayers] = useState([{ name: '', image: null }]);
   const [gameName, setGameName] = useState('');
   const [timerDuration, setTimerDuration] = useState(() => {
     const saved = localStorage.getItem('preferred-timer-duration');
@@ -92,11 +88,6 @@ const RummikubTracker = () => {
     const saved = localStorage.getItem('tts-language');
     return saved || 'de-DE';
   });
-  const [draggedPlayerIndex, setDraggedPlayerIndex] = useState(null);
-  const [draggedGamePlayerIndex, setDraggedGamePlayerIndex] = useState(null);
-  const [declaredWinner, setDeclaredWinner] = useState(null);
-  const [pendingGame, setPendingGame] = useState(null);
-  const [startingPlayerIndex, setStartingPlayerIndex] = useState(0);
 
   // Audio
   const { playTickTock, playTurnNotification, speakPlayerName } = useAudio();
@@ -114,6 +105,97 @@ const RummikubTracker = () => {
   } = useTimer(timerDuration, handleTimeUp, false);
 
   const [timerActive, setTimerActive] = useState(false);
+
+  // Player management hooks
+  const playerManagement = usePlayerManagement(MAX_PLAYERS);
+  const {
+    players,
+    setPlayers,
+    draggedPlayerIndex,
+    addPlayer,
+    removePlayer,
+    updatePlayer,
+    movePlayerUp,
+    movePlayerDown,
+    handleImageUploadWrapper,
+    handleDragStart,
+    handleDragOver,
+    handleDrop,
+    resetPlayers
+  } = playerManagement;
+
+  const gamePlayerManagement = useGamePlayerManagement({
+    activeGame,
+    setActiveGame,
+    currentPlayerIndex,
+    setCurrentPlayerIndex
+  });
+  const {
+    draggedGamePlayerIndex,
+    moveGamePlayerUp,
+    moveGamePlayerDown,
+    handleGameDragStart,
+    handleGameDragOver,
+    handleGameDrop
+  } = gamePlayerManagement;
+
+  // Timer control hook
+  const timerControl = useTimerControl({
+    activeGame,
+    setActiveGame,
+    currentPlayerIndex,
+    setCurrentPlayerIndex,
+    timerSeconds,
+    setTimerSeconds,
+    timerDuration,
+    setTimerDuration,
+    originalTimerDuration,
+    setOriginalTimerDuration,
+    playerExtensions,
+    setPlayerExtensions,
+    setTimerActive,
+    playTurnNotification,
+    speakPlayerName,
+    ttsLanguage
+  });
+  const {
+    nextPlayer,
+    extendTimer,
+    updateTimerDuration,
+    resetTimer,
+    pauseTimer,
+    resumeTimer
+  } = timerControl;
+
+  // Game flow hook
+  const gameFlow = useGameFlow({
+    activeGame,
+    setActiveGame,
+    currentPlayerIndex,
+    setCurrentPlayerIndex,
+    playerExtensions,
+    setPlayerExtensions,
+    roundScores,
+    updateRoundScore,
+    saveRound,
+    startNewGame,
+    playTurnNotification,
+    speakPlayerName,
+    setTimerActive,
+    setTimerSeconds,
+    timerDuration
+  });
+  const {
+    declaredWinner,
+    pendingGame,
+    startingPlayerIndex,
+    handleStartGame: handleStartGameFlow,
+    handlePlayerSelected: handlePlayerSelectedFlow,
+    handleDeclareWinner,
+    handleCancelWinner,
+    handleSaveRound: handleSaveRoundFlow,
+    cancelPendingGame
+  } = gameFlow;
 
 
   // Timer interval effect
@@ -171,105 +253,6 @@ const RummikubTracker = () => {
     return text;
   };
 
-  // Game functions
-  const nextPlayer = () => {
-    if (!activeGame) return;
-    setTimerActive(false);
-    const nextIndex = (currentPlayerIndex + 1) % activeGame.players.length;
-    const nextPlayerName = activeGame.players[nextIndex].name;
-    playTurnNotification();
-    speakPlayerName(nextPlayerName, activeGame.ttsLanguage || ttsLanguage);
-    setCurrentPlayerIndex(nextIndex);
-    setTimerSeconds(originalTimerDuration);
-    setTimerDuration(originalTimerDuration);
-    const updatedGame = { ...activeGame, currentPlayerIndex: nextIndex };
-    setActiveGame(updatedGame);
-    localStorage.setItem(STORAGE_KEYS.ACTIVE_GAME, JSON.stringify(updatedGame));
-    setTimeout(() => setTimerActive(true), 500);
-  };
-
-  const extendTimer = () => {
-    if (!activeGame || !activeGame.players[currentPlayerIndex]) return;
-    const currentPlayer = activeGame.players[currentPlayerIndex];
-    const extensionsUsed = playerExtensions[currentPlayer.name] || 0;
-    const maxAllowed = activeGame.maxExtensions || 3;
-    if (extensionsUsed >= maxAllowed) return;
-    
-    const newTime = timerSeconds + EXTENSION_DURATION_SECONDS;
-    setTimerSeconds(newTime);
-    setTimerDuration(newTime);
-    const updatedExtensions = { ...playerExtensions, [currentPlayer.name]: extensionsUsed + 1 };
-    setPlayerExtensions(updatedExtensions);
-    const updatedGame = { ...activeGame, playerExtensions: updatedExtensions };
-    setActiveGame(updatedGame);
-    localStorage.setItem(STORAGE_KEYS.ACTIVE_GAME, JSON.stringify(updatedGame));
-  };
-
-  const updateTimerDuration = (newDuration) => {
-    setTimerDuration(newDuration);
-    setOriginalTimerDuration(newDuration);
-    setTimerSeconds(newDuration);
-    if (activeGame) {
-      const updatedGame = { ...activeGame, timerDuration: newDuration, originalTimerDuration: newDuration };
-      setActiveGame(updatedGame);
-      localStorage.setItem(STORAGE_KEYS.ACTIVE_GAME, JSON.stringify(updatedGame));
-    }
-  };
-
-  // Player management functions
-  const handleAddPlayer = () => {
-    setPlayers(addPlayer(players, MAX_PLAYERS));
-  };
-
-  const handleRemovePlayer = (index) => {
-    setPlayers(removePlayer(players, index));
-  };
-
-  const handleUpdatePlayer = (index, field, value) => {
-    setPlayers(updatePlayer(players, index, field, value));
-  };
-
-  const handleMovePlayerUp = (index) => {
-    setPlayers(movePlayerUp(players, index));
-  };
-
-  const handleMovePlayerDown = (index) => {
-    setPlayers(movePlayerDown(players, index));
-  };
-
-  const handleImageUploadWrapper = (index, file) => {
-    handleImageUpload(file, (resizedImage) => {
-      handleUpdatePlayer(index, 'image', resizedImage);
-    });
-  };
-
-  const handleGamePlayerReorder = (dragIndex, dropIndex) => {
-    if (!activeGame) return;
-    const currentPlayerName = activeGame.players[currentPlayerIndex].name;
-    const newPlayers = reorderPlayers(activeGame.players, dragIndex, dropIndex);
-    const newCurrentPlayerIndex = newPlayers.findIndex(p => p.name === currentPlayerName);
-    
-    const updatedGame = {
-      ...activeGame,
-      players: newPlayers,
-      currentPlayerIndex: newCurrentPlayerIndex
-    };
-    
-    setActiveGame(updatedGame);
-    setCurrentPlayerIndex(newCurrentPlayerIndex);
-    localStorage.setItem(STORAGE_KEYS.ACTIVE_GAME, JSON.stringify(updatedGame));
-  };
-
-  const handleMoveGamePlayerUp = (index) => {
-    if (index === 0) return;
-    handleGamePlayerReorder(index, index - 1);
-  };
-
-  const handleMoveGamePlayerDown = (index) => {
-    if (!activeGame || index === activeGame.players.length - 1) return;
-    handleGamePlayerReorder(index, index + 1);
-  };
-
   // New game flow
   const handleStartNewGame = () => {
     if (activeGame) {
@@ -278,88 +261,47 @@ const RummikubTracker = () => {
       }
     }
     setView(VIEWS.NEW_GAME);
-    setPlayers([{ name: '', image: null }]);
+    resetPlayers();
     setGameName('');
   };
 
   const handleStartGame = () => {
-    const validPlayers = validateMinPlayers(players, MIN_PLAYERS);
+    const result = handleStartGameFlow(players, gameName, timerDuration, maxExtensions, ttsLanguage, MIN_PLAYERS);
     
-    if (!validPlayers) {
-      alert(t('minPlayersAlert'));
+    if (result.error) {
+      alert(t(result.error));
       return;
     }
 
-    // Store pending game data and show player selection
-    setPendingGame({ validPlayers, gameName, timerDuration, maxExtensions, ttsLanguage });
-    setView(VIEWS.PLAYER_SELECTION);
+    if (result.showPlayerSelection) {
+      setView(VIEWS.PLAYER_SELECTION);
+    }
   };
 
   const handlePlayerSelected = (selectedIndex) => {
-    if (!pendingGame) return;
+    const result = handlePlayerSelectedFlow(selectedIndex);
     
-    const { validPlayers, gameName, timerDuration, maxExtensions, ttsLanguage } = pendingGame;
-    
-    try {
-      const game = startNewGame(validPlayers, gameName, timerDuration, maxExtensions, ttsLanguage);
-      setCurrentPlayerIndex(selectedIndex);
-      setStartingPlayerIndex(selectedIndex);
-      setPlayerExtensions(game.playerExtensions);
-      setTimerActive(false);
-      setTimerSeconds(game.timerDuration);
-      setOriginalTimerDuration(game.originalTimerDuration);
-      setView(VIEWS.ACTIVE_GAME);
-      setPendingGame(null);
-      
-      setTimeout(() => {
-        playTurnNotification();
-        speakPlayerName(validPlayers[selectedIndex].name, ttsLanguage);
-        setTimerActive(true);
-      }, 500);
-    } catch (error) {
-      console.error('Error starting game:', error);
-      if (error.name === 'QuotaExceededError' || error.message.includes('quota')) {
+    if (result.error) {
+      if (result.error === 'quotaExceeded') {
         alert('Storage quota exceeded! This usually happens when player images are too large. Try:\n\n1. Using smaller images\n2. Removing some player photos\n3. Clearing old game history\n4. Using browser settings to increase storage limit');
       } else {
         alert('Error starting game. Please try again.');
       }
+      return;
     }
-  };
 
-  const handleDeclareWinner = () => {
-    if (!activeGame || !activeGame.players[currentPlayerIndex]) return;
-    const winner = activeGame.players[currentPlayerIndex];
-    setTimerActive(false);
-    setDeclaredWinner(winner);
-    updateRoundScore(winner, '0');
-  };
-
-  const handleCancelWinner = () => {
-    setDeclaredWinner(null);
-    setTimerActive(true);
+    if (result.success) {
+      setOriginalTimerDuration(result.originalTimerDuration);
+      setView(VIEWS.ACTIVE_GAME);
+    }
   };
 
   const handleSaveRound = () => {
-    if (!activeGame.players.every(p => roundScores[p.name] !== undefined && roundScores[p.name] !== '')) {
-      alert(t('enterAllScoresAlert'));
-      return;
+    const result = handleSaveRoundFlow(t, ttsLanguage);
+    
+    if (result.error) {
+      alert(t(result.error));
     }
-    
-    // Update starting player to next in order
-    const nextStartingPlayerIndex = (startingPlayerIndex + 1) % activeGame.players.length;
-    setStartingPlayerIndex(nextStartingPlayerIndex);
-    setCurrentPlayerIndex(nextStartingPlayerIndex);
-    
-    setTimerActive(false);
-    setTimerSeconds(timerDuration);
-    setDeclaredWinner(null);
-    saveRound();
-    
-    // Announce the new starting player (timer remains paused)
-    setTimeout(() => {
-      playTurnNotification();
-      speakPlayerName(activeGame.players[nextStartingPlayerIndex].name, activeGame.ttsLanguage || ttsLanguage);
-    }, 500);
   };
 
   const handleUpdatePastScore = (roundIndex, playerName, newScore) => {
@@ -480,22 +422,15 @@ const RummikubTracker = () => {
               localStorage.setItem('preferred-timer-duration', duration);
             }}
             onMaxExtensionsChange={setMaxExtensions}
-            onAddPlayer={handleAddPlayer}
-            onRemovePlayer={handleRemovePlayer}
-            onUpdatePlayer={handleUpdatePlayer}
+            onAddPlayer={addPlayer}
+            onRemovePlayer={removePlayer}
+            onUpdatePlayer={updatePlayer}
             onImageUpload={handleImageUploadWrapper}
-            onMovePlayerUp={handleMovePlayerUp}
-            onMovePlayerDown={handleMovePlayerDown}
-            onDragStart={(index) => setDraggedPlayerIndex(index)}
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e, index) => {
-              e.preventDefault();
-              if (draggedPlayerIndex !== null && draggedPlayerIndex !== index) {
-                const newPlayers = reorderPlayers(players, draggedPlayerIndex, index);
-                setPlayers(newPlayers);
-              }
-              setDraggedPlayerIndex(null);
-            }}
+            onMovePlayerUp={movePlayerUp}
+            onMovePlayerDown={movePlayerDown}
+            onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
             onAddSavedPlayer={handleAddSavedPlayer}
             onStartGame={handleStartGame}
             draggedPlayerIndex={draggedPlayerIndex}
@@ -531,7 +466,7 @@ const RummikubTracker = () => {
             </div>
             <button
               onClick={() => {
-                setPendingGame(null);
+                cancelPendingGame();
                 setView(VIEWS.NEW_GAME);
               }}
               className="w-full mt-4 px-4 py-2 sm:py-3 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 transition font-semibold text-sm sm:text-base"
@@ -558,13 +493,9 @@ const RummikubTracker = () => {
               setView(VIEWS.HOME);
             }}
             onNextPlayer={nextPlayer}
-            onPause={() => setTimerActive(false)}
-            onResume={() => setTimerActive(true)}
-            onResetTimer={() => {
-              setTimerSeconds(originalTimerDuration);
-              setTimerDuration(originalTimerDuration);
-              setTimerActive(true);
-            }}
+            onPause={pauseTimer}
+            onResume={resumeTimer}
+            onResetTimer={resetTimer}
             onExtendTimer={extendTimer}
             onUpdateTimerDuration={updateTimerDuration}
             onUpdateRoundScore={updateRoundScore}
@@ -573,17 +504,11 @@ const RummikubTracker = () => {
             onEndGame={handleEndGame}
             onDeclareWinner={handleDeclareWinner}
             onCancelWinner={handleCancelWinner}
-            onMovePlayerUp={handleMoveGamePlayerUp}
-            onMovePlayerDown={handleMoveGamePlayerDown}
-            onDragStart={(index) => setDraggedGamePlayerIndex(index)}
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e, index) => {
-              e.preventDefault();
-              if (draggedGamePlayerIndex !== null && draggedGamePlayerIndex !== index) {
-                handleGamePlayerReorder(draggedGamePlayerIndex, index);
-              }
-              setDraggedGamePlayerIndex(null);
-            }}
+            onMovePlayerUp={moveGamePlayerUp}
+            onMovePlayerDown={moveGamePlayerDown}
+            onDragStart={handleGameDragStart}
+            onDragOver={handleGameDragOver}
+            onDrop={handleGameDrop}
             t={t}
           />
         )}
