@@ -340,12 +340,15 @@ const RummikubTracker = () => {
   const handleUpdatePastScore = (roundIndex, playerName, newScore) => {
     if (!activeGame) return;
     
+    // Parse and convert to remove leading zeros
+    const parsedScore = newScore === '' ? '0' : String(parseInt(newScore) || 0);
+    
     const updatedRounds = [...activeGame.rounds];
     updatedRounds[roundIndex] = {
       ...updatedRounds[roundIndex],
       scores: {
         ...updatedRounds[roundIndex].scores,
-        [playerName]: newScore
+        [playerName]: parsedScore
       }
     };
     
