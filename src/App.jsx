@@ -95,6 +95,8 @@ const RummikubTracker = () => {
   const [draggedPlayerIndex, setDraggedPlayerIndex] = useState(null);
   const [draggedGamePlayerIndex, setDraggedGamePlayerIndex] = useState(null);
   const [declaredWinner, setDeclaredWinner] = useState(null);
+  const [pendingGame, setPendingGame] = useState(null);
+  const [startingPlayerIndex, setStartingPlayerIndex] = useState(0);
 
   // Audio
   const { playTickTock, playTurnNotification, speakPlayerName } = useAudio();
@@ -288,18 +290,30 @@ const RummikubTracker = () => {
       return;
     }
 
+    // Store pending game data and show player selection
+    setPendingGame({ validPlayers, gameName, timerDuration, maxExtensions, ttsLanguage });
+    setView(VIEWS.PLAYER_SELECTION);
+  };
+
+  const handlePlayerSelected = (selectedIndex) => {
+    if (!pendingGame) return;
+    
+    const { validPlayers, gameName, timerDuration, maxExtensions, ttsLanguage } = pendingGame;
+    
     try {
       const game = startNewGame(validPlayers, gameName, timerDuration, maxExtensions, ttsLanguage);
-      setCurrentPlayerIndex(0);
+      setCurrentPlayerIndex(selectedIndex);
+      setStartingPlayerIndex(selectedIndex);
       setPlayerExtensions(game.playerExtensions);
       setTimerActive(false);
       setTimerSeconds(game.timerDuration);
       setOriginalTimerDuration(game.originalTimerDuration);
       setView(VIEWS.ACTIVE_GAME);
+      setPendingGame(null);
       
       setTimeout(() => {
         playTurnNotification();
-        speakPlayerName(validPlayers[0].name, ttsLanguage);
+        speakPlayerName(validPlayers[selectedIndex].name, ttsLanguage);
         setTimerActive(true);
       }, 500);
     } catch (error) {
@@ -331,10 +345,21 @@ const RummikubTracker = () => {
       return;
     }
     
+    // Update starting player to next in order
+    const nextStartingPlayerIndex = (startingPlayerIndex + 1) % activeGame.players.length;
+    setStartingPlayerIndex(nextStartingPlayerIndex);
+    setCurrentPlayerIndex(nextStartingPlayerIndex);
+    
     setTimerActive(false);
     setTimerSeconds(timerDuration);
     setDeclaredWinner(null);
     saveRound();
+    
+    // Announce the new starting player (timer remains paused)
+    setTimeout(() => {
+      playTurnNotification();
+      speakPlayerName(activeGame.players[nextStartingPlayerIndex].name, activeGame.ttsLanguage || ttsLanguage);
+    }, 500);
   };
 
   const handleUpdatePastScore = (roundIndex, playerName, newScore) => {
@@ -476,6 +501,44 @@ const RummikubTracker = () => {
             draggedPlayerIndex={draggedPlayerIndex}
             t={t}
           />
+        )}
+
+        {view === VIEWS.PLAYER_SELECTION && pendingGame && (
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6">
+            <div className="text-center mb-6">
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2">{t('selectStartingPlayer')}</h2>
+              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">{t('selectStartingPlayerSubtitle')}</p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              {pendingGame.validPlayers.map((player, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => handlePlayerSelected(idx)}
+                  className="p-4 sm:p-6 rounded-lg border-2 border-gray-200 dark:border-gray-600 hover:border-indigo-500 dark:hover:border-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition flex items-center gap-3 sm:gap-4"
+                >
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 dark:from-indigo-600 dark:to-purple-700 flex items-center justify-center overflow-hidden border-2 border-white dark:border-gray-700 shadow-lg flex-shrink-0">
+                    {player.image ? (
+                      <img src={player.image} alt={player.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-xl sm:text-3xl font-bold text-white">
+                        {player.name.charAt(0).toUpperCase()}
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-gray-200 truncate flex-1 text-left">{player.name}</span>
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={() => {
+                setPendingGame(null);
+                setView(VIEWS.NEW_GAME);
+              }}
+              className="w-full mt-4 px-4 py-2 sm:py-3 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 transition font-semibold text-sm sm:text-base"
+            >
+              {t('back')}
+            </button>
+          </div>
         )}
 
         {view === VIEWS.ACTIVE_GAME && activeGame && (

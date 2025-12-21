@@ -1,8 +1,9 @@
 // locales/de.js - German translations
 const deTranslations = {
   appTitle: 'Rummikub Tracker',
-  appSubtitle: 'Verfolgen Sie Ihre Spielergebnisse mit Leichtigkeit',
-  gameInProgress: 'Spiel läuft',
+  appSubtitle: 'Verfolgen Sie Ihre Spielergebnisse mit Leichtigkeit',  selectStartingPlayer: 'Wer beginnt?',
+  selectStartingPlayerSubtitle: 'Wähle den Spieler, der den ersten Zug macht',
+  selectPlayer: 'Spieler auswählen',  gameInProgress: 'Spiel läuft',
   round: 'Runde',
   players: 'Spieler',
   resumeGame: 'Spiel fortsetzen',

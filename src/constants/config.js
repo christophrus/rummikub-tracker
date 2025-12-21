@@ -60,6 +60,7 @@ export const STORAGE_KEYS = {
 export const VIEWS = {
   HOME: 'home',
   NEW_GAME: 'newGame',
+  PLAYER_SELECTION: 'playerSelection',
   ACTIVE_GAME: 'activeGame',
   MANAGE_PLAYERS: 'managePlayers',
   GAME_HISTORY: 'gameHistory',

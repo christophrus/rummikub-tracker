@@ -2,6 +2,9 @@
 const frTranslations = {
   appTitle: 'Rummikub Tracker',
   appSubtitle: 'Suivez vos scores de jeu avec facilité',
+  selectStartingPlayer: 'Qui commence ?',
+  selectStartingPlayerSubtitle: 'Sélectionnez le joueur qui jouera en premier',
+  selectPlayer: 'Sélectionner un joueur',
   gameInProgress: 'Partie en cours',
   round: 'Manche',
   players: 'Joueurs',
