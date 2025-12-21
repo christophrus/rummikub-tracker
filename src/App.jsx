@@ -337,6 +337,27 @@ const RummikubTracker = () => {
     saveRound();
   };
 
+  const handleUpdatePastScore = (roundIndex, playerName, newScore) => {
+    if (!activeGame) return;
+    
+    const updatedRounds = [...activeGame.rounds];
+    updatedRounds[roundIndex] = {
+      ...updatedRounds[roundIndex],
+      scores: {
+        ...updatedRounds[roundIndex].scores,
+        [playerName]: newScore
+      }
+    };
+    
+    const updatedGame = {
+      ...activeGame,
+      rounds: updatedRounds
+    };
+    
+    setActiveGame(updatedGame);
+    localStorage.setItem(STORAGE_KEYS.ACTIVE_GAME, JSON.stringify(updatedGame));
+  };
+
   const handleEndGame = () => {
     setTimerActive(false);
     setTimerSeconds(timerDuration);
@@ -481,6 +502,7 @@ const RummikubTracker = () => {
             onExtendTimer={extendTimer}
             onUpdateTimerDuration={updateTimerDuration}
             onUpdateRoundScore={updateRoundScore}
+            onUpdatePastScore={handleUpdatePastScore}
             onSaveRound={handleSaveRound}
             onEndGame={handleEndGame}
             onDeclareWinner={handleDeclareWinner}

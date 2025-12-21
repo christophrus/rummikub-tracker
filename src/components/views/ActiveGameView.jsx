@@ -1,3 +1,4 @@
+import React from 'react';
 import { X, Play, Pause, RotateCcw, Check, Plus, SkipForward, Trophy } from 'lucide-react';
 import { AnalogClock, PlayerAvatar } from '../index';
 
@@ -20,6 +21,7 @@ export const ActiveGameView = ({
   onExtendTimer,
   onUpdateTimerDuration,
   onUpdateRoundScore,
+  onUpdatePastScore,
   onSaveRound,
   onEndGame,
   onDeclareWinner,
@@ -31,6 +33,7 @@ export const ActiveGameView = ({
   onDrop,
   t
 }) => {
+  const [editingCell, setEditingCell] = React.useState(null);
   const currentPlayer = activeGame.players[currentPlayerIndex];
   const playerExtensionsUsed = playerExtensions[currentPlayer?.name] || 0;
   const canExtend = playerExtensionsUsed < (activeGame.maxExtensions || 3) && (activeGame.maxExtensions || 3) > 0;
@@ -295,9 +298,34 @@ export const ActiveGameView = ({
                   {activeGame.rounds.map((round, idx) => (
                     <tr key={idx} className="border-b border-gray-100 dark:border-gray-700">
                       <td className="py-2 px-1 sm:px-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400 sticky left-0 bg-white dark:bg-gray-800">{round.round}</td>
-                      {activeGame.players.map((p, pIdx) => (
-                        <td key={pIdx} className="text-center py-2 px-1 sm:px-2 text-xs sm:text-sm text-gray-800 dark:text-gray-300">{round.scores[p.name] || 0}</td>
-                      ))}
+                      {activeGame.players.map((p, pIdx) => {
+                        const isEditing = editingCell?.roundIndex === idx && editingCell?.playerName === p.name;
+                        return (
+                          <td key={pIdx} className="text-center py-2 px-1 sm:px-2">
+                            {isEditing ? (
+                              <input
+                                type="number"
+                                value={round.scores[p.name] || 0}
+                                onChange={(e) => onUpdatePastScore?.(idx, p.name, e.target.value)}
+                                onBlur={() => setEditingCell(null)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') setEditingCell(null);
+                                  if (e.key === 'Escape') setEditingCell(null);
+                                }}
+                                autoFocus
+                                className="w-12 sm:w-16 px-1 sm:px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-center text-xs sm:text-sm bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-300 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent"
+                              />
+                            ) : (
+                              <div
+                                onClick={() => setEditingCell({ roundIndex: idx, playerName: p.name })}
+                                className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 rounded px-1 py-1 text-xs sm:text-sm text-gray-800 dark:text-gray-300"
+                              >
+                                {round.scores[p.name] || 0}
+                              </div>
+                            )}
+                          </td>
+                        );
+                      })}
                     </tr>
                   ))}
                   <tr className="bg-indigo-50 dark:bg-indigo-900/30 font-bold">
