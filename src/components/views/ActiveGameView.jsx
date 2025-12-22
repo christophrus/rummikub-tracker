@@ -124,26 +124,26 @@ export const ActiveGameView = ({
               {timerActive ? (
                 <button 
                   onClick={onPause}
-                  className="p-3 sm:p-4 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition flex items-center justify-center font-semibold shadow-lg"
+                  className="p-5 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition flex items-center justify-center font-semibold shadow-lg"
                   title={t('pause')}
                 >
-                  <Pause size={20} />
+                  <Pause size={30} />
                 </button>
               ) : (
                 <button 
                   onClick={onResume}
-                  className="p-3 sm:p-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center justify-center font-semibold shadow-lg"
+                  className="p-5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center justify-center font-semibold shadow-lg"
                   title={t('resume')}
                 >
-                  <Play size={20} />
+                  <Play size={30} />
                 </button>
               )}
               <button 
                 onClick={onResetTimer}
-                className="p-3 sm:p-4 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition flex items-center justify-center font-semibold shadow-lg"
+                className="p-5 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition flex items-center justify-center font-semibold shadow-lg"
                 title={t('reset')}
               >
-                <RotateCcw size={20} />
+                <RotateCcw size={30} />
               </button>
             </div>
 
@@ -151,7 +151,7 @@ export const ActiveGameView = ({
               <button 
                 onClick={onExtendTimer} 
                 disabled={!canExtend}
-                className={`w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg font-semibold transition flex items-center justify-center gap-2 text-sm sm:text-base ${
+                className={`w-full px-3 sm:px-4 py-3 sm:py-4.5 rounded-lg font-semibold transition flex items-center justify-center gap-2 text-sm sm:text-base ${
                   canExtend ? 'bg-blue-600 dark:bg-blue-500 text-white hover:bg-blue-700 dark:hover:bg-blue-600' : 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'
                 }`}
               >
