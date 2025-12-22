@@ -17,6 +17,22 @@ const formatPlayTime = (startTime, endTime) => {
   return `${diffMins}m`;
 };
 
+const getWinnerNames = (game) => {
+  if (game?.finalScores && typeof game.finalScores === 'object') {
+    const entries = Object.entries(game.finalScores)
+      .map(([name, score]) => [name, Number.parseInt(score, 10)])
+      .filter(([, score]) => Number.isFinite(score));
+
+    if (entries.length > 0) {
+      const minScore = Math.min(...entries.map(([, score]) => score));
+      const winners = entries.filter(([, score]) => score === minScore).map(([name]) => name);
+      if (winners.length > 0) return winners.join(', ');
+    }
+  }
+
+  return game?.winner || '';
+};
+
 export const GameHistoryView = ({ 
   gameHistory, 
   onClose, 
@@ -83,6 +99,7 @@ export const GameHistoryView = ({
         <div className="space-y-2 md:space-y-3">
           {gameHistory.map(game => {
             const isExpanded = expandedGameId === game.id;
+            const winnerNames = getWinnerNames(game);
             return (
             <div
               key={game.id}
@@ -101,7 +118,7 @@ export const GameHistoryView = ({
                     </p>
                     <div className="mt-1 md:mt-2 flex items-center gap-1 md:gap-2">
                       <Trophy size={14} className="md:size-4 text-yellow-600 dark:text-yellow-500 flex-shrink-0" />
-                      <span className="text-xs md:text-sm font-semibold text-gray-700 dark:text-gray-300 truncate">{t('winner')} {game.winner}</span>
+                      <span className="text-xs md:text-sm font-semibold text-gray-700 dark:text-gray-300 truncate">{t('winner')} {winnerNames}</span>
                     </div>
                     <div className="mt-1 md:mt-2 text-xs text-gray-600 dark:text-gray-400 line-clamp-2 md:line-clamp-none">
                       {Object.entries(game.finalScores).map(([player, score]) => (
