@@ -48,6 +48,10 @@ const RummikubTracker = () => {
   // Views
   const [view, setView] = useState(VIEWS.HOME);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [scrollLockInFullscreen, setScrollLockInFullscreen] = useState(() => {
+    const saved = localStorage.getItem('scroll-lock-fullscreen');
+    return saved === null ? true : saved === 'true';
+  });
 
   // Game data
   const gameData = useGameData();
@@ -235,6 +239,18 @@ const RummikubTracker = () => {
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
 
+  // Control scrolling in fullscreen mode
+  useEffect(() => {
+    if (isFullscreen && scrollLockInFullscreen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isFullscreen, scrollLockInFullscreen]);
+
   // Load timer duration from active game
   useEffect(() => {
     if (activeGame && activeGame.timerDuration) {
@@ -374,6 +390,13 @@ const RummikubTracker = () => {
     } else {
       document.exitFullscreen();
     }
+  };
+
+  // Toggle scroll lock in fullscreen
+  const toggleScrollLock = () => {
+    const newValue = !scrollLockInFullscreen;
+    setScrollLockInFullscreen(newValue);
+    localStorage.setItem('scroll-lock-fullscreen', newValue.toString());
   };
 
   // Loading
@@ -550,6 +573,28 @@ const RummikubTracker = () => {
       >
         {isFullscreen ? <Minimize size={24} /> : <Maximize size={24} />}
       </button>
+
+      {isFullscreen && (
+        <button 
+          onClick={toggleScrollLock}
+          className="fixed bottom-6 left-6 bg-indigo-600 text-white p-4 rounded-full shadow-lg hover:bg-indigo-700 transition-all hover:scale-110 z-40"
+          title={scrollLockInFullscreen ? t('unlockScrolling') : t('lockScrolling')}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            {scrollLockInFullscreen ? (
+              <>
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </>
+            ) : (
+              <>
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 9.9-1"/>
+              </>
+            )}
+          </svg>
+        </button>
+      )}
     </div>
   );
 };

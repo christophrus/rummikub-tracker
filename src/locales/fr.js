@@ -65,6 +65,8 @@ const frTranslations = {
   moveDown: 'Descendre',
   enterFullscreen: 'Plein écran',
   exitFullscreen: 'Quitter le plein écran',
+  lockScrolling: 'Verrouiller le défilement',
+  unlockScrolling: 'Déverrouiller le défilement',
   maxPlayersAlert: 'Maximum 6 joueurs autorisés',
   playerAlreadyAddedAlert: 'Ce joueur est déjà ajouté à la partie',
   minPlayersAlert: 'Veuillez ajouter au moins 2 joueurs',

@@ -63,6 +63,8 @@ const deTranslations = {
   moveDown: 'Nach unten',
   enterFullscreen: 'Vollbild aktivieren',
   exitFullscreen: 'Vollbild verlassen',
+  lockScrolling: 'Scrollen sperren',
+  unlockScrolling: 'Scrollen entsperren',
   maxPlayersAlert: 'Maximal 6 Spieler erlaubt',
   playerAlreadyAddedAlert: 'Dieser Spieler wurde bereits zum Spiel hinzugefügt',
   minPlayersAlert: 'Bitte fügen Sie mindestens 2 Spieler hinzu',

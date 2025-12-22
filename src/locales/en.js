@@ -65,6 +65,8 @@ const enTranslations = {
   moveDown: 'Move down',
   enterFullscreen: 'Enter Fullscreen',
   exitFullscreen: 'Exit Fullscreen',
+  lockScrolling: 'Lock Scrolling',
+  unlockScrolling: 'Unlock Scrolling',
   maxPlayersAlert: 'Maximum 6 players allowed',
   playerAlreadyAddedAlert: 'This player is already added to the game',
   minPlayersAlert: 'Please add at least 2 players',
