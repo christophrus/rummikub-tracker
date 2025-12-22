@@ -1,5 +1,21 @@
-import { History, Trash2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { History, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import { Trophy } from 'lucide-react';
+import { PlayerAvatar } from '../index';
+
+const formatPlayTime = (startTime, endTime) => {
+  const start = new Date(startTime);
+  const end = new Date(endTime);
+  const diffMs = end - start;
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMins / 60);
+  const remainingMins = diffMins % 60;
+  
+  if (diffHours > 0) {
+    return `${diffHours}h ${remainingMins}m`;
+  }
+  return `${diffMins}m`;
+};
 
 export const GameHistoryView = ({ 
   gameHistory, 
@@ -7,6 +23,12 @@ export const GameHistoryView = ({
   onDeleteGame,
   t 
 }) => {
+  const [expandedGameId, setExpandedGameId] = useState(null);
+
+  const toggleGameExpanded = (gameId) => {
+    setExpandedGameId(expandedGameId === gameId ? null : gameId);
+  };
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 md:p-6">
       <div className="flex items-center justify-between mb-4 md:mb-6">
@@ -20,31 +42,114 @@ export const GameHistoryView = ({
         </div>
       ) : (
         <div className="space-y-2 md:space-y-3">
-          {gameHistory.map(game => (
-            <div key={game.id} className="border border-gray-200 dark:border-gray-600 rounded-lg p-2 md:p-4 hover:border-indigo-300 dark:hover:border-indigo-500 transition bg-white dark:bg-gray-700">
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-gray-800 dark:text-gray-100 text-sm md:text-base truncate">{game.name}</h3>
-                  <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 mt-0.5 md:mt-1">{new Date(game.startTime).toLocaleDateString()} • {game.rounds.length} {t('rounds')}</p>
-                  <div className="mt-1 md:mt-2 flex items-center gap-1 md:gap-2">
-                    <Trophy size={14} className="md:size-4 text-yellow-600 dark:text-yellow-500 flex-shrink-0" />
-                    <span className="text-xs md:text-sm font-semibold text-gray-700 dark:text-gray-300 truncate">{t('winner')} {game.winner}</span>
+          {gameHistory.map(game => {
+            const isExpanded = expandedGameId === game.id;
+            return (
+            <div key={game.id} className="border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden hover:border-indigo-300 dark:hover:border-indigo-500 transition bg-white dark:bg-gray-700">
+              <div className="p-2 md:p-4">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-gray-800 dark:text-gray-100 text-sm md:text-base truncate">{game.name}</h3>
+                    <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 mt-0.5 md:mt-1">
+                      {new Date(game.startTime).toLocaleDateString()} • {game.rounds.length} {t('rounds')}
+                      {game.endTime && (
+                        <> • {formatPlayTime(game.startTime, game.endTime)}</>
+                      )}
+                    </p>
+                    <div className="mt-1 md:mt-2 flex items-center gap-1 md:gap-2">
+                      <Trophy size={14} className="md:size-4 text-yellow-600 dark:text-yellow-500 flex-shrink-0" />
+                      <span className="text-xs md:text-sm font-semibold text-gray-700 dark:text-gray-300 truncate">{t('winner')} {game.winner}</span>
+                    </div>
+                    <div className="mt-1 md:mt-2 text-xs text-gray-600 dark:text-gray-400 line-clamp-2 md:line-clamp-none">
+                      {Object.entries(game.finalScores).map(([player, score]) => (
+                        <span key={player} className="mr-2 md:mr-3">{player}: {score}</span>
+                      ))}
+                    </div>
                   </div>
-                  <div className="mt-1 md:mt-2 text-xs text-gray-600 dark:text-gray-400 line-clamp-2 md:line-clamp-none">
-                    {Object.entries(game.finalScores).map(([player, score]) => (
-                      <span key={player} className="mr-2 md:mr-3">{player}: {score}</span>
-                    ))}
+                  <div className="flex gap-1 flex-shrink-0">
+                    <button 
+                      onClick={() => toggleGameExpanded(game.id)} 
+                      className="text-indigo-500 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 p-1"
+                      title={isExpanded ? t('hideDetails') : t('showDetails')}
+                    >
+                      {isExpanded ? <ChevronUp size={18} className="md:size-5" /> : <ChevronDown size={18} className="md:size-5" />}
+                    </button>
+                    <button 
+                      onClick={() => onDeleteGame(game.id)} 
+                      className="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 p-1"
+                    >
+                      <Trash2 size={18} className="md:size-5" />
+                    </button>
                   </div>
                 </div>
-                <button 
-                  onClick={() => onDeleteGame(game.id)} 
-                  className="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 p-1 flex-shrink-0"
-                >
-                  <Trash2 size={18} className="md:size-5" />
-                </button>
               </div>
+              
+              {isExpanded && game.rounds.length > 0 && (
+                <div className="border-t border-gray-200 dark:border-gray-600 p-2 md:p-4 bg-gray-50 dark:bg-gray-800">
+                  <h4 className="text-sm md:text-base font-bold text-gray-800 dark:text-gray-100 mb-2 md:mb-3">{t('scoreSummary')}</h4>
+                  <div className="overflow-x-auto -mx-2 md:mx-0">
+                    <div className="inline-block min-w-full align-middle px-2 md:px-0">
+                      <table className="min-w-full">
+                        <thead>
+                          <tr className="border-b-2 border-gray-200 dark:border-gray-600">
+                            <th className="text-left py-2 px-1 md:px-2 text-xs md:text-sm font-semibold text-gray-700 dark:text-gray-300 sticky left-0 bg-gray-50 dark:bg-gray-800">{t('round')}</th>
+                            {game.players.map((p, idx) => (
+                              <th key={idx} className="text-center py-2 px-1 md:px-2 text-xs md:text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                <div className="flex flex-col items-center gap-1">
+                                  <PlayerAvatar player={p} size="sm" />
+                                  <span className="text-xs truncate max-w-[60px] md:max-w-none">{p.name}</span>
+                                </div>
+                              </th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {game.rounds.map((round, idx) => {
+                            // Find the winner of this round (lowest score)
+                            const roundScores = game.players.map(p => ({
+                              name: p.name,
+                              score: parseInt(round.scores[p.name]) || 0
+                            }));
+                            const minScore = Math.min(...roundScores.map(rs => rs.score));
+                            const roundWinners = roundScores.filter(rs => rs.score === minScore).map(rs => rs.name);
+                            
+                            return (
+                            <tr key={idx} className="border-b border-gray-100 dark:border-gray-700">
+                              <td className="py-2 px-1 md:px-2 text-xs md:text-sm text-gray-600 dark:text-gray-400 sticky left-0 bg-gray-50 dark:bg-gray-800">{round.round}</td>
+                              {game.players.map((p, pIdx) => {
+                                const isRoundWinner = roundWinners.includes(p.name);
+                                return (
+                                <td key={pIdx} className={`text-center py-2 px-1 md:px-2 text-xs md:text-sm ${isRoundWinner ? 'text-green-700 dark:text-green-400 font-semibold' : 'text-gray-800 dark:text-gray-300'}`}>
+                                  <div className="flex items-center justify-center gap-1">
+                                    {isRoundWinner && <Trophy size={12} className="text-yellow-600 dark:text-yellow-500 flex-shrink-0" />}
+                                    <span>{round.scores[p.name] || 0}</span>
+                                  </div>
+                                </td>
+                                );
+                              })}
+                            </tr>
+                            );
+                          })}
+                          <tr className="bg-indigo-50 dark:bg-indigo-900/30 font-bold">
+                            <td className="py-2 px-1 md:px-2 text-xs md:text-sm sticky left-0 bg-indigo-50 dark:bg-indigo-900/30 dark:text-gray-200">{t('total')}</td>
+                            {game.players.map((p, pIdx) => {
+                              const isWinner = game.winner === p.name;
+                              return (
+                              <td key={pIdx} className={`text-center py-2 px-1 md:px-2 text-xs md:text-sm ${isWinner ? 'text-green-700 dark:text-green-400' : 'text-indigo-900 dark:text-indigo-200'}`}>
+                                {game.rounds.reduce((s, r) => s + (parseInt(r.scores[p.name]) || 0), 0)}
+                              </td>
+                              );
+                            })}
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
