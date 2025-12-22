@@ -1,6 +1,6 @@
 import React from 'react';
 import { X, Play, Pause, RotateCcw, Check, Plus, SkipForward, Trophy } from 'lucide-react';
-import { AnalogClock, PlayerAvatar } from '../index';
+import { AnalogClock, Confetti, PlayerAvatar } from '../index';
 
 export const ActiveGameView = ({ 
   activeGame,
@@ -70,6 +70,8 @@ export const ActiveGameView = ({
         </div>
 
         {declaredWinner && (
+          <>
+          <Confetti active={true} />
           <div className="bg-gradient-to-r from-yellow-400 to-amber-500 rounded-lg p-4 sm:p-6 mb-4 text-white animate-pulse">
             <div className="flex flex-col items-center gap-4">
               <Trophy size={56} className="text-white drop-shadow-lg" />
@@ -90,6 +92,7 @@ export const ActiveGameView = ({
               </div>
             </div>
           </div>
+          </>
         )}
 
         {!declaredWinner && currentPlayer && (
