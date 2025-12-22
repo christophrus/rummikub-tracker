@@ -96,20 +96,20 @@ export const ActiveGameView = ({
                   <p className="text-base sm:text-2xl font-bold truncate">{currentPlayer.name}</p>
                 </div>
               </div>
-              <div className="flex flex-col gap-2">
+              <div className="flex gap-2">
                 <button 
                   onClick={onDeclareWinner}
-                  className="w-full bg-yellow-400 text-yellow-900 px-2 py-1.5 sm:px-4 sm:py-2 rounded-lg flex items-center justify-center gap-1 sm:gap-2 transition hover:bg-yellow-300 font-semibold shadow text-xs sm:text-base"
+                  className="flex-1 bg-yellow-400 text-yellow-900 py-4 rounded-lg flex items-center justify-center transition hover:bg-yellow-300 font-semibold shadow"
+                  title={t('declareWinner')}
                 >
-                  <Trophy size={16} className="sm:w-5 sm:h-5" />
-                  <span className="truncate">{t('declareWinner')}</span>
+                  <Trophy size={20} />
                 </button>
                 <button 
                   onClick={onNextPlayer}
-                  className="w-full bg-white dark:bg-gray-100 text-indigo-600 dark:text-indigo-700 px-2 py-1.5 sm:px-4 sm:py-2 rounded-lg flex items-center justify-center gap-1 sm:gap-2 transition hover:bg-indigo-50 dark:hover:bg-gray-200 font-semibold shadow text-xs sm:text-base"
+                  className="flex-1 bg-white dark:bg-gray-100 text-indigo-600 dark:text-indigo-700 py-4 rounded-lg flex items-center justify-center transition hover:bg-indigo-50 dark:hover:bg-gray-200 font-semibold shadow"
+                  title={t('nextPlayer')}
                 >
-                  <SkipForward size={16} className="sm:w-5 sm:h-5" />
-                  <span className="truncate">{t('nextPlayer')}</span>
+                  <SkipForward size={20} />
                 </button>
               </div>
             </div>
