@@ -78,9 +78,37 @@ export const useAudio = () => {
     }
   };
 
+  const playVictorySound = () => {
+    const audioContext = getAudioContext();
+    if (!audioContext) return;
+    
+    // Play a celebratory ascending melody
+    const notes = [
+      { freq: 523.25, start: 0, duration: 0.15 },      // C5
+      { freq: 659.25, start: 0.15, duration: 0.15 },   // E5
+      { freq: 783.99, start: 0.3, duration: 0.15 },    // G5
+      { freq: 1046.50, start: 0.45, duration: 0.4 }    // C6 (longer)
+    ];
+    
+    notes.forEach(note => {
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      oscillator.frequency.value = note.freq;
+      oscillator.type = 'sine';
+      const startTime = audioContext.currentTime + note.start;
+      gainNode.gain.setValueAtTime(0.5, startTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + note.duration);
+      oscillator.start(startTime);
+      oscillator.stop(startTime + note.duration);
+    });
+  };
+
   return {
     playTickTock,
     playTurnNotification,
-    speakPlayerName
+    speakPlayerName,
+    playVictorySound
   };
 };

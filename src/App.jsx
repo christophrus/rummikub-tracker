@@ -92,7 +92,7 @@ const RummikubTracker = () => {
   });
 
   // Audio
-  const { playTickTock, playTurnNotification, speakPlayerName } = useAudio();
+  const { playTickTock, playTurnNotification, speakPlayerName, playVictorySound } = useAudio();
 
   // Timer (kept for useTimer hook compatibility)
   const handleTimeUp = useCallback(() => {
@@ -181,6 +181,7 @@ const RummikubTracker = () => {
     startNewGame,
     playTurnNotification,
     speakPlayerName,
+    playVictorySound,
     setTimerActive,
     setTimerSeconds,
     timerDuration

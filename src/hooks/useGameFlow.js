@@ -13,6 +13,7 @@ export const useGameFlow = ({
   startNewGame,
   playTurnNotification,
   speakPlayerName,
+  playVictorySound,
   setTimerActive,
   setTimerSeconds,
   timerDuration
@@ -69,7 +70,8 @@ export const useGameFlow = ({
     setTimerActive(false);
     setDeclaredWinner(winner);
     updateRoundScore(winner, '0');
-  }, [activeGame, currentPlayerIndex, setTimerActive, updateRoundScore]);
+    playVictorySound();
+  }, [activeGame, currentPlayerIndex, setTimerActive, updateRoundScore, playVictorySound]);
 
   const handleCancelWinner = useCallback(() => {
     setDeclaredWinner(null);
