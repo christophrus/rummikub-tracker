@@ -82,6 +82,16 @@ export const useGameFlow = ({
     if (!activeGame.players.every(p => roundScores[p.name] !== undefined && roundScores[p.name] !== '')) {
       return { error: 'enterAllScoresAlert' };
     }
+
+    const zeroScoresCount = activeGame.players.reduce((count, player) => {
+      const raw = roundScores[player.name];
+      const score = raw === '' || raw === undefined ? NaN : Number.parseInt(raw, 10);
+      return count + (Number.isFinite(score) && score === 0 ? 1 : 0);
+    }, 0);
+
+    if (zeroScoresCount > 1) {
+      return { error: 'multipleZeroScoresAlert' };
+    }
     
     // Update starting player to next in order
     const nextStartingPlayerIndex = (startingPlayerIndex + 1) % activeGame.players.length;

@@ -52,6 +52,16 @@ export const useGameData = () => {
     if (!activeGame.players.every(p => roundScores[p.name] !== undefined && roundScores[p.name] !== '')) {
       return null; // Caller should handle validation
     }
+
+    const zeroScoresCount = activeGame.players.reduce((count, player) => {
+      const raw = roundScores[player.name];
+      const score = raw === '' || raw === undefined ? NaN : Number.parseInt(raw, 10);
+      return count + (Number.isFinite(score) && score === 0 ? 1 : 0);
+    }, 0);
+
+    if (zeroScoresCount > 1) {
+      return null; // Caller should handle validation
+    }
     
     const updatedGame = {
       ...activeGame,

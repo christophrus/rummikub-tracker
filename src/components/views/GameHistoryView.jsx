@@ -26,40 +26,6 @@ export const GameHistoryView = ({
   const [expandedGameId, setExpandedGameId] = useState(null);
   const entryRefs = useRef({});
 
-  const normalizeCssColor = async (value) => {
-    if (!value || typeof value !== 'string') return value;
-
-    const trimmed = value.trim();
-    const lower = trimmed.toLowerCase();
-
-    // Fast path: already safe for html2canvas.
-    if (
-      lower === 'transparent' ||
-      lower.startsWith('rgb(') ||
-      lower.startsWith('rgba(') ||
-      lower.startsWith('#')
-    ) {
-      return trimmed;
-    }
-
-    // Try converting modern color spaces (oklch/oklab/color(display-p3)/etc.) to rgb().
-    try {
-      const culori = await import('culori');
-      const parsed = culori.parse(trimmed);
-      if (parsed) {
-        const asRgb = culori.rgb(parsed);
-        if (asRgb) {
-          // formatRgb returns rgb()/rgba() depending on alpha.
-          return culori.formatRgb(asRgb);
-        }
-      }
-    } catch {
-      // Ignore; fall back to original value.
-    }
-
-    return trimmed;
-  };
-
   const toggleGameExpanded = (gameId) => {
     setExpandedGameId(expandedGameId === gameId ? null : gameId);
   };

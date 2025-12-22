@@ -71,6 +71,7 @@ const frTranslations = {
   playerAlreadyAddedAlert: 'Ce joueur est déjà ajouté à la partie',
   minPlayersAlert: 'Veuillez ajouter au moins 2 joueurs',
   enterAllScoresAlert: 'Veuillez entrer les scores pour tous les joueurs',
+  multipleZeroScoresAlert: 'Un seul joueur peut avoir un score de 0 par manche',
   endCurrentGameConfirm: 'Commencer une nouvelle partie terminera votre partie actuelle. Continuer?',
   language: 'Langue',
   selectLanguage: 'Sélectionner la langue',

@@ -69,6 +69,7 @@ const deTranslations = {
   playerAlreadyAddedAlert: 'Dieser Spieler wurde bereits zum Spiel hinzugefügt',
   minPlayersAlert: 'Bitte fügen Sie mindestens 2 Spieler hinzu',
   enterAllScoresAlert: 'Bitte geben Sie Punkte für alle Spieler ein',
+  multipleZeroScoresAlert: 'Pro Runde darf nur ein Spieler 0 Punkte haben',
   endCurrentGameConfirm: 'Das Starten eines neuen Spiels beendet Ihr aktuelles Spiel. Fortfahren?',
   language: 'Sprache',
   selectLanguage: 'Sprache auswählen',
