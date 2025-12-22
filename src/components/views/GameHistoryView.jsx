@@ -7,14 +7,24 @@ const formatPlayTime = (startTime, endTime) => {
   const start = new Date(startTime);
   const end = new Date(endTime);
   const diffMs = end - start;
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMins / 60);
-  const remainingMins = diffMins % 60;
-  
+
+  if (!Number.isFinite(diffMs) || diffMs < 0) return '';
+
+  const totalSeconds = Math.floor(diffMs / 1000);
+  const diffHours = Math.floor(totalSeconds / 3600);
+  const remainingSecondsAfterHours = totalSeconds % 3600;
+  const diffMins = Math.floor(remainingSecondsAfterHours / 60);
+  const diffSecs = remainingSecondsAfterHours % 60;
+
   if (diffHours > 0) {
-    return `${diffHours}h ${remainingMins}m`;
+    return `${diffHours}h ${diffMins}m ${diffSecs}s`;
   }
-  return `${diffMins}m`;
+
+  if (diffMins > 0) {
+    return `${diffMins}m ${diffSecs}s`;
+  }
+
+  return `${diffSecs}s`;
 };
 
 const getWinnerNames = (game) => {
