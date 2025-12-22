@@ -9,6 +9,7 @@ export const ActiveGameView = ({
   timerDuration,
   timerActive,
   currentRound,
+  gameElapsedTime,
   roundScores,
   playerExtensions,
   draggedGamePlayerIndex,
@@ -53,7 +54,12 @@ export const ActiveGameView = ({
         <div className="flex items-center justify-between mb-4">
           <div className="flex-1 min-w-0 mr-4">
             <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-100 truncate">{activeGame.name}</h2>
-            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">{t('round')} {currentRound}</p>
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+              {t('round')} {currentRound}
+              {gameElapsedTime && (
+                <span className="ml-2 opacity-75">• {gameElapsedTime}</span>
+              )}
+            </p>
           </div>
           <button 
             onClick={handleCloseClick}

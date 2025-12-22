@@ -105,6 +105,7 @@ const RummikubTracker = () => {
   } = useTimer(timerDuration, handleTimeUp, false);
 
   const [timerActive, setTimerActive] = useState(false);
+  const [gameElapsedTime, setGameElapsedTime] = useState('');
 
   // Player management hooks
   const playerManagement = usePlayerManagement(MAX_PLAYERS);
@@ -246,6 +247,31 @@ const RummikubTracker = () => {
       document.body.style.overflow = '';
     };
   }, [isFullscreen, scrollLockInFullscreen]);
+
+  // Update game elapsed time (hours and minutes only)
+  useEffect(() => {
+    if (!activeGame || !activeGame.startTime) return;
+    
+    const updateElapsedTime = () => {
+      const start = new Date(activeGame.startTime);
+      const now = new Date();
+      const diffMs = now - start;
+      const totalMinutes = Math.floor(diffMs / 60000);
+      const hours = Math.floor(totalMinutes / 60);
+      const mins = totalMinutes % 60;
+      
+      if (hours > 0) {
+        setGameElapsedTime(`${hours}h ${mins}m`);
+      } else {
+        setGameElapsedTime(`${mins}m`);
+      }
+    };
+    
+    updateElapsedTime();
+    const interval = setInterval(updateElapsedTime, 60000); // Update every minute
+    
+    return () => clearInterval(interval);
+  }, [activeGame]);
 
   // Load timer duration from active game
   useEffect(() => {
@@ -519,6 +545,7 @@ const RummikubTracker = () => {
             timerDuration={timerDuration}
             timerActive={timerActive}
             currentRound={currentRound}
+            gameElapsedTime={gameElapsedTime}
             roundScores={roundScores}
             playerExtensions={playerExtensions}
             draggedGamePlayerIndex={draggedGamePlayerIndex}
