@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { History, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { X, History, Trash2, ChevronDown, ChevronUp, Camera } from 'lucide-react';
 import { Trophy } from 'lucide-react';
 import { PlayerAvatar } from '../index';
 
@@ -24,16 +24,89 @@ export const GameHistoryView = ({
   t 
 }) => {
   const [expandedGameId, setExpandedGameId] = useState(null);
+  const entryRefs = useRef({});
+
+  const normalizeCssColor = async (value) => {
+    if (!value || typeof value !== 'string') return value;
+
+    const trimmed = value.trim();
+    const lower = trimmed.toLowerCase();
+
+    // Fast path: already safe for html2canvas.
+    if (
+      lower === 'transparent' ||
+      lower.startsWith('rgb(') ||
+      lower.startsWith('rgba(') ||
+      lower.startsWith('#')
+    ) {
+      return trimmed;
+    }
+
+    // Try converting modern color spaces (oklch/oklab/color(display-p3)/etc.) to rgb().
+    try {
+      const culori = await import('culori');
+      const parsed = culori.parse(trimmed);
+      if (parsed) {
+        const asRgb = culori.rgb(parsed);
+        if (asRgb) {
+          // formatRgb returns rgb()/rgba() depending on alpha.
+          return culori.formatRgb(asRgb);
+        }
+      }
+    } catch {
+      // Ignore; fall back to original value.
+    }
+
+    return trimmed;
+  };
 
   const toggleGameExpanded = (gameId) => {
     setExpandedGameId(expandedGameId === gameId ? null : gameId);
+  };
+
+  const captureScreenshot = async (gameId, gameName) => {
+    const element = entryRefs.current[gameId];
+    if (!element) return;
+
+    try {
+      // Alternative screenshot method: html-to-image (avoids html2canvas color parsing).
+      const htmlToImage = await import('html-to-image');
+
+      const isDark = document.documentElement.classList.contains('dark');
+      const safeBg = isDark ? '#1f2937' : '#f9fafb';
+      const safeText = isDark ? '#f3f4f6' : '#111827';
+
+      const blob = await htmlToImage.toBlob(element, {
+        backgroundColor: safeBg,
+        pixelRatio: 2,
+        cacheBust: true,
+        style: {
+          backgroundColor: safeBg,
+          color: safeText
+        }
+      });
+
+      if (!blob) {
+        throw new Error('Failed to generate screenshot blob');
+      }
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${gameName.replace(/[^a-z0-9]/gi, '_')}_stats_${new Date().toISOString().split('T')[0]}.png`;
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Screenshot failed:', error);
+      alert('Screenshot failed. Please try again.');
+    }
   };
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 md:p-6">
       <div className="flex items-center justify-between mb-4 md:mb-6">
         <h2 className="text-lg md:text-2xl font-bold text-gray-800 dark:text-gray-100">{t('gameHistory')}</h2>
-        <button onClick={onClose} className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 flex-shrink-0"><History size={24} /></button>
+        <button onClick={onClose} className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 flex-shrink-0"><X size={24} /></button>
       </div>
       {gameHistory.length === 0 ? (
         <div className="text-center py-8 md:py-12 text-gray-500 dark:text-gray-400">
@@ -45,7 +118,11 @@ export const GameHistoryView = ({
           {gameHistory.map(game => {
             const isExpanded = expandedGameId === game.id;
             return (
-            <div key={game.id} className="border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden hover:border-indigo-300 dark:hover:border-indigo-500 transition bg-white dark:bg-gray-700">
+            <div
+              key={game.id}
+              ref={el => entryRefs.current[game.id] = el}
+              className="border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden hover:border-indigo-300 dark:hover:border-indigo-500 transition bg-white dark:bg-gray-700"
+            >
               <div className="p-2 md:p-4">
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
@@ -85,8 +162,21 @@ export const GameHistoryView = ({
               </div>
               
               {isExpanded && game.rounds.length > 0 && (
-                <div className="border-t border-gray-200 dark:border-gray-600 p-2 md:p-4 bg-gray-50 dark:bg-gray-800">
-                  <h4 className="text-sm md:text-base font-bold text-gray-800 dark:text-gray-100 mb-2 md:mb-3">{t('scoreSummary')}</h4>
+                <div 
+                  data-game-id={game.id}
+                  className="border-t border-gray-200 dark:border-gray-600 p-2 md:p-4 bg-gray-50 dark:bg-gray-800"
+                >
+                  <div className="flex items-center justify-between mb-2 md:mb-3">
+                    <h4 className="text-sm md:text-base font-bold text-gray-800 dark:text-gray-100">{t('scoreSummary')}</h4>
+                    <button
+                      onClick={() => captureScreenshot(game.id, game.name)}
+                      className="flex items-center gap-1 md:gap-2 px-2 md:px-3 py-1 md:py-2 bg-indigo-600 dark:bg-indigo-500 text-white rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition text-xs md:text-sm font-semibold"
+                      title={t('takeScreenshot') || 'Take Screenshot'}
+                    >
+                      <Camera size={14} className="md:size-4" />
+                      <span className="hidden sm:inline">{t('screenshot') || 'Screenshot'}</span>
+                    </button>
+                  </div>
                   <div className="overflow-x-auto -mx-2 md:mx-0">
                     <div className="inline-block min-w-full align-middle px-2 md:px-0">
                       <table className="min-w-full">
