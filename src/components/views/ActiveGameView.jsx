@@ -124,26 +124,26 @@ export const ActiveGameView = ({
               {timerActive ? (
                 <button 
                   onClick={onPause}
-                  className="px-4 sm:px-6 py-2 sm:py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition flex items-center gap-2 font-semibold shadow-lg text-sm sm:text-base"
+                  className="p-3 sm:p-4 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition flex items-center justify-center font-semibold shadow-lg"
+                  title={t('pause')}
                 >
                   <Pause size={20} />
-                  {t('pause')}
                 </button>
               ) : (
                 <button 
                   onClick={onResume}
-                  className="px-4 sm:px-6 py-2 sm:py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center gap-2 font-semibold shadow-lg text-sm sm:text-base"
+                  className="p-3 sm:p-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center justify-center font-semibold shadow-lg"
+                  title={t('resume')}
                 >
                   <Play size={20} />
-                  {t('resume')}
                 </button>
               )}
               <button 
                 onClick={onResetTimer}
-                className="px-4 sm:px-6 py-2 sm:py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition flex items-center gap-2 font-semibold shadow-lg text-sm sm:text-base"
+                className="p-3 sm:p-4 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition flex items-center justify-center font-semibold shadow-lg"
+                title={t('reset')}
               >
                 <RotateCcw size={20} />
-                {t('reset')}
               </button>
             </div>
 
