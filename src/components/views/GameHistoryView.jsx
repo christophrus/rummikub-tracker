@@ -130,11 +130,6 @@ export const GameHistoryView = ({
                       <Trophy size={14} className="md:size-4 text-yellow-600 dark:text-yellow-500 flex-shrink-0" />
                       <span className="text-xs md:text-sm font-semibold text-gray-700 dark:text-gray-300 truncate">{t('winner')} {winnerNames}</span>
                     </div>
-                    <div className="mt-1 md:mt-2 text-xs text-gray-600 dark:text-gray-400 line-clamp-2 md:line-clamp-none">
-                      {Object.entries(game.finalScores).map(([player, score]) => (
-                        <span key={player} className="mr-2 md:mr-3">{player}: {score}</span>
-                      ))}
-                    </div>
                   </div>
                   <div className="flex gap-1 flex-shrink-0">
                     <button 
