@@ -43,22 +43,12 @@ export const useGameData = () => {
         if (Array.isArray(parsedHistory)) {
           const hydratedHistory = parsedHistory.map(g => ({ ...g, players: hydratePlayers(g.players) }));
           setGameHistory(hydratedHistory);
-
-          // Cleanup legacy data: remove any embedded images from stored history.
-          const needsCleanup = parsedHistory.some(g =>
-            Array.isArray(g?.players) && g.players.some(p => p && typeof p === 'object' && p.image)
-          );
-          if (needsCleanup) {
-            localStorage.setItem('game-history', JSON.stringify(parsedHistory.map(sanitizeGameForStorage)));
-          }
         }
       }
       
       const activeGameData = localStorage.getItem('active-game');
       if (activeGameData) {
         const game = JSON.parse(activeGameData);
-        const activeGameHadEmbeddedImages =
-          Array.isArray(game?.players) && game.players.some(p => p && typeof p === 'object' && p.image);
         if (game.players) {
           game.players = hydratePlayers(game.players);
         }
@@ -70,11 +60,6 @@ export const useGameData = () => {
         setCurrentPlayerIndex(game.currentPlayerIndex || 0);
         setCurrentRound(game.rounds.length + 1);
         setPlayerExtensions(game.playerExtensions || {});
-
-        // Cleanup legacy data: remove any embedded images from stored active game.
-        if (activeGameHadEmbeddedImages) {
-          localStorage.setItem('active-game', JSON.stringify(sanitizeGameForStorage(game)));
-        }
       }
     } catch (error) {
       console.error('Error loading data:', error);
