@@ -7,7 +7,8 @@ import {
   updatePlayer as updatePlayerUtil,
   addPlayer as addPlayerUtil,
   removePlayer as removePlayerUtil,
-  handleImageUpload
+  handleImageUpload,
+  sanitizeGameForStorage
 } from '../utils';
 
 export const usePlayerManagement = (maxPlayers) => {
@@ -100,7 +101,7 @@ export const useGamePlayerManagement = ({
     
     setActiveGame(updatedGame);
     setCurrentPlayerIndex(newCurrentPlayerIndex);
-    localStorage.setItem(STORAGE_KEYS.ACTIVE_GAME, JSON.stringify(updatedGame));
+    localStorage.setItem(STORAGE_KEYS.ACTIVE_GAME, JSON.stringify(sanitizeGameForStorage(updatedGame)));
   }, [activeGame, currentPlayerIndex, setActiveGame, setCurrentPlayerIndex]);
 
   const moveGamePlayerUp = useCallback((index) => {

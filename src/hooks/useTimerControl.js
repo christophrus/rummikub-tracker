@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { STORAGE_KEYS, EXTENSION_DURATION_SECONDS } from '../constants';
+import { sanitizeGameForStorage } from '../utils';
 
 export const useTimerControl = ({
   activeGame,
@@ -31,7 +32,7 @@ export const useTimerControl = ({
     setTimerDuration(originalTimerDuration);
     const updatedGame = { ...activeGame, currentPlayerIndex: nextIndex };
     setActiveGame(updatedGame);
-    localStorage.setItem(STORAGE_KEYS.ACTIVE_GAME, JSON.stringify(updatedGame));
+    localStorage.setItem(STORAGE_KEYS.ACTIVE_GAME, JSON.stringify(sanitizeGameForStorage(updatedGame)));
     setTimeout(() => setTimerActive(true), 500);
   }, [activeGame, currentPlayerIndex, originalTimerDuration, playTurnNotification, speakPlayerName, ttsLanguage, setTimerActive, setCurrentPlayerIndex, setTimerSeconds, setTimerDuration, setActiveGame]);
 
@@ -49,7 +50,7 @@ export const useTimerControl = ({
     setPlayerExtensions(updatedExtensions);
     const updatedGame = { ...activeGame, playerExtensions: updatedExtensions };
     setActiveGame(updatedGame);
-    localStorage.setItem(STORAGE_KEYS.ACTIVE_GAME, JSON.stringify(updatedGame));
+    localStorage.setItem(STORAGE_KEYS.ACTIVE_GAME, JSON.stringify(sanitizeGameForStorage(updatedGame)));
   }, [activeGame, currentPlayerIndex, timerSeconds, playerExtensions, setTimerSeconds, setTimerDuration, setPlayerExtensions, setActiveGame]);
 
   const updateTimerDuration = useCallback((newDuration) => {
@@ -59,7 +60,7 @@ export const useTimerControl = ({
     if (activeGame) {
       const updatedGame = { ...activeGame, timerDuration: newDuration, originalTimerDuration: newDuration };
       setActiveGame(updatedGame);
-      localStorage.setItem(STORAGE_KEYS.ACTIVE_GAME, JSON.stringify(updatedGame));
+      localStorage.setItem(STORAGE_KEYS.ACTIVE_GAME, JSON.stringify(sanitizeGameForStorage(updatedGame)));
     }
   }, [activeGame, setTimerDuration, setOriginalTimerDuration, setTimerSeconds, setActiveGame]);
 

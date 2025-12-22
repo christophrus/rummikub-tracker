@@ -62,3 +62,22 @@ export const validateMinPlayers = (players, minPlayers = 2) => {
 export const getInitials = (name) => {
   return name.charAt(0).toUpperCase();
 };
+
+export const stripPlayerImages = (players) => {
+  if (!Array.isArray(players)) return players;
+  return players.map((p) => {
+    if (typeof p === 'string') return p;
+    if (p && typeof p === 'object') {
+      return { name: p.name };
+    }
+    return p;
+  });
+};
+
+export const sanitizeGameForStorage = (game) => {
+  if (!game || typeof game !== 'object') return game;
+  return {
+    ...game,
+    players: stripPlayerImages(game.players)
+  };
+};

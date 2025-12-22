@@ -342,7 +342,11 @@ const RummikubTracker = () => {
     };
     
     setActiveGame(updatedGame);
-    localStorage.setItem(STORAGE_KEYS.ACTIVE_GAME, JSON.stringify(updatedGame));
+    // Store without player images; images are persisted only in saved-players.
+    localStorage.setItem(STORAGE_KEYS.ACTIVE_GAME, JSON.stringify({
+      ...updatedGame,
+      players: updatedGame.players?.map(p => ({ name: p.name }))
+    }));
   };
 
   const handleEndGame = () => {

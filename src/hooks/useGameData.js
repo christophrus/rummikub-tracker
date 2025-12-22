@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { sanitizeGameForStorage } from '../utils';
 
 export const useGameData = () => {
   const [activeGame, setActiveGame] = useState(null);
@@ -12,17 +13,54 @@ export const useGameData = () => {
 
   const loadData = () => {
     try {
-      const historyData = localStorage.getItem('game-history');
-      if (historyData) setGameHistory(JSON.parse(historyData));
-      
       const savedPlayersData = localStorage.getItem('saved-players');
-      if (savedPlayersData) setSavedPlayers(JSON.parse(savedPlayersData));
+      const savedPlayersList = savedPlayersData ? JSON.parse(savedPlayersData) : [];
+      if (savedPlayersData) setSavedPlayers(savedPlayersList);
+
+      const imageByName = new Map(
+        (savedPlayersList || [])
+          .filter(p => p && typeof p === 'object' && typeof p.name === 'string')
+          .map(p => [p.name.toLowerCase(), p.image || null])
+      );
+
+      const hydratePlayers = (players) => {
+        if (!Array.isArray(players)) return players;
+        return players
+          .map((p) => {
+            const name = typeof p === 'string' ? p : p?.name;
+            if (!name) return null;
+            return {
+              name,
+              image: imageByName.get(String(name).toLowerCase()) || null
+            };
+          })
+          .filter(Boolean);
+      };
+
+      const historyData = localStorage.getItem('game-history');
+      if (historyData) {
+        const parsedHistory = JSON.parse(historyData);
+        if (Array.isArray(parsedHistory)) {
+          const hydratedHistory = parsedHistory.map(g => ({ ...g, players: hydratePlayers(g.players) }));
+          setGameHistory(hydratedHistory);
+
+          // Cleanup legacy data: remove any embedded images from stored history.
+          const needsCleanup = parsedHistory.some(g =>
+            Array.isArray(g?.players) && g.players.some(p => p && typeof p === 'object' && p.image)
+          );
+          if (needsCleanup) {
+            localStorage.setItem('game-history', JSON.stringify(parsedHistory.map(sanitizeGameForStorage)));
+          }
+        }
+      }
       
       const activeGameData = localStorage.getItem('active-game');
       if (activeGameData) {
         const game = JSON.parse(activeGameData);
+        const activeGameHadEmbeddedImages =
+          Array.isArray(game?.players) && game.players.some(p => p && typeof p === 'object' && p.image);
         if (game.players) {
-          game.players = game.players.map(p => typeof p === 'string' ? { name: p, image: null } : p);
+          game.players = hydratePlayers(game.players);
         }
         if (!game.playerExtensions) {
           game.playerExtensions = {};
@@ -32,6 +70,11 @@ export const useGameData = () => {
         setCurrentPlayerIndex(game.currentPlayerIndex || 0);
         setCurrentRound(game.rounds.length + 1);
         setPlayerExtensions(game.playerExtensions || {});
+
+        // Cleanup legacy data: remove any embedded images from stored active game.
+        if (activeGameHadEmbeddedImages) {
+          localStorage.setItem('active-game', JSON.stringify(sanitizeGameForStorage(game)));
+        }
       }
     } catch (error) {
       console.error('Error loading data:', error);
@@ -68,7 +111,7 @@ export const useGameData = () => {
       rounds: [...activeGame.rounds, { round: currentRound, scores: { ...roundScores }, timestamp: new Date().toISOString() }]
     };
     setActiveGame(updatedGame);
-    localStorage.setItem('active-game', JSON.stringify(updatedGame));
+    localStorage.setItem('active-game', JSON.stringify(sanitizeGameForStorage(updatedGame)));
     setCurrentRound(currentRound + 1);
     setRoundScores({});
     return updatedGame;
@@ -93,9 +136,12 @@ export const useGameData = () => {
       winner,
       finalScores: totals
     };
-    const updatedHistory = [completedGame, ...gameHistory];
+    const updatedHistory = [
+      completedGame,
+      ...gameHistory
+    ];
     setGameHistory(updatedHistory);
-    localStorage.setItem('game-history', JSON.stringify(updatedHistory));
+    localStorage.setItem('game-history', JSON.stringify(updatedHistory.map(sanitizeGameForStorage)));
     localStorage.removeItem('active-game');
     setActiveGame(null);
     return completedGame;
@@ -113,7 +159,7 @@ export const useGameData = () => {
   const deleteGame = (gameId) => {
     const updatedHistory = gameHistory.filter(g => g.id !== gameId);
     setGameHistory(updatedHistory);
-    localStorage.setItem('game-history', JSON.stringify(updatedHistory));
+    localStorage.setItem('game-history', JSON.stringify(updatedHistory.map(sanitizeGameForStorage)));
   };
 
   const deleteSavedPlayer = (playerName) => {
@@ -149,9 +195,43 @@ export const useGameData = () => {
       const extensions = {};
       validPlayers.forEach(p => extensions[p.name] = 0);
       
+      const GAME_NUMBER_KEY = 'game-number-seq';
+      const baseDefaultName = `Game ${new Date().toLocaleDateString()}`;
+      const existingNames = new Set(
+        [activeGame, ...gameHistory]
+          .filter(Boolean)
+          .map(g => String(g.name || '').toLowerCase())
+      );
+
+      let resolvedName = (gameName || '').trim();
+      if (!resolvedName) {
+        // Ensure a unique default name by adding an incrementing suffix (#1, #2, ...).
+        // Persisted so it increments across reloads.
+        let seq = Number.parseInt(localStorage.getItem(GAME_NUMBER_KEY) || '0', 10);
+        if (!Number.isFinite(seq) || seq < 0) seq = 0;
+
+        // Avoid collisions if localStorage was cleared but history remains.
+        // Keep incrementing until we find a free name.
+        for (let attempt = 0; attempt < 1000; attempt += 1) {
+          const candidateSeq = seq + 1;
+          const candidate = `${baseDefaultName} #${candidateSeq}`;
+          if (!existingNames.has(candidate.toLowerCase())) {
+            resolvedName = candidate;
+            localStorage.setItem(GAME_NUMBER_KEY, String(candidateSeq));
+            break;
+          }
+          seq = candidateSeq;
+        }
+
+        // Fallback: still guarantee a name.
+        if (!resolvedName) {
+          resolvedName = `${baseDefaultName} #${String(Date.now())}`;
+        }
+      }
+
       const game = {
         id: Date.now(),
-        name: gameName || `Game ${new Date().toLocaleDateString()}`,
+        name: resolvedName,
         players: validPlayers,
         rounds: [],
         startTime: new Date().toISOString(),
@@ -169,7 +249,7 @@ export const useGameData = () => {
       setPlayerExtensions(extensions);
       setCurrentRound(1);
       setRoundScores({});
-      localStorage.setItem('active-game', JSON.stringify(game));
+      localStorage.setItem('active-game', JSON.stringify(sanitizeGameForStorage(game)));
       return game;
     } catch (error) {
       console.error('Error starting game:', error);
