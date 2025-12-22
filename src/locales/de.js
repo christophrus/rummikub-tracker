@@ -65,11 +65,13 @@ const deTranslations = {
   exitFullscreen: 'Vollbild verlassen',
   lockScrolling: 'Scrollen sperren',
   unlockScrolling: 'Scrollen entsperren',
+  cancelActiveGame: 'Spiel abbrechen',
   maxPlayersAlert: 'Maximal 6 Spieler erlaubt',
   playerAlreadyAddedAlert: 'Dieser Spieler wurde bereits zum Spiel hinzugefügt',
   minPlayersAlert: 'Bitte fügen Sie mindestens 2 Spieler hinzu',
   enterAllScoresAlert: 'Bitte geben Sie Punkte für alle Spieler ein',
   multipleZeroScoresAlert: 'Pro Runde darf nur ein Spieler 0 Punkte haben',
+  cancelActiveGameConfirm: 'Aktuelles Spiel abbrechen? Das aktive Spiel wird verworfen und nicht in der Historie gespeichert.',
   endCurrentGameConfirm: 'Das Starten eines neuen Spiels beendet Ihr aktuelles Spiel. Fortfahren?',
   language: 'Sprache',
   selectLanguage: 'Sprache auswählen',
@@ -90,7 +92,6 @@ const deTranslations = {
   clearAllDataDescription: 'Alle gespeicherten Spiele, Spieler und Einstellungen löschen',
   clearAllDataConfirm: 'Bist du sicher, dass du alle Daten löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden!',
   clearAllDataButton: 'Alle Daten löschen',
-  paused: 'PAUSIERT',
   declareWinner: 'Gewinner erklären',
   roundWinner: 'Rundengewinner!'
 };

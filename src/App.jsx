@@ -71,6 +71,7 @@ const RummikubTracker = () => {
     saveRound,
     calculateTotals,
     endGame,
+    cancelActiveGame,
     deleteGame,
     deleteSavedPlayer,
     addSavedPlayerToGame,
@@ -352,6 +353,16 @@ const RummikubTracker = () => {
     setView(VIEWS.GAME_HISTORY);
   };
 
+  const handleCancelActiveGame = () => {
+    if (!activeGame) return;
+    if (!window.confirm(t('cancelActiveGameConfirm'))) return;
+
+    setTimerActive(false);
+    setTimerSeconds(timerDuration);
+    cancelActiveGame();
+    setView(VIEWS.HOME);
+  };
+
   const handleResumeGame = () => {
     setView(VIEWS.ACTIVE_GAME);
     setTimeout(() => {
@@ -424,6 +435,7 @@ const RummikubTracker = () => {
             currentPlayerIndex={currentPlayerIndex}
             onNewGame={handleStartNewGame}
             onResume={handleResumeGame}
+            onCancelActiveGame={handleCancelActiveGame}
             onManagePlayers={() => setView(VIEWS.MANAGE_PLAYERS)}
             onViewHistory={() => setView(VIEWS.GAME_HISTORY)}
             onSettings={() => setView(VIEWS.SETTINGS)}

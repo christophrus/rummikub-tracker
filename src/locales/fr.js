@@ -67,11 +67,13 @@ const frTranslations = {
   exitFullscreen: 'Quitter le plein écran',
   lockScrolling: 'Verrouiller le défilement',
   unlockScrolling: 'Déverrouiller le défilement',
+  cancelActiveGame: 'Annuler la partie',
   maxPlayersAlert: 'Maximum 6 joueurs autorisés',
   playerAlreadyAddedAlert: 'Ce joueur est déjà ajouté à la partie',
   minPlayersAlert: 'Veuillez ajouter au moins 2 joueurs',
   enterAllScoresAlert: 'Veuillez entrer les scores pour tous les joueurs',
   multipleZeroScoresAlert: 'Un seul joueur peut avoir un score de 0 par manche',
+  cancelActiveGameConfirm: 'Annuler la partie en cours ? La partie active sera supprimée et ne sera pas enregistrée dans l\'historique.',
   endCurrentGameConfirm: 'Commencer une nouvelle partie terminera votre partie actuelle. Continuer?',
   language: 'Langue',
   selectLanguage: 'Sélectionner la langue',
@@ -92,7 +94,6 @@ const frTranslations = {
   clearAllDataDescription: 'Supprimer tous les jeux, joueurs et paramètres sauvegardés',
   clearAllDataConfirm: 'Êtes-vous sûr de vouloir supprimer toutes les données? Cette action est irréversible!',
   clearAllDataButton: 'Effacer toutes les données',
-  paused: 'EN PAUSE',
   declareWinner: 'Déclarer vainqueur',
   roundWinner: 'Gagnant du tour !'
 };

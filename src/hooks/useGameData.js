@@ -101,6 +101,15 @@ export const useGameData = () => {
     return completedGame;
   };
 
+  const cancelActiveGame = () => {
+    localStorage.removeItem('active-game');
+    setActiveGame(null);
+    setCurrentPlayerIndex(0);
+    setCurrentRound(1);
+    setRoundScores({});
+    setPlayerExtensions({});
+  };
+
   const deleteGame = (gameId) => {
     const updatedHistory = gameHistory.filter(g => g.id !== gameId);
     setGameHistory(updatedHistory);
@@ -185,6 +194,7 @@ export const useGameData = () => {
     saveRound,
     calculateTotals,
     endGame,
+    cancelActiveGame,
     deleteGame,
     deleteSavedPlayer,
     addSavedPlayerToGame,

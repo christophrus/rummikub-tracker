@@ -1,10 +1,11 @@
-import { Play, Trophy, Settings, Users, History } from 'lucide-react';
+import { Play, Trophy, Settings, Users, History, X } from 'lucide-react';
 
 export const HomeView = ({ 
   activeGame, 
   currentPlayerIndex, 
   onNewGame, 
   onResume, 
+  onCancelActiveGame,
   onManagePlayers, 
   onViewHistory,
   onSettings,
@@ -20,14 +21,25 @@ export const HomeView = ({
               <h3 className="text-xl sm:text-2xl font-bold mb-2 truncate">{activeGame.name}</h3>
               <p className="text-xs sm:text-sm opacity-90">{t('round')} {activeGame.rounds.length + 1} • {activeGame.players.length} {t('players').toLowerCase()}</p>
             </div>
-            <button
-              onClick={onResume}
-              className="w-full sm:w-auto bg-white dark:bg-gray-100 text-green-600 dark:text-green-700 px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold hover:bg-green-50 dark:hover:bg-gray-200 transition flex items-center justify-center gap-2 text-sm sm:text-base whitespace-nowrap"
-            >
-              <Play size={18} className="sm:hidden" />
-              <Play size={20} className="hidden sm:inline" />
-              {t('resumeGame')}
-            </button>
+            <div className="w-full sm:w-auto flex flex-col sm:flex-row gap-2">
+              <button
+                onClick={onResume}
+                className="w-full sm:w-auto bg-white dark:bg-gray-100 text-green-600 dark:text-green-700 px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold hover:bg-green-50 dark:hover:bg-gray-200 transition flex items-center justify-center gap-2 text-sm sm:text-base whitespace-nowrap"
+              >
+                <Play size={18} className="sm:hidden" />
+                <Play size={20} className="hidden sm:inline" />
+                {t('resumeGame')}
+              </button>
+              <button
+                onClick={onCancelActiveGame}
+                className="w-full sm:w-auto bg-white/20 hover:bg-white/30 px-4 sm:px-5 py-2 sm:py-3 rounded-lg font-semibold transition flex items-center justify-center gap-2 text-sm sm:text-base whitespace-nowrap border border-white/30"
+                title={t('cancelActiveGame')}
+              >
+                <X size={18} className="sm:hidden" />
+                <X size={20} className="hidden sm:inline" />
+                {t('cancelActiveGame')}
+              </button>
+            </div>
           </div>
         </div>
       )}
