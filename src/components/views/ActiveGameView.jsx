@@ -120,6 +120,20 @@ export const ActiveGameView = ({
           <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 rounded-lg p-4 sm:p-6 shadow-inner">
             <div className="flex flex-col items-center">
               <AnalogClock seconds={timerSeconds} duration={timerDuration} isActive={timerActive} t={t} onClick={onNextPlayer} />
+              
+              <div className="mt-4 w-full">
+                <button 
+                  onClick={onExtendTimer} 
+                  disabled={!canExtend}
+                  className={`w-full px-3 sm:px-4 py-3 sm:py-4.5 rounded-lg font-semibold transition flex items-center justify-center gap-2 text-sm sm:text-base ${
+                    canExtend ? 'bg-blue-600 dark:bg-blue-500 text-white hover:bg-blue-700 dark:hover:bg-blue-600' : 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+                  }`}
+                >
+                  <Plus size={20} />
+                  <span className="truncate">{t('addSeconds')} ({(activeGame.maxExtensions || 3) - playerExtensionsUsed} {t('left')})</span>
+                </button>
+              </div>
+              
               <div className="flex gap-2 mt-4 flex-wrap justify-center">
               {timerActive ? (
                 <button 
@@ -144,19 +158,6 @@ export const ActiveGameView = ({
                 title={t('reset')}
               >
                 <RotateCcw size={30} />
-              </button>
-            </div>
-
-            <div className="mt-4 w-full">
-              <button 
-                onClick={onExtendTimer} 
-                disabled={!canExtend}
-                className={`w-full px-3 sm:px-4 py-3 sm:py-4.5 rounded-lg font-semibold transition flex items-center justify-center gap-2 text-sm sm:text-base ${
-                  canExtend ? 'bg-blue-600 dark:bg-blue-500 text-white hover:bg-blue-700 dark:hover:bg-blue-600' : 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-                }`}
-              >
-                <Plus size={20} />
-                <span className="truncate">{t('addSeconds')} ({(activeGame.maxExtensions || 3) - playerExtensionsUsed} {t('left')})</span>
               </button>
             </div>
 
