@@ -4,10 +4,8 @@ import { validateMinPlayers } from '../utils';
 
 export const useGameFlow = ({
   activeGame,
-  setActiveGame,
   currentPlayerIndex,
   setCurrentPlayerIndex,
-  playerExtensions,
   setPlayerExtensions,
   roundScores,
   updateRoundScore,

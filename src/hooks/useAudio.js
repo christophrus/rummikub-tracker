@@ -1,15 +1,30 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 export const useAudio = () => {
-  const [audioContext, setAudioContext] = useState(null);
+  const audioContextRef = useRef(null);
+  
+  // Initialize AudioContext on first use
+  const getAudioContext = () => {
+    if (!audioContextRef.current) {
+      audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    // Resume context if it's suspended (browser autoplay policy)
+    if (audioContextRef.current.state === 'suspended') {
+      audioContextRef.current.resume();
+    }
+    return audioContextRef.current;
+  };
 
   useEffect(() => {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    setAudioContext(ctx);
-    return () => ctx.close();
+    return () => {
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+      }
+    };
   }, []);
 
   const playTickTock = () => {
+    const audioContext = getAudioContext();
     if (!audioContext) return;
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
@@ -24,6 +39,7 @@ export const useAudio = () => {
   };
 
   const playTurnNotification = () => {
+    const audioContext = getAudioContext();
     if (!audioContext) return;
     [523.25, 659.25].forEach((freq, index) => {
       const oscillator = audioContext.createOscillator();

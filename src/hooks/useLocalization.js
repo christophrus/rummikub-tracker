@@ -1,12 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 export const useLocalization = () => {
-  const [uiLanguage, setUiLanguage] = useState('en');
-  
-  useEffect(() => {
+  const [uiLanguage, setUiLanguage] = useState(() => {
     const savedUiLanguage = localStorage.getItem('ui-language');
-    if (savedUiLanguage) setUiLanguage(savedUiLanguage);
-  }, []);
+    return savedUiLanguage || 'en';
+  });
 
   const changeUiLanguage = (lang) => {
     setUiLanguage(lang);

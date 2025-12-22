@@ -23,9 +23,7 @@ import {
 import { VIEWS, STORAGE_KEYS, MAX_PLAYERS, MIN_PLAYERS, EXTENSION_DURATION_SECONDS } from './constants';
 
 // Import utilities
-import { 
-  validateMinPlayers
-} from './utils';
+// (No utilities currently imported)
 
 // Import components
 import {
@@ -69,7 +67,6 @@ const RummikubTracker = () => {
     loading,
     updateRoundScore,
     saveRound,
-    calculateTotals,
     endGame,
     cancelActiveGame,
     deleteGame,
@@ -104,9 +101,7 @@ const RummikubTracker = () => {
 
   const { 
     timerSeconds, 
-    setTimerSeconds, 
-    resetTimer: timerResetTimer, 
-    updateDuration: timerUpdateDuration 
+    setTimerSeconds
   } = useTimer(timerDuration, handleTimeUp, false);
 
   const [timerActive, setTimerActive] = useState(false);
@@ -193,7 +188,6 @@ const RummikubTracker = () => {
   const {
     declaredWinner,
     pendingGame,
-    startingPlayerIndex,
     handleStartGame: handleStartGameFlow,
     handlePlayerSelected: handlePlayerSelectedFlow,
     handleDeclareWinner,
@@ -222,14 +216,14 @@ const RummikubTracker = () => {
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [timerActive, timerSeconds, timerDuration, playTickTock]);
+  }, [timerActive, timerSeconds, timerDuration, playTickTock, setTimerSeconds]);
 
   // Handle timer expiration
   useEffect(() => {
     if (timerSeconds === 0 && activeGame && !timerActive) {
       nextPlayer();
     }
-  }, [timerSeconds, activeGame, timerActive]);
+  }, [timerSeconds, activeGame, timerActive, nextPlayer]);
 
   // Fullscreen listener
   useEffect(() => {
@@ -259,6 +253,7 @@ const RummikubTracker = () => {
       setOriginalTimerDuration(activeGame.originalTimerDuration || activeGame.timerDuration);
       setTimerSeconds(activeGame.timerDuration);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeGame?.timerDuration]);
 
   // Translation function

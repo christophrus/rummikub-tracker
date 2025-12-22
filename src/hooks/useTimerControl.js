@@ -9,7 +9,7 @@ export const useTimerControl = ({
   setCurrentPlayerIndex,
   timerSeconds,
   setTimerSeconds,
-  timerDuration,
+
   setTimerDuration,
   originalTimerDuration,
   setOriginalTimerDuration,

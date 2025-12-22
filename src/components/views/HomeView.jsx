@@ -2,7 +2,6 @@ import { Play, Trophy, Settings, Users, History, X } from 'lucide-react';
 
 export const HomeView = ({ 
   activeGame, 
-  currentPlayerIndex, 
   onNewGame, 
   onResume, 
   onCancelActiveGame,
