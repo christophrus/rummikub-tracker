@@ -47,9 +47,10 @@ export const GameHistoryView = ({
   gameHistory, 
   onClose, 
   onDeleteGame,
+  initialExpandedGameId,
   t 
 }) => {
-  const [expandedGameId, setExpandedGameId] = useState(null);
+  const [expandedGameId, setExpandedGameId] = useState(initialExpandedGameId || null);
   const entryRefs = useRef({});
 
   const toggleGameExpanded = (gameId) => {

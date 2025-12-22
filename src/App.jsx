@@ -106,6 +106,7 @@ const RummikubTracker = () => {
 
   const [timerActive, setTimerActive] = useState(false);
   const [gameElapsedTime, setGameElapsedTime] = useState('');
+  const [initialExpandedGameId, setInitialExpandedGameId] = useState(null);
 
   // Player management hooks
   const playerManagement = usePlayerManagement(MAX_PLAYERS);
@@ -375,7 +376,8 @@ const RummikubTracker = () => {
     setTimerActive(false);
     setTimerSeconds(timerDuration);
     
-    endGame();
+    const completedGame = endGame();
+    setInitialExpandedGameId(completedGame?.id || null);
     setView(VIEWS.GAME_HISTORY);
   };
 
@@ -587,8 +589,12 @@ const RummikubTracker = () => {
         {view === VIEWS.GAME_HISTORY && (
           <GameHistoryView
             gameHistory={gameHistory}
-            onClose={() => setView(VIEWS.HOME)}
+            onClose={() => {
+              setInitialExpandedGameId(null);
+              setView(VIEWS.HOME);
+            }}
             onDeleteGame={deleteGame}
+            initialExpandedGameId={initialExpandedGameId}
             t={t}
           />
         )}
