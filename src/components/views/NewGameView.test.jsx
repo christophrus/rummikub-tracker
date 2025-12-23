@@ -71,4 +71,75 @@ describe('NewGameView', () => {
     render(<NewGameView {...defaultProps} />);
     expect(screen.getAllByTestId('player-card')).toHaveLength(1);
   });
+
+  it('calls onClose when close button is clicked', () => {
+    const onClose = vi.fn();
+    render(<NewGameView {...defaultProps} onClose={onClose} />);
+    
+    const closeButton = screen.getByRole('button', { name: '' }); // X icon button
+    // Find the X button (it's at the top)
+    const buttons = screen.getAllByRole('button');
+    // First button is the close button
+    fireEvent.click(buttons[0]);
+    
+    expect(onClose).toHaveBeenCalled();
+  });
+
+  it('calls onTimerDurationChange when timer is changed', () => {
+    const onTimerDurationChange = vi.fn();
+    render(<NewGameView {...defaultProps} onTimerDurationChange={onTimerDurationChange} />);
+    
+    const selects = screen.getAllByRole('combobox');
+    // First select is timer duration
+    fireEvent.change(selects[0], { target: { value: '120' } });
+    
+    expect(onTimerDurationChange).toHaveBeenCalledWith(120);
+  });
+
+  it('calls onMaxExtensionsChange when extensions setting changes', () => {
+    const onMaxExtensionsChange = vi.fn();
+    render(<NewGameView {...defaultProps} onMaxExtensionsChange={onMaxExtensionsChange} />);
+    
+    const selects = screen.getAllByRole('combobox');
+    // Second select is max extensions
+    fireEvent.change(selects[1], { target: { value: '5' } });
+    
+    expect(onMaxExtensionsChange).toHaveBeenCalledWith(5);
+  });
+
+  it('shows saved players when available', () => {
+    const savedPlayers = [
+      { name: 'Saved Player 1' },
+      { name: 'Saved Player 2' }
+    ];
+    render(<NewGameView {...defaultProps} savedPlayers={savedPlayers} />);
+    
+    expect(screen.getByText('Saved Player 1')).toBeInTheDocument();
+    expect(screen.getByText('Saved Player 2')).toBeInTheDocument();
+  });
+
+  it('calls onAddSavedPlayer when saved player button is clicked', () => {
+    const onAddSavedPlayer = vi.fn();
+    const savedPlayers = [{ name: 'Saved Player' }];
+    render(<NewGameView {...defaultProps} savedPlayers={savedPlayers} onAddSavedPlayer={onAddSavedPlayer} />);
+    
+    fireEvent.click(screen.getByText('Saved Player'));
+    
+    expect(onAddSavedPlayer).toHaveBeenCalledWith({ name: 'Saved Player' });
+  });
+
+  it('calls onAddPlayer when add player button is clicked', () => {
+    const onAddPlayer = vi.fn();
+    render(<NewGameView {...defaultProps} onAddPlayer={onAddPlayer} />);
+    
+    fireEvent.click(screen.getByText('addPlayer'));
+    
+    expect(onAddPlayer).toHaveBeenCalled();
+  });
+
+  it('displays game name in input', () => {
+    render(<NewGameView {...defaultProps} gameName="Test Game" />);
+    
+    expect(screen.getByDisplayValue('Test Game')).toBeInTheDocument();
+  });
 });

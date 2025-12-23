@@ -150,4 +150,133 @@ describe('useGameFlow', () => {
 
     expect(response.error).toBe('enterAllScoresAlert');
   });
+
+  it('returns error when multiple players have zero scores', () => {
+    const props = {
+      ...defaultProps,
+      activeGame: { players: [{ name: 'P1' }, { name: 'P2' }] },
+      roundScores: { 'P1': '0', 'P2': '0' }
+    };
+    const { result } = renderHook(() => useGameFlow(props));
+    
+    let response;
+    act(() => {
+      response = result.current.handleSaveRound(vi.fn(), 'en-US');
+    });
+
+    expect(response.error).toBe('multipleZeroScoresAlert');
+  });
+
+  it('returns error when handlePlayerSelected is called without pending game', () => {
+    const { result } = renderHook(() => useGameFlow(defaultProps));
+    
+    let response;
+    act(() => {
+      response = result.current.handlePlayerSelected(0);
+    });
+
+    expect(response.error).toBe('noPendingGame');
+  });
+
+  it('handles quota exceeded error when starting game', () => {
+    const props = {
+      ...defaultProps,
+      startNewGame: vi.fn(() => {
+        const error = new Error('quota exceeded');
+        error.name = 'QuotaExceededError';
+        throw error;
+      })
+    };
+    const { result } = renderHook(() => useGameFlow(props));
+    
+    // Setup pending game first
+    act(() => {
+      result.current.handleStartGame(
+        [{ name: 'P1' }, { name: 'P2' }],
+        'Game 1',
+        60,
+        3,
+        'en-US',
+        2
+      );
+    });
+
+    let response;
+    act(() => {
+      response = result.current.handlePlayerSelected(0);
+    });
+
+    expect(response.error).toBe('quotaExceeded');
+  });
+
+  it('handles generic error when starting game', () => {
+    const props = {
+      ...defaultProps,
+      startNewGame: vi.fn(() => {
+        throw new Error('some other error');
+      })
+    };
+    const { result } = renderHook(() => useGameFlow(props));
+    
+    // Setup pending game first
+    act(() => {
+      result.current.handleStartGame(
+        [{ name: 'P1' }, { name: 'P2' }],
+        'Game 1',
+        60,
+        3,
+        'en-US',
+        2
+      );
+    });
+
+    let response;
+    act(() => {
+      response = result.current.handlePlayerSelected(0);
+    });
+
+    expect(response.error).toBe('genericError');
+  });
+
+  it('does nothing if no active game when declaring winner', () => {
+    const props = {
+      ...defaultProps,
+      setTimerActive: vi.fn(),
+      updateRoundScore: vi.fn()
+    };
+    const { result } = renderHook(() => useGameFlow(props));
+    
+    act(() => {
+      result.current.handleDeclareWinner();
+    });
+
+    // Should not call any of the functions (activeGame is null)
+    expect(props.setTimerActive).not.toHaveBeenCalled();
+    expect(props.updateRoundScore).not.toHaveBeenCalled();
+  });
+
+  it('cancels pending game', () => {
+    const { result } = renderHook(() => useGameFlow(defaultProps));
+    
+    // Create pending game
+    act(() => {
+      result.current.handleStartGame(
+        [{ name: 'P1' }, { name: 'P2' }],
+        'Game 1',
+        60,
+        3,
+        'en-US',
+        2
+      );
+    });
+    
+    expect(result.current.pendingGame).not.toBeNull();
+    
+    // Cancel it
+    act(() => {
+      result.current.cancelPendingGame();
+    });
+    
+    expect(result.current.pendingGame).toBeNull();
+  });
 });

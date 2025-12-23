@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { formatTime, validateMinPlayers, getInitials, stripPlayerImages, sanitizeGameForStorage } from './helpers';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { formatTime, validateMinPlayers, getInitials, stripPlayerImages, sanitizeGameForStorage, handleImageUpload } from './helpers';
 
 describe('formatTime', () => {
   it('formats seconds to MM:SS', () => {
@@ -37,6 +37,14 @@ describe('getInitials', () => {
   it('returns first letter capitalized', () => {
     expect(getInitials('john')).toBe('J');
   });
+
+  it('handles uppercase names', () => {
+    expect(getInitials('JOHN')).toBe('J');
+  });
+
+  it('handles single character', () => {
+    expect(getInitials('a')).toBe('A');
+  });
 });
 
 describe('stripPlayerImages', () => {
@@ -66,5 +74,96 @@ describe('sanitizeGameForStorage', () => {
 
   it('returns input if not object', () => {
     expect(sanitizeGameForStorage(null)).toBeNull();
+  });
+
+  it('preserves other game properties', () => {
+    const game = { 
+      id: 1, 
+      name: 'Game', 
+      rounds: [{ scores: {} }],
+      players: [{ name: 'P1', image: 'data:...' }] 
+    };
+    const sanitized = sanitizeGameForStorage(game);
+    expect(sanitized.id).toBe(1);
+    expect(sanitized.name).toBe('Game');
+    expect(sanitized.rounds).toEqual([{ scores: {} }]);
+  });
+
+  it('handles undefined', () => {
+    expect(sanitizeGameForStorage(undefined)).toBeUndefined();
+  });
+});
+
+describe('handleImageUpload', () => {
+  beforeEach(() => {
+    // Mock FileReader
+    global.FileReader = vi.fn().mockImplementation(function() {
+      this.readAsDataURL = vi.fn().mockImplementation(function() {
+        setTimeout(() => {
+          this.onload({ target: { result: 'data:image/jpeg;base64,mockdata' } });
+        }, 0);
+      });
+    });
+
+    // Mock Image
+    global.Image = vi.fn().mockImplementation(function() {
+      setTimeout(() => {
+        this.width = 100;
+        this.height = 100;
+        if (this.onload) this.onload();
+      }, 0);
+    });
+
+    // Mock canvas
+    const mockCtx = {
+      drawImage: vi.fn()
+    };
+    HTMLCanvasElement.prototype.getContext = vi.fn(() => mockCtx);
+    HTMLCanvasElement.prototype.toDataURL = vi.fn(() => 'data:image/jpeg;base64,resized');
+  });
+
+  it('processes image file and calls callback', async () => {
+    const callback = vi.fn();
+    const file = new File([''], 'test.jpg', { type: 'image/jpeg' });
+    
+    handleImageUpload(file, callback);
+    
+    await new Promise(resolve => setTimeout(resolve, 50));
+    expect(callback).toHaveBeenCalledWith('data:image/jpeg;base64,resized');
+  });
+
+  it('does nothing for non-image files', () => {
+    const callback = vi.fn();
+    const file = new File([''], 'test.txt', { type: 'text/plain' });
+    
+    handleImageUpload(file, callback);
+    
+    expect(callback).not.toHaveBeenCalled();
+  });
+
+  it('does nothing if file is null', () => {
+    const callback = vi.fn();
+    
+    handleImageUpload(null, callback);
+    
+    expect(callback).not.toHaveBeenCalled();
+  });
+
+  it('handles large images by resizing', async () => {
+    global.Image = vi.fn().mockImplementation(function() {
+      setTimeout(() => {
+        this.width = 500;
+        this.height = 300;
+        if (this.onload) this.onload();
+      }, 0);
+    });
+
+    const callback = vi.fn();
+    const file = new File([''], 'large.jpg', { type: 'image/png' });
+    
+    handleImageUpload(file, callback);
+    
+    await new Promise(resolve => setTimeout(resolve, 50));
+    expect(callback).toHaveBeenCalled();
   });
 });

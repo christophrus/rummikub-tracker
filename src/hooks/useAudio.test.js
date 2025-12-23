@@ -81,4 +81,76 @@ describe('useAudio', () => {
     
     expect(mockAudioContext.resume).toHaveBeenCalled();
   });
+
+  it('plays victory sound with multiple notes', () => {
+    const { result } = renderHook(() => useAudio());
+    result.current.playVictorySound();
+    
+    // Victory sound plays 4 notes (C5, E5, G5, C6)
+    expect(mockAudioContext.createOscillator).toHaveBeenCalledTimes(4);
+    expect(mockOscillator.start).toHaveBeenCalledTimes(4);
+  });
+
+  it('speaks player name using speech synthesis', () => {
+    // Mock SpeechSynthesisUtterance
+    global.SpeechSynthesisUtterance = vi.fn().mockImplementation(function(text) {
+      this.text = text;
+      this.rate = 1.0;
+      this.pitch = 1.0;
+      this.volume = 1.0;
+      this.lang = '';
+      this.voice = null;
+    });
+
+    const mockCancel = vi.fn();
+    const mockSpeak = vi.fn();
+    
+    Object.defineProperty(window, 'speechSynthesis', {
+      value: {
+        cancel: mockCancel,
+        speak: mockSpeak,
+        getVoices: vi.fn(() => [
+          { lang: 'de-DE', name: 'German Voice' },
+          { lang: 'en-US', name: 'English Voice' }
+        ])
+      },
+      writable: true,
+      configurable: true
+    });
+
+    const { result } = renderHook(() => useAudio());
+    
+    vi.useFakeTimers();
+    result.current.speakPlayerName('John', 'de-DE');
+    
+    expect(mockCancel).toHaveBeenCalled();
+    
+    // Advance past the 400ms delay
+    vi.advanceTimersByTime(500);
+    
+    expect(mockSpeak).toHaveBeenCalled();
+    vi.useRealTimers();
+  });
+
+  it('cleans up audio context on unmount', () => {
+    const { result, unmount } = renderHook(() => useAudio());
+    
+    // Initialize context
+    result.current.playTickTock();
+    
+    // Unmount
+    unmount();
+    
+    expect(mockAudioContext.close).toHaveBeenCalled();
+  });
+
+  it('reuses existing audio context', () => {
+    const { result } = renderHook(() => useAudio());
+    
+    result.current.playTickTock();
+    result.current.playTickTock();
+    
+    // Should only create one AudioContext
+    expect(window.AudioContext).toHaveBeenCalledTimes(1);
+  });
 });

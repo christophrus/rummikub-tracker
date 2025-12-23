@@ -68,4 +68,22 @@ describe('useTimer', () => {
     });
     expect(result.current.timerSeconds).toBe(60);
   });
+
+  it('allows setting timer seconds directly', () => {
+    const { result } = renderHook(() => useTimer(60, () => {}, false));
+    
+    act(() => {
+      result.current.setTimerSeconds(30);
+    });
+    expect(result.current.timerSeconds).toBe(30);
+  });
+
+  it('allows updating duration via updateDuration', () => {
+    const { result } = renderHook(() => useTimer(60, () => {}, false));
+    
+    act(() => {
+      result.current.updateDuration(90);
+    });
+    expect(result.current.timerSeconds).toBe(90);
+  });
 });

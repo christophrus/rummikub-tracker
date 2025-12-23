@@ -26,8 +26,23 @@ describe('PlayerAvatar', () => {
   it('applies size classes correctly', () => {
     const player = { name: 'John Doe' };
     const { container } = render(<PlayerAvatar player={player} size="lg" />);
-    // The container's first child should have the size class
     expect(container.firstChild).toHaveClass('w-10 h-10');
+  });
+
+  it('applies default size (md) when not specified', () => {
+    const player = { name: 'John Doe' };
+    const { container } = render(<PlayerAvatar player={player} />);
+    expect(container.firstChild).toHaveClass('w-8 h-8');
+  });
+
+  it('handles null player gracefully', () => {
+    const { container } = render(<PlayerAvatar player={null} />);
+    expect(screen.getByText('?')).toBeInTheDocument();
+  });
+
+  it('handles undefined player gracefully', () => {
+    const { container } = render(<PlayerAvatar player={undefined} />);
+    expect(screen.getByText('?')).toBeInTheDocument();
   });
 });
 

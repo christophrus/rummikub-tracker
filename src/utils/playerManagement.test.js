@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { 
   movePlayerUp, 
   movePlayerDown, 
@@ -94,6 +94,20 @@ describe('playerManagement', () => {
       const singlePlayer = [{ name: 'Player 1' }];
       const result = removePlayer(singlePlayer, 0);
       expect(result.length).toBe(1);
+    });
+  });
+
+  describe('reorderPlayers edge cases', () => {
+    it('does nothing if dragged index equals drop index', () => {
+      const result = reorderPlayers(initialPlayers, 1, 1);
+      expect(result).toEqual(initialPlayers);
+    });
+
+    it('handles moving to beginning', () => {
+      const result = reorderPlayers(initialPlayers, 2, 0);
+      expect(result[0].name).toBe('Player 3');
+      expect(result[1].name).toBe('Player 1');
+      expect(result[2].name).toBe('Player 2');
     });
   });
 });
