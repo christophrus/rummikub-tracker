@@ -93,7 +93,7 @@ describe('useAudio', () => {
 
   it('speaks player name using speech synthesis', () => {
     // Mock SpeechSynthesisUtterance
-    global.SpeechSynthesisUtterance = vi.fn().mockImplementation(function(text) {
+    globalThis.SpeechSynthesisUtterance = vi.fn().mockImplementation(function(text) {
       this.text = text;
       this.rate = 1.0;
       this.pitch = 1.0;

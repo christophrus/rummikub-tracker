@@ -97,7 +97,7 @@ describe('sanitizeGameForStorage', () => {
 describe('handleImageUpload', () => {
   beforeEach(() => {
     // Mock FileReader
-    global.FileReader = vi.fn().mockImplementation(function() {
+    globalThis.FileReader = vi.fn().mockImplementation(function() {
       this.readAsDataURL = vi.fn().mockImplementation(function() {
         setTimeout(() => {
           this.onload({ target: { result: 'data:image/jpeg;base64,mockdata' } });
@@ -106,7 +106,7 @@ describe('handleImageUpload', () => {
     });
 
     // Mock Image
-    global.Image = vi.fn().mockImplementation(function() {
+    globalThis.Image = vi.fn().mockImplementation(function() {
       setTimeout(() => {
         this.width = 100;
         this.height = 100;
@@ -150,7 +150,7 @@ describe('handleImageUpload', () => {
   });
 
   it('handles large images by resizing', async () => {
-    global.Image = vi.fn().mockImplementation(function() {
+    globalThis.Image = vi.fn().mockImplementation(function() {
       setTimeout(() => {
         this.width = 500;
         this.height = 300;

@@ -1,10 +1,10 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { usePlayerManagement, useGamePlayerManagement } from './usePlayerManagement';
 
 // Mock utils
 vi.mock('../utils', () => ({
-  addPlayer: (players, max) => [...players, { name: '' }],
+  addPlayer: (players) => [...players, { name: '' }],
   removePlayer: (players, index) => players.filter((_, i) => i !== index),
   updatePlayer: (players, index, field, value) => {
     const newPlayers = [...players];

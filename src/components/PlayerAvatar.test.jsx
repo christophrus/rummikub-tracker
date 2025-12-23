@@ -36,12 +36,12 @@ describe('PlayerAvatar', () => {
   });
 
   it('handles null player gracefully', () => {
-    const { container } = render(<PlayerAvatar player={null} />);
+    render(<PlayerAvatar player={null} />);
     expect(screen.getByText('?')).toBeInTheDocument();
   });
 
   it('handles undefined player gracefully', () => {
-    const { container } = render(<PlayerAvatar player={undefined} />);
+    render(<PlayerAvatar player={undefined} />);
     expect(screen.getByText('?')).toBeInTheDocument();
   });
 });

@@ -76,7 +76,6 @@ describe('NewGameView', () => {
     const onClose = vi.fn();
     render(<NewGameView {...defaultProps} onClose={onClose} />);
     
-    const closeButton = screen.getByRole('button', { name: '' }); // X icon button
     // Find the X button (it's at the top)
     const buttons = screen.getAllByRole('button');
     // First button is the close button

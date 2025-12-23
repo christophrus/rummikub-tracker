@@ -40,7 +40,7 @@ describe('AnalogClock', () => {
   });
 
   it('changes color based on time remaining', () => {
-    const { rerender, container } = render(<AnalogClock {...defaultProps} seconds={40} />);
+    const { rerender } = render(<AnalogClock {...defaultProps} seconds={40} />);
     // Normal color (indigo/blue-ish) - checking stroke color might be hard with just class names if it's inline style or attribute
     // The code uses stroke attribute on the circle
     

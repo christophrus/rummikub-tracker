@@ -39,8 +39,8 @@ describe('GameHistoryView', () => {
 
   beforeEach(() => {
     // Mock URL.createObjectURL and URL.revokeObjectURL
-    global.URL.createObjectURL = vi.fn(() => 'blob:test');
-    global.URL.revokeObjectURL = vi.fn();
+    globalThis.URL.createObjectURL = vi.fn(() => 'blob:test');
+    globalThis.URL.revokeObjectURL = vi.fn();
   });
 
   afterEach(() => {
@@ -84,7 +84,7 @@ describe('GameHistoryView', () => {
     });
     
     // Verify URL.createObjectURL was called
-    expect(global.URL.createObjectURL).toHaveBeenCalled();
+    expect(globalThis.URL.createObjectURL).toHaveBeenCalled();
   });
 
   it('handles screenshot error gracefully', async () => {
