@@ -44,7 +44,7 @@ export const HomeView = ({
       )}
       
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-8 text-center">
-        <Trophy className="w-12 sm:w-16 h-12 sm:h-16 mx-auto mb-3 sm:mb-4 text-indigo-600 dark:text-indigo-400" />
+        <img src="/pwa-192x192.png" alt="Rummikub Tracker" className="w-12 sm:w-16 h-12 sm:h-16 mx-auto mb-3 sm:mb-4" />
         <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2 sm:mb-4">{t('welcomeTitle')}</h2>
         <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-4 sm:mb-6">{t('welcomeSubtitle')}</p>
         <div className="space-y-2 sm:space-y-3">
