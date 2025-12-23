@@ -5,17 +5,19 @@ A modern, feature-rich web application for tracking Rummikub game scores with ti
 ![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![React](https://img.shields.io/badge/React-18.x-61dafb.svg)
+![Test Coverage](https://img.shields.io/badge/coverage-87%25-brightgreen.svg)
 
-Demo: ![https://christophrus.github.io/rummikub-tracker/](https://christophrus.github.io/rummikub-tracker/)
+Demo: [https://christophrus.github.io/rummikub-tracker/](https://christophrus.github.io/rummikub-tracker/)
 
 ## ✨ Features
 
 ### 🎮 Game Management
 - **Turn-based Timer**: Configurable timer (30 seconds to 5 minutes) with visual countdown
 - **Audio Notifications**: Sound alerts and text-to-speech player name announcements
-- **Time Extensions**: Configurable per-player time extensions (each adds 30 seconds)
-- **Score Tracking**: Round-by-round score entry with automatic totals
-- **Game History**: Save and review completed games with winners and final scores
+- **Time Extensions**: Configurable per-player time extensions (each adds 30 seconds) with pulsating button alert
+- **Score Tracking**: Round-by-round score entry with automatic totals and editable past scores
+- **Game History**: Save and review completed games with winners, final scores, and screenshot capture
+- **Dark Mode**: Full dark mode support with persistent theme preference
 
 ### 👥 Player Management
 - **2-6 Players**: Support for up to 6 players per game
@@ -29,7 +31,9 @@ Demo: ![https://christophrus.github.io/rummikub-tracker/](https://christophrus.g
   - Blue: Normal time
   - Yellow: Warning (15-10 seconds remaining)
   - Red: Critical (under 10 seconds)
-- **Tick-Tock Sound**: Audible countdown in the final 15 seconds
+- **Pulsating Extension Button**: Button pulsates with glow effect when time is low (≤15 seconds)
+- **Extension Counter Badge**: Visual badge showing remaining extensions
+- **Tick-Tock Sound**: Audible countdown in the final 10 seconds
 - **Pause/Resume**: Pause the timer at any time
 - **Auto-Advance**: Automatic turn progression when time expires
 
@@ -74,11 +78,11 @@ Demo: ![https://christophrus.github.io/rummikub-tracker/](https://christophrus.g
 
 3. **Start the development server**
    ```bash
-   npm start
+   npm run dev
    ```
 
 4. **Open your browser**
-   Navigate to `http://localhost:3000`
+   Navigate to `http://localhost:5173`
 
 ### Build for Production
 
@@ -86,7 +90,18 @@ Demo: ![https://christophrus.github.io/rummikub-tracker/](https://christophrus.g
 npm run build
 ```
 
-The optimized build will be in the `build/` directory.
+The optimized build will be in the `dist/` directory.
+
+### Available Scripts
+
+```bash
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run preview      # Preview production build
+npm run lint         # Run ESLint
+npm test             # Run tests
+npm run test:coverage # Run tests with coverage
+```
 
 ## 📖 Usage Guide
 
@@ -139,31 +154,92 @@ The optimized build will be in the `build/` directory.
 
 ## 🛠️ Technology Stack
 
-- **React 18.x** - UI framework
+- **React 18.x** - UI framework with hooks
+- **Vite** - Fast build tool and dev server
 - **Lucide React** - Icon library
-- **Tailwind CSS** - Styling (utility classes only)
+- **Tailwind CSS** - Utility-first styling
+- **Vitest** - Unit testing framework (245 tests, 87% coverage)
+- **React Testing Library** - Component testing
 - **Web Speech API** - Text-to-speech functionality
 - **Web Audio API** - Sound notifications
+- **html-to-image** - Screenshot capture for game history
 - **localStorage** - Data persistence
+- **PWA Support** - Installable as a Progressive Web App
 
 ## 📁 Project Structure
 
 ```
 rummikub-tracker/
 ├── public/
-│   ├── index.html
-│   └── ...
+│   ├── favicon.ico
+│   ├── pwa-192x192.png
+│   └── pwa-512x512.png
 ├── src/
+│   ├── components/
+│   │   ├── AnalogClock.jsx      # Timer display
+│   │   ├── Confetti.jsx         # Victory animation
+│   │   ├── PlayerAvatar.jsx     # Player profile images
+│   │   ├── PlayerCard.jsx       # Player card component
+│   │   ├── ThemeToggle.jsx      # Dark/light mode toggle
+│   │   └── views/
+│   │       ├── ActiveGameView.jsx
+│   │       ├── GameHistoryView.jsx
+│   │       ├── HomeView.jsx
+│   │       ├── ManagePlayersView.jsx
+│   │       ├── NewGameView.jsx
+│   │       └── SettingsView.jsx
+│   ├── constants/
+│   │   └── config.js            # App configuration
+│   ├── hooks/
+│   │   ├── useAudio.js          # Sound effects
+│   │   ├── useGameData.js       # Game state management
+│   │   ├── useGameFlow.js       # Game logic
+│   │   ├── useLocalization.js   # Language support
+│   │   ├── usePlayerManagement.js
+│   │   ├── useTheme.jsx         # Dark mode
+│   │   ├── useTimer.js          # Timer logic
+│   │   └── useTimerControl.js   # Timer controls
 │   ├── locales/
-│   │   ├── en.js          # English translations
-│   │   ├── de.js          # German translations
-│   │   └── fr.js          # French translations
-│   ├── App.jsx            # Main application component
-│   └── index.js           # Entry point
-├── LOCALIZATION_GUIDE.md  # Guide for adding languages
-├── README.md              # This file
+│   │   ├── en.js                # English translations
+│   │   ├── de.js                # German translations
+│   │   └── fr.js                # French translations
+│   ├── utils/
+│   │   ├── helpers.js           # Utility functions
+│   │   └── playerManagement.js  # Player utilities
+│   ├── App.jsx                  # Main application
+│   ├── App.css                  # Custom styles
+│   └── main.jsx                 # Entry point
+├── LOCALIZATION_GUIDE.md
+├── README.md
+├── vite.config.js
 └── package.json
 ```
+
+## 🧪 Testing
+
+The project includes a comprehensive test suite with **245 tests** and **87% code coverage**.
+
+### Running Tests
+
+```bash
+# Run all tests
+npm test
+
+# Run tests with coverage report
+npm run test:coverage
+
+# Run tests in watch mode
+npm run test:watch
+```
+
+### Test Coverage
+
+| Category | Coverage |
+|----------|----------|
+| Lines | 87.39% |
+| Branches | 74.30% |
+| Functions | 88.46% |
+| Statements | 86.77% |
 
 ## 🌐 Adding New Languages
 
@@ -236,6 +312,7 @@ The analog clock can be customized in the `AnalogClock` component:
 - **Browser Compatibility**: Web Speech API may not work in all browsers
 - **localStorage Limits**: Most browsers limit to ~5-10MB
 - **Offline Only**: No cloud sync (all data stored locally)
+- **Large Images**: Player photos are compressed to reduce storage usage
 
 ## 🤝 Contributing
 
@@ -272,11 +349,15 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🗺️ Roadmap
 
+- [x] Dark mode theme
+- [x] Screenshot capture for game history
+- [x] Comprehensive test suite (87% coverage)
+- [x] Editable past round scores
+- [x] Pulsating timer extension button
 - [ ] Cloud sync and multi-device support
 - [ ] Statistics and analytics dashboard
 - [ ] Customizable game rules
 - [ ] Tournament mode
-- [ ] Dark mode theme
 - [ ] Export game history (CSV/PDF)
 - [ ] Mobile app version
 - [ ] Team play mode
