@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Maximize, Minimize } from 'lucide-react';
+import './App.css';
 
 // Import translations
 import enTranslations from './locales/en.js';

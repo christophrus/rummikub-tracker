@@ -136,7 +136,7 @@ export const ActiveGameView = ({
                   disabled={!canExtend}
                   className={`w-full px-3 sm:px-4 py-3 sm:py-4.5 rounded-lg font-semibold transition flex items-center justify-center gap-2 text-sm sm:text-base ${
                     canExtend ? 'bg-blue-600 dark:bg-blue-500 text-white hover:bg-blue-700 dark:hover:bg-blue-600' : 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-                  }`}
+                  } ${canExtend && timerSeconds <= 15 && timerActive ? 'pulsate-urgent' : ''}`}
                 >
                   <Plus size={20} />
                   <span className="truncate">{t('addSeconds')} ({(activeGame.maxExtensions || 3) - playerExtensionsUsed} {t('left')})</span>
