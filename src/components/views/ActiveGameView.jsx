@@ -134,12 +134,17 @@ export const ActiveGameView = ({
                 <button 
                   onClick={onExtendTimer} 
                   disabled={!canExtend}
-                  className={`w-full px-3 sm:px-4 py-3 sm:py-4.5 rounded-lg font-semibold transition flex items-center justify-center gap-2 text-sm sm:text-base ${
+                  className={`relative w-full px-3 sm:px-4 py-3 sm:py-4.5 rounded-lg font-semibold transition flex items-center justify-center gap-2 text-sm sm:text-base ${
                     canExtend ? 'bg-blue-600 dark:bg-blue-500 text-white hover:bg-blue-700 dark:hover:bg-blue-600' : 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'
                   } ${canExtend && timerSeconds <= 15 && timerActive ? 'pulsate-urgent' : ''}`}
                 >
                   <Plus size={20} />
-                  <span className="truncate">{t('addSeconds')} ({(activeGame.maxExtensions || 3) - playerExtensionsUsed} {t('left')})</span>
+                  <span className="truncate">{t('addSeconds')}</span>
+                  <span className={`absolute -top-2 -right-2 min-w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold ${
+                    canExtend ? 'bg-yellow-400 text-gray-900' : 'bg-gray-400 text-gray-600'
+                  }`}>
+                    {(activeGame.maxExtensions || 3) - playerExtensionsUsed}
+                  </span>
                 </button>
               </div>
               
