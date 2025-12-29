@@ -187,7 +187,8 @@ const RummikubTracker = () => {
     playVictorySound,
     setTimerActive,
     setTimerSeconds,
-    timerDuration
+    setTimerDuration,
+    originalTimerDuration
   });
   const {
     declaredWinner,

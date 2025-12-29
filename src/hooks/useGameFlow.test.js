@@ -22,7 +22,8 @@ describe('useGameFlow', () => {
     playVictorySound: vi.fn(),
     setTimerActive: vi.fn(),
     setTimerSeconds: vi.fn(),
-    timerDuration: 60
+    setTimerDuration: vi.fn(),
+    originalTimerDuration: 60
   };
 
   it('validates and prepares pending game', () => {

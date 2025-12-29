@@ -16,7 +16,8 @@ export const useGameFlow = ({
   playVictorySound,
   setTimerActive,
   setTimerSeconds,
-  timerDuration
+  setTimerDuration,
+  originalTimerDuration
 }) => {
   const [declaredWinner, setDeclaredWinner] = useState(null);
   const [pendingGame, setPendingGame] = useState(null);
@@ -99,7 +100,8 @@ export const useGameFlow = ({
     setCurrentPlayerIndex(nextStartingPlayerIndex);
     
     setTimerActive(false);
-    setTimerSeconds(timerDuration);
+    setTimerSeconds(originalTimerDuration);
+    setTimerDuration(originalTimerDuration);
     setDeclaredWinner(null);
     saveRound();
     
@@ -110,7 +112,7 @@ export const useGameFlow = ({
     }, 500);
     
     return { success: true };
-  }, [activeGame, roundScores, startingPlayerIndex, setCurrentPlayerIndex, setTimerActive, setTimerSeconds, timerDuration, saveRound, playTurnNotification, speakPlayerName]);
+  }, [activeGame, roundScores, startingPlayerIndex, setCurrentPlayerIndex, setTimerActive, setTimerSeconds, setTimerDuration, originalTimerDuration, saveRound, playTurnNotification, speakPlayerName]);
 
   const cancelPendingGame = useCallback(() => {
     setPendingGame(null);
