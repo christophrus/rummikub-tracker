@@ -86,6 +86,9 @@ describe('useGameData', () => {
   });
 
   it('handles corrupted localStorage gracefully', () => {
+    // Suppress expected error output
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    
     localStorage.setItem('saved-players', 'invalid-json');
     localStorage.setItem('game-history', 'invalid-json');
     
@@ -93,6 +96,8 @@ describe('useGameData', () => {
     
     expect(result.current.savedPlayers).toEqual([]);
     expect(result.current.gameHistory).toEqual([]);
+    
+    consoleErrorSpy.mockRestore();
   });
 
   it('starts new game with correct properties', () => {

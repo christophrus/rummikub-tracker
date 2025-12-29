@@ -98,9 +98,12 @@ describe('SettingsView', () => {
   it('clears all data when confirm is accepted', () => {
     const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
     const clearSpy = vi.spyOn(Storage.prototype, 'clear');
-    const originalLocation = window.location;
-    delete window.location;
-    window.location = { ...originalLocation, reload: vi.fn() };
+    // Mock reload using Object.defineProperty to avoid jsdom "Not implemented: navigation" warning
+    const reloadMock = vi.fn();
+    Object.defineProperty(window, 'location', {
+      configurable: true,
+      value: { ...window.location, reload: reloadMock },
+    });
     
     render(<SettingsView {...defaultProps} />);
     
@@ -112,7 +115,6 @@ describe('SettingsView', () => {
     
     confirmSpy.mockRestore();
     clearSpy.mockRestore();
-    window.location = originalLocation;
   });
 
   it('does not clear data when confirm is cancelled', () => {

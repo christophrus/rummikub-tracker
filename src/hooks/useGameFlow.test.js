@@ -180,6 +180,9 @@ describe('useGameFlow', () => {
   });
 
   it('handles quota exceeded error when starting game', () => {
+    // Suppress expected error output
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    
     const props = {
       ...defaultProps,
       startNewGame: vi.fn(() => {
@@ -208,9 +211,13 @@ describe('useGameFlow', () => {
     });
 
     expect(response.error).toBe('quotaExceeded');
+    consoleErrorSpy.mockRestore();
   });
 
   it('handles generic error when starting game', () => {
+    // Suppress expected error output
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    
     const props = {
       ...defaultProps,
       startNewGame: vi.fn(() => {
@@ -237,6 +244,7 @@ describe('useGameFlow', () => {
     });
 
     expect(response.error).toBe('genericError');
+    consoleErrorSpy.mockRestore();
   });
 
   it('does nothing if no active game when declaring winner', () => {

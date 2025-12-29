@@ -88,6 +88,9 @@ describe('GameHistoryView', () => {
   });
 
   it('handles screenshot error gracefully', async () => {
+    // Suppress expected error output
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    
     // Override the mock to reject
     mocks.toBlob.mockRejectedValueOnce(new Error('Canvas error'));
     
@@ -108,6 +111,7 @@ describe('GameHistoryView', () => {
     });
     
     alertSpy.mockRestore();
+    consoleErrorSpy.mockRestore();
   });
 
   it('calls onDeleteGame when delete button is clicked', () => {
