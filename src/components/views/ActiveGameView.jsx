@@ -7,6 +7,7 @@ export const ActiveGameView = ({
   currentPlayerIndex,
   timerSeconds,
   timerDuration,
+  originalTimerDuration,
   timerActive,
   currentRound,
   gameElapsedTime,
@@ -178,7 +179,7 @@ export const ActiveGameView = ({
             <div className="flex items-center gap-2 mt-4 flex-wrap justify-center">
               <label className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 font-medium">{t('duration')}</label>
               <select 
-                value={timerDuration} 
+                value={originalTimerDuration} 
                 onChange={(e) => onUpdateTimerDuration(Number(e.target.value))}
                 className="text-xs sm:text-sm px-3 sm:px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 bg-white dark:bg-gray-700 dark:text-gray-100"
               >

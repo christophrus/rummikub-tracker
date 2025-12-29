@@ -21,6 +21,7 @@ describe('ActiveGameView', () => {
     currentPlayerIndex: 0,
     timerSeconds: 60,
     timerDuration: 60,
+    originalTimerDuration: 60,
     timerActive: true,
     currentRound: 1,
     gameElapsedTime: '00:05:30',
@@ -404,5 +405,54 @@ describe('ActiveGameView', () => {
     render(<ActiveGameView {...defaultProps} gameElapsedTime="25m" />);
     
     expect(screen.getByText(/25m/)).toBeInTheDocument();
+  });
+
+  it('shows originalTimerDuration in dropdown not extended timerDuration', () => {
+    // Simulate extended timer scenario: timerDuration is 90 (extended), but originalTimerDuration is 60
+    render(
+      <ActiveGameView 
+        {...defaultProps} 
+        timerDuration={90}
+        originalTimerDuration={60}
+      />
+    );
+    
+    const select = screen.getByRole('combobox');
+    // The dropdown should show 60 (originalTimerDuration), not 90 (extended)
+    expect(select.value).toBe('60');
+  });
+
+  it('dropdown shows correct value after multiple extensions', () => {
+    // Simulate multiple extensions: original was 45s, extended to 105s
+    render(
+      <ActiveGameView 
+        {...defaultProps} 
+        timerSeconds={105}
+        timerDuration={105}
+        originalTimerDuration={45}
+      />
+    );
+    
+    const select = screen.getByRole('combobox');
+    // Should still show 45 as the configured duration
+    expect(select.value).toBe('45');
+  });
+
+  it('changing duration dropdown calls onUpdateTimerDuration with new value', () => {
+    const onUpdateTimerDuration = vi.fn();
+    render(
+      <ActiveGameView 
+        {...defaultProps} 
+        timerDuration={90}
+        originalTimerDuration={60}
+        onUpdateTimerDuration={onUpdateTimerDuration}
+      />
+    );
+    
+    const select = screen.getByRole('combobox');
+    fireEvent.change(select, { target: { value: '120' } });
+    
+    // Should call with the new duration value
+    expect(onUpdateTimerDuration).toHaveBeenCalledWith(120);
   });
 });

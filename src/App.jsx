@@ -376,7 +376,8 @@ const RummikubTracker = () => {
 
   const handleEndGame = () => {
     setTimerActive(false);
-    setTimerSeconds(timerDuration);
+    setTimerSeconds(originalTimerDuration);
+    setTimerDuration(originalTimerDuration);
     
     const completedGame = endGame();
     setInitialExpandedGameId(completedGame?.id || null);
@@ -388,7 +389,8 @@ const RummikubTracker = () => {
     if (!window.confirm(t('cancelActiveGameConfirm'))) return;
 
     setTimerActive(false);
-    setTimerSeconds(timerDuration);
+    setTimerSeconds(originalTimerDuration);
+    setTimerDuration(originalTimerDuration);
     cancelActiveGame();
     setView(VIEWS.HOME);
   };
@@ -547,6 +549,7 @@ const RummikubTracker = () => {
             currentPlayerIndex={currentPlayerIndex}
             timerSeconds={timerSeconds}
             timerDuration={timerDuration}
+            originalTimerDuration={originalTimerDuration}
             timerActive={timerActive}
             currentRound={currentRound}
             gameElapsedTime={gameElapsedTime}

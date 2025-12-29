@@ -280,4 +280,54 @@ describe('useGameFlow', () => {
     
     expect(result.current.pendingGame).toBeNull();
   });
+
+  it('handleSaveRound resets timer to originalTimerDuration not extended duration', () => {
+    const setTimerSeconds = vi.fn();
+    const setTimerDuration = vi.fn();
+    const props = {
+      ...defaultProps,
+      activeGame: { 
+        players: [{ name: 'P1' }, { name: 'P2' }],
+        ttsLanguage: 'en-US'
+      },
+      roundScores: { 'P1': '0', 'P2': '25' },
+      originalTimerDuration: 45, // Original setting was 45s
+      setTimerSeconds,
+      setTimerDuration
+    };
+    const { result } = renderHook(() => useGameFlow(props));
+    
+    act(() => {
+      result.current.handleSaveRound(vi.fn(), 'en-US');
+    });
+
+    // Should reset to originalTimerDuration (45), not any extended value
+    expect(setTimerSeconds).toHaveBeenCalledWith(45);
+    expect(setTimerDuration).toHaveBeenCalledWith(45);
+  });
+
+  it('handleSaveRound resets both timerSeconds and timerDuration', () => {
+    const setTimerSeconds = vi.fn();
+    const setTimerDuration = vi.fn();
+    const props = {
+      ...defaultProps,
+      activeGame: { 
+        players: [{ name: 'P1' }, { name: 'P2' }],
+        ttsLanguage: 'en-US'
+      },
+      roundScores: { 'P1': '0', 'P2': '15' },
+      originalTimerDuration: 120,
+      setTimerSeconds,
+      setTimerDuration
+    };
+    const { result } = renderHook(() => useGameFlow(props));
+    
+    act(() => {
+      result.current.handleSaveRound(vi.fn(), 'en-US');
+    });
+
+    // Both should be reset to ensure clock display is correct
+    expect(setTimerSeconds).toHaveBeenCalledWith(120);
+    expect(setTimerDuration).toHaveBeenCalledWith(120);
+  });
 });

@@ -114,4 +114,78 @@ describe('useTimerControl', () => {
     });
     expect(defaultProps.setTimerActive).toHaveBeenCalledWith(true);
   });
+
+  it('resets timer to originalTimerDuration not extended duration', () => {
+    // Simulate scenario where timerDuration was extended but originalTimerDuration remains
+    const props = {
+      ...defaultProps,
+      timerSeconds: 90, // Extended from 60 to 90
+      originalTimerDuration: 60, // Original setting
+      setTimerSeconds: vi.fn(),
+      setTimerDuration: vi.fn(),
+      setTimerActive: vi.fn()
+    };
+    const { result } = renderHook(() => useTimerControl(props));
+    
+    act(() => {
+      result.current.resetTimer();
+    });
+
+    // Should reset to originalTimerDuration (60), not current timerSeconds (90)
+    expect(props.setTimerSeconds).toHaveBeenCalledWith(60);
+    expect(props.setTimerDuration).toHaveBeenCalledWith(60);
+  });
+
+  it('nextPlayer resets timer to originalTimerDuration after extension', () => {
+    // Simulate extended timer scenario
+    const props = {
+      ...defaultProps,
+      timerSeconds: 90, // Extended
+      originalTimerDuration: 45, // Original was 45s
+      setTimerSeconds: vi.fn(),
+      setTimerDuration: vi.fn(),
+      setCurrentPlayerIndex: vi.fn(),
+      setTimerActive: vi.fn(),
+      setActiveGame: vi.fn(),
+      playTurnNotification: vi.fn(),
+      speakPlayerName: vi.fn()
+    };
+    const { result } = renderHook(() => useTimerControl(props));
+    
+    vi.useFakeTimers();
+    
+    act(() => {
+      result.current.nextPlayer();
+    });
+
+    // Should reset to originalTimerDuration (45), not extended value
+    expect(props.setTimerSeconds).toHaveBeenCalledWith(45);
+    expect(props.setTimerDuration).toHaveBeenCalledWith(45);
+    
+    vi.useRealTimers();
+  });
+
+  it('extendTimer updates timerDuration but not originalTimerDuration', () => {
+    const props = {
+      ...defaultProps,
+      timerSeconds: 45,
+      originalTimerDuration: 45,
+      setTimerSeconds: vi.fn(),
+      setTimerDuration: vi.fn(),
+      setOriginalTimerDuration: vi.fn(),
+      setPlayerExtensions: vi.fn(),
+      setActiveGame: vi.fn(),
+      playerExtensions: {}
+    };
+    const { result } = renderHook(() => useTimerControl(props));
+    
+    act(() => {
+      result.current.extendTimer();
+    });
+
+    // Should update timerDuration to extended value
+    expect(props.setTimerDuration).toHaveBeenCalled();
+    // Should NOT update originalTimerDuration
+    expect(props.setOriginalTimerDuration).not.toHaveBeenCalled();
+  });
 });
