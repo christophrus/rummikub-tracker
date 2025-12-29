@@ -18,6 +18,7 @@ export const useTimerControl = ({
   setTimerActive,
   playTurnNotification,
   speakPlayerName,
+  playExtendSound,
   ttsLanguage
 }) => {
   const nextPlayer = useCallback(() => {
@@ -43,6 +44,9 @@ export const useTimerControl = ({
     const maxAllowed = activeGame.maxExtensions || 3;
     if (extensionsUsed >= maxAllowed) return;
     
+    // Play extend sound effect
+    if (playExtendSound) playExtendSound();
+    
     const newTime = timerSeconds + EXTENSION_DURATION_SECONDS;
     setTimerSeconds(newTime);
     setTimerDuration(newTime);
@@ -51,7 +55,7 @@ export const useTimerControl = ({
     const updatedGame = { ...activeGame, playerExtensions: updatedExtensions };
     setActiveGame(updatedGame);
     localStorage.setItem(STORAGE_KEYS.ACTIVE_GAME, JSON.stringify(sanitizeGameForStorage(updatedGame)));
-  }, [activeGame, currentPlayerIndex, timerSeconds, playerExtensions, setTimerSeconds, setTimerDuration, setPlayerExtensions, setActiveGame]);
+  }, [activeGame, currentPlayerIndex, timerSeconds, playerExtensions, playExtendSound, setTimerSeconds, setTimerDuration, setPlayerExtensions, setActiveGame]);
 
   const updateTimerDuration = useCallback((newDuration) => {
     setTimerDuration(newDuration);

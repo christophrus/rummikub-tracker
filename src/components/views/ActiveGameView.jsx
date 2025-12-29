@@ -36,6 +36,7 @@ export const ActiveGameView = ({
   t
 }) => {
   const [editingCell, setEditingCell] = React.useState(null);
+  const [extendAnimating, setExtendAnimating] = React.useState(false);
   const currentPlayer = activeGame.players[currentPlayerIndex];
   const playerExtensionsUsed = playerExtensions[currentPlayer?.name] || 0;
   const canExtend = playerExtensionsUsed < (activeGame.maxExtensions || 3) && (activeGame.maxExtensions || 3) > 0;
@@ -47,6 +48,13 @@ export const ActiveGameView = ({
     } else {
       onClose();
     }
+  };
+
+  const handleExtendClick = () => {
+    if (!canExtend) return;
+    setExtendAnimating(true);
+    onExtendTimer();
+    setTimeout(() => setExtendAnimating(false), 400);
   };
 
   return (
@@ -133,11 +141,12 @@ export const ActiveGameView = ({
               
               <div className="mt-4 w-full">
                 <button 
-                  onClick={onExtendTimer} 
+                  onClick={handleExtendClick} 
                   disabled={!canExtend}
                   className={`relative w-full px-3 sm:px-4 py-3 sm:py-4.5 rounded-lg font-semibold transition flex items-center justify-center gap-2 text-sm sm:text-base ${
                     canExtend ? 'bg-blue-600 dark:bg-blue-500 text-white hover:bg-blue-700 dark:hover:bg-blue-600' : 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-                  } ${canExtend && timerSeconds <= 15 && timerActive ? 'pulsate-urgent' : ''}`}
+                  } ${canExtend && timerSeconds <= 15 && timerActive ? 'pulsate-urgent' : ''} ${extendAnimating ? 'extend-flash' : ''}`}
+                  style={extendAnimating ? { animation: 'extendPulse 0.4s ease-out' } : {}}
                 >
                   <Plus size={20} />
                   <span className="truncate">{t('addSeconds')}</span>

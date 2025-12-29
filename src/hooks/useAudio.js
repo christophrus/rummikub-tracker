@@ -78,6 +78,31 @@ export const useAudio = () => {
     }
   };
 
+  const playExtendSound = () => {
+    const audioContext = getAudioContext();
+    if (!audioContext) return;
+    
+    // Positive "power up" sound - ascending whoosh
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    oscillator.type = 'sine';
+    
+    const startTime = audioContext.currentTime;
+    
+    // Quick ascending sweep
+    oscillator.frequency.setValueAtTime(400, startTime);
+    oscillator.frequency.exponentialRampToValueAtTime(800, startTime + 0.15);
+    
+    gainNode.gain.setValueAtTime(0.3, startTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.2);
+    
+    oscillator.start(startTime);
+    oscillator.stop(startTime + 0.2);
+  };
+
   const playVictorySound = () => {
     const audioContext = getAudioContext();
     if (!audioContext) return;
@@ -109,6 +134,7 @@ export const useAudio = () => {
     playTickTock,
     playTurnNotification,
     speakPlayerName,
+    playExtendSound,
     playVictorySound
   };
 };
