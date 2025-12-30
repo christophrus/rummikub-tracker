@@ -95,7 +95,12 @@ const enTranslations = {
   clearAllDataConfirm: 'Are you sure you want to delete all data? This action cannot be undone!',
   clearAllDataButton: 'Clear All Data',
   declareWinner: 'Declare Winner',
-  roundWinner: 'Round Winner!'
+  roundWinner: 'Round Winner!',
+  extensionReplenish: 'Extension Replenishment',
+  extensionReplenishDescription: 'Add one extra +30s extension for all players every X rounds',
+  extensionReplenishDisabled: 'Disabled',
+  extensionReplenishEvery: 'Every',
+  extensionReplenishRounds: 'rounds'
 };
 
 export default enTranslations;

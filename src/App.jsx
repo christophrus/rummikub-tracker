@@ -87,6 +87,10 @@ const RummikubTracker = () => {
   });
   const [originalTimerDuration, setOriginalTimerDuration] = useState(60);
   const [maxExtensions, setMaxExtensions] = useState(3);
+  const [extensionReplenishRounds, setExtensionReplenishRounds] = useState(() => {
+    const saved = localStorage.getItem('extension-replenish-rounds');
+    return saved ? Number(saved) : 0; // 0 means disabled
+  });
   const [ttsLanguage, setTtsLanguage] = useState(() => {
     const saved = localStorage.getItem('tts-language');
     return saved || 'en-US';
@@ -189,7 +193,8 @@ const RummikubTracker = () => {
     setTimerActive,
     setTimerSeconds,
     setTimerDuration,
-    originalTimerDuration
+    originalTimerDuration,
+    extensionReplenishRounds
   });
   const {
     declaredWinner,
@@ -425,6 +430,11 @@ const RummikubTracker = () => {
     localStorage.setItem('tts-language', newLang);
   };
 
+  const handleExtensionReplenishChange = (rounds) => {
+    setExtensionReplenishRounds(rounds);
+    localStorage.setItem('extension-replenish-rounds', rounds.toString());
+  };
+
   // Fullscreen
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
@@ -482,6 +492,7 @@ const RummikubTracker = () => {
             gameName={gameName}
             timerDuration={timerDuration}
             maxExtensions={maxExtensions}
+            extensionReplenishRounds={extensionReplenishRounds}
             savedPlayers={savedPlayers}
             onClose={() => setView(VIEWS.HOME)}
             onGameNameChange={setGameName}
@@ -490,6 +501,7 @@ const RummikubTracker = () => {
               localStorage.setItem('preferred-timer-duration', duration);
             }}
             onMaxExtensionsChange={setMaxExtensions}
+            onExtensionReplenishChange={handleExtensionReplenishChange}
             onAddPlayer={addPlayer}
             onRemovePlayer={removePlayer}
             onUpdatePlayer={updatePlayer}

@@ -93,7 +93,12 @@ const deTranslations = {
   clearAllDataConfirm: 'Bist du sicher, dass du alle Daten löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden!',
   clearAllDataButton: 'Alle Daten löschen',
   declareWinner: 'Gewinner erklären',
-  roundWinner: 'Rundengewinner!'
+  roundWinner: 'Rundengewinner!',
+  extensionReplenish: 'Verlängerungen hinzufügen',
+  extensionReplenishDescription: 'Eine zusätzliche +30s-Verlängerung für alle Spieler alle X Runden hinzufügen',
+  extensionReplenishDisabled: 'Deaktiviert',
+  extensionReplenishEvery: 'Alle',
+  extensionReplenishRounds: 'Runden'
 };
 
 export default deTranslations;

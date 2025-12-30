@@ -95,7 +95,12 @@ const frTranslations = {
   clearAllDataConfirm: 'Êtes-vous sûr de vouloir supprimer toutes les données? Cette action est irréversible!',
   clearAllDataButton: 'Effacer toutes les données',
   declareWinner: 'Déclarer vainqueur',
-  roundWinner: 'Gagnant du tour !'
+  roundWinner: 'Gagnant du tour !',
+  extensionReplenish: 'Ajout d\'extensions',
+  extensionReplenishDescription: 'Ajouter une extension +30s supplémentaire pour tous les joueurs toutes les X manches',
+  extensionReplenishDisabled: 'Désactivé',
+  extensionReplenishEvery: 'Toutes les',
+  extensionReplenishRounds: 'manches'
 };
 
 export default frTranslations;

@@ -4,6 +4,7 @@ import { validateMinPlayers } from '../utils';
 
 export const useGameFlow = ({
   activeGame,
+  setActiveGame,
   currentPlayerIndex,
   setCurrentPlayerIndex,
   setPlayerExtensions,
@@ -17,7 +18,8 @@ export const useGameFlow = ({
   setTimerActive,
   setTimerSeconds,
   setTimerDuration,
-  originalTimerDuration
+  originalTimerDuration,
+  extensionReplenishRounds = 0
 }) => {
   const [declaredWinner, setDeclaredWinner] = useState(null);
   const [pendingGame, setPendingGame] = useState(null);
@@ -105,6 +107,16 @@ export const useGameFlow = ({
     setDeclaredWinner(null);
     saveRound();
     
+    // Check if extensions should be replenished (after saveRound increments the round count)
+    const newRoundNumber = (activeGame.rounds?.length || 0) + 1;
+    if (extensionReplenishRounds > 0 && newRoundNumber % extensionReplenishRounds === 0) {
+      // Add one extra extension slot for all players
+      setActiveGame(prev => ({
+        ...prev,
+        maxExtensions: prev.maxExtensions + 1
+      }));
+    }
+    
     // Announce the new starting player (timer remains paused)
     setTimeout(() => {
       playTurnNotification();
@@ -112,7 +124,7 @@ export const useGameFlow = ({
     }, 500);
     
     return { success: true };
-  }, [activeGame, roundScores, startingPlayerIndex, setCurrentPlayerIndex, setTimerActive, setTimerSeconds, setTimerDuration, originalTimerDuration, saveRound, playTurnNotification, speakPlayerName]);
+  }, [activeGame, setActiveGame, roundScores, startingPlayerIndex, setCurrentPlayerIndex, setTimerActive, setTimerSeconds, setTimerDuration, originalTimerDuration, saveRound, playTurnNotification, speakPlayerName, extensionReplenishRounds]);
 
   const cancelPendingGame = useCallback(() => {
     setPendingGame(null);

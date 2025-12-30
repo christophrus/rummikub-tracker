@@ -8,11 +8,13 @@ export const NewGameView = ({
   gameName,
   timerDuration,
   maxExtensions,
+  extensionReplenishRounds,
   savedPlayers,
   onClose,
   onGameNameChange,
   onTimerDurationChange,
   onMaxExtensionsChange,
+  onExtensionReplenishChange,
   onAddPlayer,
   onRemovePlayer,
   onUpdatePlayer,
@@ -80,6 +82,24 @@ export const NewGameView = ({
           </select>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('extensionNote')}</p>
         </div>
+
+        {maxExtensions > 0 && (
+          <div>
+            <label className="block text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 md:mb-2">{t('extensionReplenish')}</label>
+            <select 
+              value={extensionReplenishRounds} 
+              onChange={(e) => onExtensionReplenishChange(Number(e.target.value))}
+              className="w-full px-3 md:px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 text-sm"
+            >
+              <option value={0}>{t('extensionReplenishDisabled')}</option>
+              <option value={3}>{t('extensionReplenishEvery')} 3 {t('extensionReplenishRounds')}</option>
+              <option value={4}>{t('extensionReplenishEvery')} 4 {t('extensionReplenishRounds')}</option>
+              <option value={5}>{t('extensionReplenishEvery')} 5 {t('extensionReplenishRounds')}</option>
+              <option value={6}>{t('extensionReplenishEvery')} 6 {t('extensionReplenishRounds')}</option>
+            </select>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('extensionReplenishDescription')}</p>
+          </div>
+        )}
 
         {savedPlayers.length > 0 && (
           <div>

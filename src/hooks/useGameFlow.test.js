@@ -338,4 +338,133 @@ describe('useGameFlow', () => {
     expect(setTimerSeconds).toHaveBeenCalledWith(120);
     expect(setTimerDuration).toHaveBeenCalledWith(120);
   });
+
+  describe('extension replenishment', () => {
+    it('adds one extension when round matches extensionReplenishRounds', () => {
+      const setActiveGame = vi.fn();
+      const props = {
+        ...defaultProps,
+        activeGame: { 
+          players: [{ name: 'P1' }, { name: 'P2' }],
+          maxExtensions: 3,
+          rounds: [{ scores: {} }, { scores: {} }], // 2 completed rounds, saving will be round 3
+          ttsLanguage: 'en-US'
+        },
+        setActiveGame,
+        roundScores: { 'P1': '0', 'P2': '15' },
+        extensionReplenishRounds: 3
+      };
+      const { result } = renderHook(() => useGameFlow(props));
+      
+      act(() => {
+        result.current.handleSaveRound(vi.fn(), 'en-US');
+      });
+
+      // Should call setActiveGame to increment maxExtensions
+      expect(setActiveGame).toHaveBeenCalled();
+      const updateFn = setActiveGame.mock.calls[0][0];
+      const newState = updateFn({ maxExtensions: 3 });
+      expect(newState.maxExtensions).toBe(4);
+    });
+
+    it('adds extension on round 6 when replenish is every 3 rounds', () => {
+      const setActiveGame = vi.fn();
+      const props = {
+        ...defaultProps,
+        activeGame: { 
+          players: [{ name: 'P1' }, { name: 'P2' }],
+          maxExtensions: 4, // Already got one at round 3
+          rounds: Array(5).fill({ scores: {} }), // 5 completed rounds, saving will be round 6
+          ttsLanguage: 'en-US'
+        },
+        setActiveGame,
+        roundScores: { 'P1': '0', 'P2': '15' },
+        extensionReplenishRounds: 3
+      };
+      const { result } = renderHook(() => useGameFlow(props));
+      
+      act(() => {
+        result.current.handleSaveRound(vi.fn(), 'en-US');
+      });
+
+      expect(setActiveGame).toHaveBeenCalled();
+      const updateFn = setActiveGame.mock.calls[0][0];
+      const newState = updateFn({ maxExtensions: 4 });
+      expect(newState.maxExtensions).toBe(5);
+    });
+
+    it('does not add extension when round does not match interval', () => {
+      const setActiveGame = vi.fn();
+      const props = {
+        ...defaultProps,
+        activeGame: { 
+          players: [{ name: 'P1' }, { name: 'P2' }],
+          maxExtensions: 3,
+          rounds: [{ scores: {} }], // 1 completed round, saving will be round 2
+          ttsLanguage: 'en-US'
+        },
+        setActiveGame,
+        roundScores: { 'P1': '0', 'P2': '15' },
+        extensionReplenishRounds: 3
+      };
+      const { result } = renderHook(() => useGameFlow(props));
+      
+      act(() => {
+        result.current.handleSaveRound(vi.fn(), 'en-US');
+      });
+
+      // setActiveGame should NOT have been called for extension replenishment
+      expect(setActiveGame).not.toHaveBeenCalled();
+    });
+
+    it('does not add extension when extensionReplenishRounds is 0 (disabled)', () => {
+      const setActiveGame = vi.fn();
+      const props = {
+        ...defaultProps,
+        activeGame: { 
+          players: [{ name: 'P1' }, { name: 'P2' }],
+          maxExtensions: 3,
+          rounds: [{ scores: {} }, { scores: {} }], // Round 3
+          ttsLanguage: 'en-US'
+        },
+        setActiveGame,
+        roundScores: { 'P1': '0', 'P2': '15' },
+        extensionReplenishRounds: 0 // Disabled
+      };
+      const { result } = renderHook(() => useGameFlow(props));
+      
+      act(() => {
+        result.current.handleSaveRound(vi.fn(), 'en-US');
+      });
+
+      // setActiveGame should NOT have been called
+      expect(setActiveGame).not.toHaveBeenCalled();
+    });
+
+    it('adds extension on first round when replenish interval matches', () => {
+      const setActiveGame = vi.fn();
+      const props = {
+        ...defaultProps,
+        activeGame: { 
+          players: [{ name: 'P1' }, { name: 'P2' }],
+          maxExtensions: 3,
+          rounds: [], // No rounds yet, saving will be round 1
+          ttsLanguage: 'en-US'
+        },
+        setActiveGame,
+        roundScores: { 'P1': '0', 'P2': '15' },
+        extensionReplenishRounds: 1 // Every round
+      };
+      const { result } = renderHook(() => useGameFlow(props));
+      
+      act(() => {
+        result.current.handleSaveRound(vi.fn(), 'en-US');
+      });
+
+      expect(setActiveGame).toHaveBeenCalled();
+      const updateFn = setActiveGame.mock.calls[0][0];
+      const newState = updateFn({ maxExtensions: 3 });
+      expect(newState.maxExtensions).toBe(4);
+    });
+  });
 });
