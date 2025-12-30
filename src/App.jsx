@@ -89,7 +89,7 @@ const RummikubTracker = () => {
   const [maxExtensions, setMaxExtensions] = useState(3);
   const [ttsLanguage, setTtsLanguage] = useState(() => {
     const saved = localStorage.getItem('tts-language');
-    return saved || 'de-DE';
+    return saved || 'en-US';
   });
 
   // Audio
