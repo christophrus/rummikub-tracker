@@ -98,7 +98,9 @@ const deTranslations = {
   extensionReplenishDescription: 'Eine zusätzliche +30s-Verlängerung für alle Spieler alle X Runden hinzufügen',
   extensionReplenishDisabled: 'Deaktiviert',
   extensionReplenishEvery: 'Alle',
-  extensionReplenishRounds: 'Runden'
+  extensionReplenishRounds: 'Runden',
+  scanTiles: 'Steine vom Foto scannen',
+  scanTilesError: 'Bildanalyse fehlgeschlagen'
 };
 
 export default deTranslations;

@@ -100,7 +100,9 @@ const frTranslations = {
   extensionReplenishDescription: 'Ajouter une extension +30s supplémentaire pour tous les joueurs toutes les X manches',
   extensionReplenishDisabled: 'Désactivé',
   extensionReplenishEvery: 'Toutes les',
-  extensionReplenishRounds: 'manches'
+  extensionReplenishRounds: 'manches',
+  scanTiles: 'Scanner les tuiles depuis une photo',
+  scanTilesError: 'Échec de l\'analyse de l\'image'
 };
 
 export default frTranslations;

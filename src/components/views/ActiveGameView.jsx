@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Play, Pause, RotateCcw, Check, Plus, SkipForward, Trophy } from 'lucide-react';
+import { X, Play, Pause, RotateCcw, Check, Plus, SkipForward, Trophy, Camera, Loader2 } from 'lucide-react';
 import { AnalogClock, Confetti, PlayerAvatar } from '../index';
 
 export const ActiveGameView = ({ 
@@ -37,6 +37,38 @@ export const ActiveGameView = ({
 }) => {
   const [editingCell, setEditingCell] = React.useState(null);
   const [extendAnimating, setExtendAnimating] = React.useState(false);
+  const [analyzingPlayer, setAnalyzingPlayer] = React.useState(null);
+  const [analyzeError, setAnalyzeError] = React.useState(null);
+  const fileInputRefs = React.useRef({});
+
+  const handleTileImageUpload = async (player, file) => {
+    if (!file) return;
+    setAnalyzingPlayer(player.name);
+    setAnalyzeError(null);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const response = await fetch('https://rummikub.lorus.org/api/analyze', {
+        method: 'POST',
+        body: formData,
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      const data = await response.json();
+      if (data.total_score !== undefined) {
+        onUpdateRoundScore(player, String(data.total_score));
+      }
+    } catch (err) {
+      setAnalyzeError(player.name);
+      setTimeout(() => setAnalyzeError(null), 3000);
+    } finally {
+      setAnalyzingPlayer(null);
+      if (fileInputRefs.current[player.name]) {
+        fileInputRefs.current[player.name].value = '';
+      }
+    }
+  };
   const currentPlayer = activeGame.players[currentPlayerIndex];
   const playerExtensionsUsed = playerExtensions[currentPlayer?.name] || 0;
   const canExtend = playerExtensionsUsed < (activeGame.maxExtensions || 3) && (activeGame.maxExtensions || 3) > 0;
@@ -270,17 +302,46 @@ export const ActiveGameView = ({
               <div key={idx} className="flex items-center gap-2 sm:gap-3">
                 <PlayerAvatar player={player} size="md" />
                 <label className="flex-1 text-sm sm:text-base text-gray-700 dark:text-gray-300 font-medium truncate">{player.name}</label>
-                <input 
-                  type="number" 
-                  value={roundScores[player.name] || ''} 
-                  onChange={(e) => onUpdateRoundScore(player, e.target.value)}
-                  placeholder="0" 
-                  className={`w-16 sm:w-24 px-2 sm:px-4 py-2 border rounded-lg text-center text-sm sm:text-base ${
-                    isWinner 
-                      ? 'border-green-500 bg-green-50 dark:bg-green-900/30 dark:border-green-400 text-green-700 dark:text-green-300 font-bold' 
-                      : 'border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400'
-                  }`} 
-                />
+                <div className="flex items-center gap-1">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    className="hidden"
+                    ref={(el) => { fileInputRefs.current[player.name] = el; }}
+                    onChange={(e) => handleTileImageUpload(player, e.target.files?.[0])}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRefs.current[player.name]?.click()}
+                    disabled={analyzingPlayer === player.name || isWinner}
+                    className={`p-2 rounded-lg transition ${
+                      isWinner
+                        ? 'bg-gray-200 dark:bg-gray-600 text-gray-400 dark:text-gray-500 cursor-not-allowed'
+                        : analyzeError === player.name
+                          ? 'bg-red-100 dark:bg-red-900/30 text-red-500 dark:text-red-400'
+                          : 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-200 dark:hover:bg-indigo-800/40'
+                    }`}
+                    title={t('scanTiles')}
+                  >
+                    {analyzingPlayer === player.name ? (
+                      <Loader2 size={18} className="animate-spin" />
+                    ) : (
+                      <Camera size={18} />
+                    )}
+                  </button>
+                  <input 
+                    type="number" 
+                    value={roundScores[player.name] || ''} 
+                    onChange={(e) => onUpdateRoundScore(player, e.target.value)}
+                    placeholder="0" 
+                    className={`w-16 sm:w-24 px-2 sm:px-4 py-2 border rounded-lg text-center text-sm sm:text-base ${
+                      isWinner 
+                        ? 'border-green-500 bg-green-50 dark:bg-green-900/30 dark:border-green-400 text-green-700 dark:text-green-300 font-bold' 
+                        : 'border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400'
+                    }`} 
+                  />
+                </div>
               </div>
               );
             })}

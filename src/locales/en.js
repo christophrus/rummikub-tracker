@@ -100,7 +100,9 @@ const enTranslations = {
   extensionReplenishDescription: 'Add one extra +30s extension for all players every X rounds',
   extensionReplenishDisabled: 'Disabled',
   extensionReplenishEvery: 'Every',
-  extensionReplenishRounds: 'rounds'
+  extensionReplenishRounds: 'rounds',
+  scanTiles: 'Scan tiles from photo',
+  scanTilesError: 'Failed to analyze image'
 };
 
 export default enTranslations;
