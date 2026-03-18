@@ -103,6 +103,34 @@ npm test             # Run tests
 npm run test:coverage # Run tests with coverage
 ```
 
+## 📲 Install as a PWA
+
+The Rummikub Tracker can be installed as a Progressive Web App (PWA), so it behaves like a native app with its own icon and fullscreen window.
+
+### Desktop (Chrome / Edge / Brave)
+
+1. Open the app in your browser: `https://christophrus.github.io/rummikub-tracker/`
+2. Wait until the page has fully loaded.
+3. Click the **Install** / **Install app** button in the address bar (monitor/plus icon) or the PWA icon if shown.
+4. Confirm the dialog – the app will appear as a standalone window and in your Start menu.
+
+### Android (Chrome)
+
+1. Open the app URL in Chrome.
+2. Wait until the page has fully loaded.
+3. Tap the **⋮** menu in the top-right corner.
+4. Choose **“Install app”** or **“Add to Home screen”**.
+5. Confirm – the icon will be added to your home screen and app drawer.
+
+### iOS / iPadOS (Safari)
+
+1. Open the app URL in Safari.
+2. Tap the **Share** button (square with arrow up).
+3. Scroll down and select **“Add to Home Screen”**.
+4. Optionally adjust the name, then tap **Add**.
+
+After installation, the PWA runs in fullscreen and updates are applied automatically on the next load.
+
 ## 📖 Usage Guide
 
 ### Starting a New Game
