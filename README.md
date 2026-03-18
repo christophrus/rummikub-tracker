@@ -125,7 +125,8 @@ npm run test:coverage # Run tests with coverage
   - ⏸️ Pause/▶️ Resume: Control the timer
   - 🔄 Reset: Restart the current turn
   - ➕ Add 30 Seconds: Use available time extensions
-  - ⏭️ Skip Turn: Move to next player
+   - ⏭️ Skip Turn: Move to next player
+   - 🕒 Tap/Click on the clock: Also advances to the next player
 
 - **Entering Scores**:
   - Scroll down to "Enter Round X Scores"
@@ -135,6 +136,40 @@ npm run test:coverage # Run tests with coverage
 - **Player Order**:
   - Use ▲/▼ buttons in player cards to reorder
   - Or drag-and-drop on desktop
+
+### 🔍 Tile Recognition API (Stone Detection)
+
+When entering round scores (section "Enter Round X Scores"), each player row has a camera button next to the score field:
+- Tap/click the camera icon to take or select a photo of the tiles
+- The app sends the image to an external recognition API
+- The detected `total_score` from the response is automatically filled into that player's score field (you can still adjust it manually)
+
+**API details**
+- Endpoint: `POST https://rummikub.lorus.org/api/analyze`
+- Request: `multipart/form-data` with one field `file` (image, up to ~20 MB)
+- Response (example):
+   ```json
+   {
+      "tiles": [
+         {
+            "number": 7,
+            "confidence": 0.95,
+            "is_joker": false,
+            "x": 100,
+            "y": 150,
+            "width": 50,
+            "height": 60
+         }
+      ],
+      "total_score": 49,
+      "tile_count": 3,
+      "processing_time_ms": 245.32,
+      "image_width": 1920,
+      "image_height": 1080
+   }
+   ```
+
+Only `total_score` is currently used by the app.
 
 ### Managing Players
 
