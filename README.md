@@ -9,6 +9,26 @@ A modern, feature-rich web application for tracking Rummikub game scores with ti
 
 Demo: [https://christophrus.github.io/rummikub-tracker/](https://christophrus.github.io/rummikub-tracker/)
 
+## 📚 Table of Contents
+
+- [✨ Features](#-features)
+- [🚀 Getting Started](#-getting-started)
+- [📲 Install as a PWA](#-install-as-a-pwa)
+- [📖 Usage Guide](#-usage-guide)
+- [🛠️ Technology Stack](#-technology-stack)
+- [📁 Project Structure](#-project-structure)
+- [🧪 Testing](#-testing)
+- [🌐 Adding New Languages](#-adding-new-languages)
+- [⚙️ Configuration](#-configuration)
+- [🎨 Customization](#-customization)
+- [🐛 Known Issues](#-known-issues)
+- [🤝 Contributing](#-contributing)
+- [📝 License](#-license)
+- [🙏 Acknowledgments](#-acknowledgments)
+- [📧 Support](#-support)
+- [🗺️ Roadmap](#-roadmap)
+- [📸 Screenshots](#-screenshots)
+
 ## ✨ Features
 
 ### 🎮 Game Management
