@@ -453,6 +453,14 @@ const RummikubTracker = () => {
     localStorage.setItem('scroll-lock-fullscreen', newValue.toString());
   };
 
+  // If there's an active game after loading, automatically resume the active game view
+  // (helps when the browser reloads the page, e.g. after using the camera on mobile)
+  useEffect(() => {
+    if (!loading && activeGame && view === VIEWS.HOME) {
+      setView(VIEWS.ACTIVE_GAME);
+    }
+  }, [loading, activeGame, view]);
+
   // Loading
   if (loading) {
     return (

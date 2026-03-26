@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { STORAGE_KEYS } from '../constants';
 import { validateMinPlayers } from '../utils';
 
@@ -74,11 +74,29 @@ export const useGameFlow = ({
     setDeclaredWinner(winner);
     updateRoundScore(winner, '0');
     playVictorySound();
+    // Persist declared winner so the state survives a browser reload (e.g. after using the camera)
+    try {
+      if (activeGame?.id) {
+        localStorage.setItem('active-declared-winner', JSON.stringify({
+          gameId: activeGame.id,
+          playerName: winner.name
+        }));
+      }
+    } catch (e) {
+      console.error('Error saving declared winner state:', e);
+    }
   }, [activeGame, currentPlayerIndex, setTimerActive, updateRoundScore, playVictorySound]);
 
   const handleCancelWinner = useCallback(() => {
     setDeclaredWinner(null);
     setTimerActive(true);
+    // Clear persisted winner and any pending round scores when cancelling
+    try {
+      localStorage.removeItem('active-declared-winner');
+      localStorage.removeItem('active-round-scores');
+    } catch (e) {
+      console.error('Error clearing declared winner state on cancel:', e);
+    }
   }, [setTimerActive]);
 
   const handleSaveRound = useCallback((t, ttsLanguage) => {
@@ -106,6 +124,14 @@ export const useGameFlow = ({
     setTimerDuration(originalTimerDuration);
     setDeclaredWinner(null);
     saveRound();
+
+    // Round is saved – clear transient winner and round score state
+    try {
+      localStorage.removeItem('active-declared-winner');
+      localStorage.removeItem('active-round-scores');
+    } catch (e) {
+      console.error('Error clearing transient round state after save:', e);
+    }
     
     // Check if extensions should be replenished (after saveRound increments the round count)
     const newRoundNumber = (activeGame.rounds?.length || 0) + 1;
@@ -129,6 +155,23 @@ export const useGameFlow = ({
   const cancelPendingGame = useCallback(() => {
     setPendingGame(null);
   }, []);
+
+  // Restore declared winner from localStorage for the current active game (after reload)
+  useEffect(() => {
+    if (!activeGame || !activeGame.id || !Array.isArray(activeGame.players)) return;
+    try {
+      const stored = localStorage.getItem('active-declared-winner');
+      if (!stored) return;
+      const parsed = JSON.parse(stored);
+      if (!parsed || parsed.gameId !== activeGame.id || !parsed.playerName) return;
+      const winner = activeGame.players.find(p => p.name === parsed.playerName);
+      if (winner) {
+        setDeclaredWinner(winner);
+      }
+    } catch (e) {
+      console.error('Error restoring declared winner state:', e);
+    }
+  }, [activeGame]);
 
   return {
     declaredWinner,

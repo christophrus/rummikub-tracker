@@ -60,6 +60,22 @@ export const useGameData = () => {
         setCurrentPlayerIndex(game.currentPlayerIndex || 0);
         setCurrentRound(game.rounds.length + 1);
         setPlayerExtensions(game.playerExtensions || {});
+
+        // Restore any pending round scores for the active game (e.g. after a browser reload)
+        try {
+          const pendingRoundStateRaw = localStorage.getItem('active-round-scores');
+          if (pendingRoundStateRaw) {
+            const pendingRoundState = JSON.parse(pendingRoundStateRaw);
+            if (pendingRoundState && pendingRoundState.gameId === game.id && pendingRoundState.scores) {
+              setRoundScores(pendingRoundState.scores);
+            } else if (pendingRoundState && pendingRoundState.gameId && pendingRoundState.gameId !== game.id) {
+              // Stale data from a previous game
+              localStorage.removeItem('active-round-scores');
+            }
+          }
+        } catch (e) {
+          console.error('Error restoring pending round scores:', e);
+        }
       }
     } catch (error) {
       console.error('Error loading data:', error);
@@ -73,7 +89,22 @@ export const useGameData = () => {
   }, []);
 
   const updateRoundScore = (player, score) => {
-    setRoundScores({ ...roundScores, [player.name]: score });
+    setRoundScores(prevScores => {
+      const updatedScores = { ...prevScores, [player.name]: score };
+      // Persist current round scores so they survive a browser reload (e.g. after camera usage)
+      try {
+        if (activeGame) {
+          const payload = {
+            gameId: activeGame.id,
+            scores: updatedScores
+          };
+          localStorage.setItem('active-round-scores', JSON.stringify(payload));
+        }
+      } catch (e) {
+        console.error('Error saving pending round scores:', e);
+      }
+      return updatedScores;
+    });
   };
 
   const saveRound = () => {
@@ -99,6 +130,12 @@ export const useGameData = () => {
     localStorage.setItem('active-game', JSON.stringify(sanitizeGameForStorage(updatedGame)));
     setCurrentRound(currentRound + 1);
     setRoundScores({});
+    // Clear any persisted pending round scores – they are now stored as a finished round
+    try {
+      localStorage.removeItem('active-round-scores');
+    } catch (e) {
+      console.error('Error clearing pending round scores:', e);
+    }
     return updatedGame;
   };
 
@@ -128,12 +165,24 @@ export const useGameData = () => {
     setGameHistory(updatedHistory);
     localStorage.setItem('game-history', JSON.stringify(updatedHistory.map(sanitizeGameForStorage)));
     localStorage.removeItem('active-game');
+    try {
+      localStorage.removeItem('active-round-scores');
+      localStorage.removeItem('active-declared-winner');
+    } catch (e) {
+      console.error('Error clearing active game transient state:', e);
+    }
     setActiveGame(null);
     return completedGame;
   };
 
   const cancelActiveGame = () => {
     localStorage.removeItem('active-game');
+    try {
+      localStorage.removeItem('active-round-scores');
+      localStorage.removeItem('active-declared-winner');
+    } catch (e) {
+      console.error('Error clearing active game transient state on cancel:', e);
+    }
     setActiveGame(null);
     setCurrentPlayerIndex(0);
     setCurrentRound(1);
