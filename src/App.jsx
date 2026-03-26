@@ -51,6 +51,7 @@ const RummikubTracker = () => {
     const saved = localStorage.getItem('scroll-lock-fullscreen');
     return saved === null ? true : saved === 'true';
   });
+  const [hasAutoResumedActiveGame, setHasAutoResumedActiveGame] = useState(false);
 
   // Game data
   const gameData = useGameData();
@@ -456,10 +457,11 @@ const RummikubTracker = () => {
   // If there's an active game after loading, automatically resume the active game view
   // (helps when the browser reloads the page, e.g. after using the camera on mobile)
   useEffect(() => {
-    if (!loading && activeGame && view === VIEWS.HOME) {
+    if (!loading && activeGame && view === VIEWS.HOME && !hasAutoResumedActiveGame) {
       setView(VIEWS.ACTIVE_GAME);
+      setHasAutoResumedActiveGame(true);
     }
-  }, [loading, activeGame, view]);
+  }, [loading, activeGame, view, hasAutoResumedActiveGame]);
 
   // Loading
   if (loading) {
